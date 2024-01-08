@@ -5,9 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.util.Color;
 
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class Constants {

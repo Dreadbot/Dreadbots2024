@@ -1,7 +1,6 @@
 package util.drive;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import util.misc.DreadbotSubsystem;
 import util.misc.DreadbotMotor;
