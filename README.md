@@ -1,4 +1,4 @@
 # Dreadbots 2024
-Currently WIP!
+Project for the 2024 season crescendo!
 
 
