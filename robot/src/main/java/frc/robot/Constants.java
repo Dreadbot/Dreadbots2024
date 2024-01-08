@@ -56,7 +56,7 @@ public abstract class Constants {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");
     }
     public static class SwerveConstants {
-        public static final double ATTAINABLE_MAX_SPEED = 2.50;
+        public static final double ATTAINABLE_MAX_SPEED = 3;
         public static final double MODULE_Y_OFFSET = Units.inchesToMeters(26.0) / 2; // Between the front and back
         public static final double MODULE_X_OFFSET = Units.inchesToMeters(23.0) / 2; // Between the left and right
         // Encoder offsets are in degrees, not radians
