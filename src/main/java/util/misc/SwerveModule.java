@@ -1,9 +1,10 @@
 package util.misc;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -16,41 +17,40 @@ public class SwerveModule {
 
     private DreadbotMotor driveMotor;
     private DreadbotMotor turningMotor;
-    private CANCoder turningCanCoder;
-    private SparkMaxPIDController drivePIDController;
+    private CANcoder turningCanCoder;
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
     
-    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANCoder turningCanCoder, double canCoderOffset) {
+    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
         this.turningMotor = turnMotor;
         this.turningCanCoder = turningCanCoder;
-        this.turningCanCoder.configMagnetOffset(-canCoderOffset);
+        CANcoderConfiguration config = new CANcoderConfiguration();
+        config.MagnetSensor.MagnetOffset = -canCoderOffset;
+        this.turningCanCoder.getConfigurator().apply(config);
         this.turningMotor.setInverted(true);
-        this.drivePIDController = driveMotor.getPIDController();
-        this.drivePIDController.setP(0.1);
-        this.drivePIDController.setFF(1);
-
+        driveMotor.getPIDController().setP(0.1);
+        driveMotor.getPIDController().setFF(1);
         this.driveMotor.getEncoder().setPositionConversionFactor(SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO); //convert from revolutions to meters
         this.driveMotor.getEncoder().setVelocityConversionFactor((SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO) / 60);
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANCoder turningCanCoder, double canCoderOffset, double drivePOverride) {
+    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANcoder turningCanCoder, double canCoderOffset, double drivePOverride) {
         this(driveMotor, turnMotor, turningCanCoder, canCoderOffset);
-        this.drivePIDController.setP(drivePOverride);
+        this.driveMotor.getPIDController().setP(drivePOverride);
     }
 
     public SwerveModuleState getState() {
         return new SwerveModuleState(
             driveMotor.getEncoder().getVelocity(), 
-            new Rotation2d(Units.degreesToRadians(turningCanCoder.getAbsolutePosition()))
+            new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI)
         );
     }
 
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
             driveMotor.getEncoder().getPosition(), 
-            new Rotation2d(Units.degreesToRadians(turningCanCoder.getAbsolutePosition()))
+            new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI)
         );
     }
 
@@ -63,15 +63,15 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
-        SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(Units.degreesToRadians(turningCanCoder.getAbsolutePosition())));
+        SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI));
 
-        double turnOutput = turningPIDController.calculate(Units.degreesToRadians(turningCanCoder.getAbsolutePosition()), optimizedState.angle.getRadians());
-        drivePIDController.setReference(optimizedState.speedMetersPerSecond, ControlType.kVelocity);
+        double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
+        this.driveMotor.getPIDController().setReference(optimizedState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
         turningMotor.setVoltage(turnOutput);
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition());
+        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble() * 360);
     }
 
     public DreadbotMotor getDriveMotor() {
