@@ -3,24 +3,23 @@ package util.misc;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule {
 
-    private DreadbotMotor driveMotor;
-    private DreadbotMotor turningMotor;
+    private CANSparkMax driveMotor;
+    private CANSparkMax turningMotor;
     private CANcoder turningCanCoder;
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
     
-    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
+    public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
         this.turningMotor = turnMotor;
         this.turningCanCoder = turningCanCoder;
@@ -35,7 +34,7 @@ public class SwerveModule {
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANcoder turningCanCoder, double canCoderOffset, double drivePOverride) {
+    public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset, double drivePOverride) {
         this(driveMotor, turnMotor, turningCanCoder, canCoderOffset);
         this.driveMotor.getPIDController().setP(drivePOverride);
     }
@@ -55,10 +54,6 @@ public class SwerveModule {
     }
 
     public void resetEncoder() {
-        driveMotor.resetEncoder();
-    }
-
-    public void zeroModule() {
         driveMotor.getEncoder().setPosition(0);
     }
 
@@ -74,11 +69,11 @@ public class SwerveModule {
         SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble() * 360);
     }
 
-    public DreadbotMotor getDriveMotor() {
+    public CANSparkMax getDriveMotor() {
         return this.driveMotor;
     }
 
-    public DreadbotMotor getTurnMotor() {
+    public CANSparkMax getTurnMotor() {
         return this.turningMotor;
     }
 

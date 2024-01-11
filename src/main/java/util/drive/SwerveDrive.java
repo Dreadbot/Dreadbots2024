@@ -2,7 +2,7 @@ package util.drive;
 
 import java.util.HashMap;
 import java.util.List;
-
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -68,27 +68,27 @@ public class SwerveDrive extends DreadbotSubsystem {
         frontLeftModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(1, MotorType.kBrushless), "Front Left Drive"),
             new DreadbotMotor(new CANSparkMax(2, MotorType.kBrushless), "Front Left Turn"),
-            new CANCoder(9),
+            new CANcoder(9),
             SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
         );
         // frontLeftModule.getDriveMotor().setInverted(true);
         frontRightModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(3, MotorType.kBrushless), "Front Right Drive"),
             new DreadbotMotor(new CANSparkMax(4, MotorType.kBrushless), "Front Right Turn"),
-            new CANCoder(10),
+            new CANcoder(10),
             SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
         );
         backLeftModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(5, MotorType.kBrushless), "Back Left Drive"),
             new DreadbotMotor(new CANSparkMax(6, MotorType.kBrushless), "Back Left Turn"),
-            new CANCoder(11),
+            new CANcoder(11),
             SwerveConstants.BACK_LEFT_ENCODER_OFFSET
         );
         // backLeftModule.getDriveMotor().setInverted(true);
         backRightModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(7, MotorType.kBrushless), "Back Right Drive"),
             new DreadbotMotor(new CANSparkMax(8, MotorType.kBrushless), "Back Right Turn"),
-            new CANCoder(12),
+            new CANcoder(12),
             SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
         );
 
