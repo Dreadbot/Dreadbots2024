@@ -3,6 +3,10 @@ package frc.robot.subystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -16,6 +20,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.Constants.SwerveConstants;
 import util.misc.DreadbotSubsystem;
@@ -44,7 +50,6 @@ public class Drive extends DreadbotSubsystem {
 
 
     public Drive() {
-
         frontLeftModule = new SwerveModule(
             new CANSparkMax(1, MotorType.kBrushless),
             new CANSparkMax(2, MotorType.kBrushless), 
@@ -90,11 +95,31 @@ public class Drive extends DreadbotSubsystem {
             },
             new Pose2d()
         );
+
+        AutoBuilder.configureHolonomic(
+            this::getPosition, 
+            this::resetOdometry,
+            this::getSpeeds,
+            this::followSpeeds,
+            new HolonomicPathFollowerConfig(
+                new PIDConstants(2.5), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                new PIDConstants(2),
+                2.0, // keep it slow for right now during testing
+                Units.inchesToMeters(23.0),
+                new ReplanningConfig()
+            ),
+            () -> {
+                if(DriverStation.getAlliance().isPresent()) {
+                    return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
+        );
     }
 
     @Override
     public void periodic() {
-
         odometry.update(
             getGyroRotation(),
             new SwerveModulePosition[] {
@@ -109,7 +134,6 @@ public class Drive extends DreadbotSubsystem {
 
     // make sure to input speed, not percentage!!!!!
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-
         xSpeed = forwardSlewRateLimiter.calculate(xSpeed);
         ySpeed = strafeSlewRateLimiter.calculate(ySpeed);
 
@@ -119,21 +143,17 @@ public class Drive extends DreadbotSubsystem {
         );
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
-        setDesiredState(swerveModuleStates);;
-        
+        setDesiredStates(swerveModuleStates);
     }
 
-    public void setDesiredState(SwerveModuleState[] swerveModuleStates) {
-
+    public void setDesiredStates(SwerveModuleState[] swerveModuleStates) {
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
-
     }
 
     public void resetOdometry(Pose2d pose) {
-
         odometry.resetPosition(gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
@@ -153,16 +173,29 @@ public class Drive extends DreadbotSubsystem {
         return gyro.getRotation2d();
     }
 
-    public void followSpeed(ChassisSpeeds speed) {
+    public ChassisSpeeds getSpeeds() {
+        return kinematics.toChassisSpeeds(getModuleStates());
+    }
 
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speed);
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            frontLeftModule.getState(),
+            frontRightModule.getState(),
+            backLeftModule.getState(),
+            backRightModule.getState()
+        };
+    }
+
+    public void followSpeeds(ChassisSpeeds speed) {
+        ChassisSpeeds targetSpeed = ChassisSpeeds.discretize(speed, 0.02); // not sure why this is here, but lets try it anyways? lol
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(targetSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
-        setDesiredState(swerveModuleStates);
+        setDesiredStates(swerveModuleStates);
 
     }
 
-    public void resetModules() {
 
+    public void resetModules() {
         frontLeftModule.resetEncoder();
         frontRightModule.resetEncoder();
         backLeftModule.resetEncoder();
@@ -175,6 +208,8 @@ public class Drive extends DreadbotSubsystem {
         gyro.reset();
         resetOdometry(getPosition());
     }
+
+
 
     @Override
     public void close() throws Exception {
