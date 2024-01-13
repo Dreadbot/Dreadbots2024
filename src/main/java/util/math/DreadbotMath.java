@@ -91,6 +91,14 @@ public interface DreadbotMath {
         return applyDeadbandToValue(inputValue, -deadband, deadband, 0.0d);
     }
 
+    static Vector2D applyDeadbandToVector(final Vector2D inputValue, final double deadband) {
+        double magnitude = inputValue.norm();
+        if (magnitude < deadband) {
+            return new Vector2D(0, 0);
+        }
+        return inputValue;
+    }
+
     /**
      * Deadband Processing function
      * <p>

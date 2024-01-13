@@ -5,9 +5,17 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commmands.DriveCommand;
+import util.controls.DreadbotController;
+import frc.robot.subystems.Drive;
 
 
 
@@ -18,12 +26,16 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
     
-    
+    private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
+    private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
+    private final SendableChooser<Command> autoChooser;
+    Drive drive = new Drive();
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer()
-    {
-        // Configure the button bindings
+    public RobotContainer() {
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
         configureButtonBindings();
     }
     
@@ -34,10 +46,9 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings()
-    {
-        // Add button to command mappings here.
-        // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+    private void configureButtonBindings() {
+       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getYAxis, primaryController::getXAxis, primaryController::getZAxis);
+       drive.setDefaultCommand(driveCommand);
     }
     
     
@@ -46,9 +57,7 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand()
-    {
-        // An ExampleCommand will run in autonomous
-        return null;
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
     }
 }

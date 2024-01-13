@@ -16,9 +16,11 @@ public abstract class Constants {
     //region * SECTION - ROBOT PORTS
     // =================================================================================================================
 
-    // Joystick Ports
-    public static final int PRIMARY_JOYSTICK_PORT   = 0;
-    public static final int SECONDARY_JOYSTICK_PORT = 1;
+    public static class OperatorConstants {
+      public static final int PRIMARY_JOYSTICK_PORT   = 0;
+      public static final int SECONDARY_JOYSTICK_PORT = 1;
+    }
+    
 
     // Motor Ports
 
@@ -50,6 +52,12 @@ public abstract class Constants {
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");
     }
+
+    public static class DriveConstants {
+      public static final double SPEED_LIMITER = 1.0; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!\
+      public static final double DEADBAND = 0.1;
+    }
+
     public static class SwerveConstants {
         public static final double ATTAINABLE_MAX_SPEED = 3;
         public static final double MODULE_Y_OFFSET = Units.inchesToMeters(26.0) / 2; // Between the front and back

@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
@@ -104,7 +105,7 @@ public class Drive extends DreadbotSubsystem {
             new HolonomicPathFollowerConfig(
                 new PIDConstants(2.5), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
                 new PIDConstants(2),
-                2.0, // keep it slow for right now during testing
+                AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                 Units.inchesToMeters(23.0),
                 new ReplanningConfig()
             ),
