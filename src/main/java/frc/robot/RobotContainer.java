@@ -47,7 +47,7 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getYAxis, primaryController::getXAxis, primaryController::getZAxis);
+       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
        drive.setDefaultCommand(driveCommand);
     }
     
