@@ -1,7 +1,6 @@
 package frc.robot.subystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -10,7 +9,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.misc.DreadbotSubsystem;
@@ -46,9 +45,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(1.5, -1.5, .2);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(1.5, -1.5, .2);
-
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, .2);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, .2);
 
     public Drive() {
         frontLeftModule = new SwerveModule(
@@ -130,13 +128,21 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        
+        SmartDashboard.putNumber("Velocity (m/s)", frontLeftModule.getDriveMotor().getEncoder().getVelocity());
+
+        frontLeftModule.putValuesToSmartDashboard("Front Left");
+        frontRightModule.putValuesToSmartDashboard("Front Right");
+        backLeftModule.putValuesToSmartDashboard("Back Left");
+        backRightModule.putValuesToSmartDashboard("Back Right");
+
     }
 
     // make sure to input speed, not percentage!!!!!
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        xSpeed = forwardSlewRateLimiter.calculate(xSpeed);
-        ySpeed = strafeSlewRateLimiter.calculate(ySpeed);
+        xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
+        ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
+        SmartDashboard.putNumber("ySpeed", ySpeed);
+        SmartDashboard.putNumber("xSpeed", xSpeed);
 
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
             fieldRelative ? 

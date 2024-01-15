@@ -54,7 +54,7 @@ public abstract class Constants {
     }
 
     public static class DriveConstants {
-      public static final double SPEED_LIMITER = 1.0; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!\
+      public static final double SPEED_LIMITER = 1.0; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
       public static final double DEADBAND = 0.1;
     }
 
@@ -62,11 +62,11 @@ public abstract class Constants {
         public static final double ATTAINABLE_MAX_SPEED = 3;
         public static final double MODULE_Y_OFFSET = Units.inchesToMeters(26.0) / 2; // Between the front and back
         public static final double MODULE_X_OFFSET = Units.inchesToMeters(23.0) / 2; // Between the left and right
-        // Encoder offsets are in degrees, not radians
-        public static final double FRONT_LEFT_ENCODER_OFFSET = -137.021 + 180;
-        public static final double FRONT_RIGHT_ENCODER_OFFSET = -31.816 - 2;
-        public static final double BACK_LEFT_ENCODER_OFFSET = -116.895 - 1;
-        public static final double BACK_RIGHT_ENCODER_OFFSET = -121.904 + 180 + 2;
+        // Encoder offsets are in rotations now???? ok
+        public static final double FRONT_LEFT_ENCODER_OFFSET = 0.125;
+        public static final double FRONT_RIGHT_ENCODER_OFFSET = -0.108642578125;
+        public static final double BACK_LEFT_ENCODER_OFFSET = 0.17822265625 + 0.5;
+        public static final double BACK_RIGHT_ENCODER_OFFSET = 0.16943359375;
         public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         public static final double TURN_GEAR_RATIO = 150 / 7;
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);

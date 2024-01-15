@@ -66,7 +66,7 @@ public class SwerveModule {
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble() * 360);
+        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
     }
 
     public CANSparkMax getDriveMotor() {
