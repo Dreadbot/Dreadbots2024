@@ -3,9 +3,12 @@ package frc.robot.subystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -16,11 +19,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -36,7 +41,8 @@ public class Drive extends DreadbotSubsystem {
     private final Translation2d backRightLocation = new Translation2d(-SwerveConstants.MODULE_X_OFFSET, -SwerveConstants.MODULE_Y_OFFSET);
 
     private SwerveDriveKinematics kinematics;
-    private SwerveDrivePoseEstimator odometry;
+    private SwerveDrivePoseEstimator poseEstimator;
+    private SwerveDriveOdometry odometry;
 
     private AHRS gyro = new AHRS(Port.kUSB1);
 
@@ -82,9 +88,8 @@ public class Drive extends DreadbotSubsystem {
             backLeftLocation,
             backRightLocation
         );
-
         //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
-        odometry = new SwerveDrivePoseEstimator(kinematics, 
+        poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
             gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
@@ -92,9 +97,18 @@ public class Drive extends DreadbotSubsystem {
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
             },
-            new Pose2d()
+            PathPlannerAuto.getStaringPoseFromAutoFile("New Auto")
         );
-
+        odometry = new SwerveDriveOdometry(
+            kinematics, 
+            getGyroRotation(), 
+            new SwerveModulePosition[] {
+                    frontLeftModule.getPosition(),
+                    frontRightModule.getPosition(),
+                    backLeftModule.getPosition(),
+                    backRightModule.getPosition()
+            }
+        );
         AutoBuilder.configureHolonomic(
             this::getPosition, 
             this::resetOdometry,
@@ -109,8 +123,10 @@ public class Drive extends DreadbotSubsystem {
             ),
             () -> {
                 if(DriverStation.getAlliance().isPresent()) {
+                    SmartDashboard.putBoolean("Flipped Path", DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
                     return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
                 }
+                SmartDashboard.putBoolean("Flipped Path", false);
                 return false;
             },
             this
@@ -119,6 +135,15 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
+        poseEstimator.update(
+            getGyroRotation(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
+        );
         odometry.update(
             getGyroRotation(),
             new SwerveModulePosition[] {
@@ -138,6 +163,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     // make sure to input speed, not percentage!!!!!
+    //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
@@ -161,7 +187,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetOdometry(Pose2d pose) {
-        odometry.resetPosition(gyro.getRotation2d(),
+        poseEstimator.resetPosition(gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -173,7 +199,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public Pose2d getPosition() {
-        return odometry.getEstimatedPosition();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public Rotation2d getGyroRotation() {

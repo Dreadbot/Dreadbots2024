@@ -30,7 +30,7 @@ public class RobotContainer {
     
     private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
-    private final SendableChooser<Command> autoChooser;
+    public final SendableChooser<Command> autoChooser;
     Drive drive = new Drive();
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
