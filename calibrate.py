@@ -1,3 +1,4 @@
+import yaml
 import numpy as np
 import argparse
 import tempfile
@@ -42,6 +43,12 @@ def main():
         if args.camera_id is None:
             print("\x1B[91mNo camera id specified. Use \x1B[34m-c\x1B[91m or \x1B[34m--camera-id\x1B[91m to set it.\x1B[0m")
             exit(2)
+        return args.camera_id
+
+    def get_file_name():
+        if args.output_path is None:
+            return "intrinsics.yaml"
+        return args.output_path
 
     # Gather images
     def gather():
@@ -57,20 +64,20 @@ def main():
             ret, frame = cap.read()
             if ret == False:
                 print("\x1B[91mCould not read from camera.\x1B[0m")
-                exit(1)
+                continue
             cv2.imshow("frame", frame)
 
             key = cv2.waitKey(1)
             if key == ord('c') & 0xff:
                 path = f"{dir}/img{img_num}.png"
-                cv2.imwrite(path)
-                if args.verbosity >= 2 or (hard_store and args.verbosity == 1):
+                cv2.imwrite(path, frame)
+                if args.v >= 2 or (hard_store and args.v == 1):
                     print(f"Wrote to \x1B[34m{path}\x1B[0m")
                 img_num += 1
             elif key == ord('q') & 0xff:
                 break
 
-        cap.close()
+        del(cap)
         
     # Calibrate from images
     def calibrate():
@@ -107,6 +114,7 @@ def main():
                 cv2.drawChessboardCorners(img, (num_points_vert, num_points_hori), corners2, ret)
                 cv2.imshow("img", img)
                 cv2.waitKey(500)
+
     
         cv2.destroyAllWindows()
 
@@ -114,8 +122,22 @@ def main():
             print(f"\x1B[91mNot enough data to calibrate.\x1B[0m")
             exit(1)
 
-        val = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-        print(val)
+
+        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+        calibration = {
+            "fx": float(mtx[0][0]),
+            "fy": float(mtx[1][1]),
+            "cx": float(mtx[0][2]),
+            "cy": float(mtx[1][2]),
+            "k1": float(dist[0][0]),
+            "k2": float(dist[0][1]),
+            "p1": float(dist[0][2]),
+            "p2": float(dist[0][3]),
+            "k3": float(dist[0][4])
+        }
+
+        with open(get_file_name(), 'w') as outfile:
+            yaml.dump(calibration, outfile)
 
     if args.precaptured_images is None:
         gather()
