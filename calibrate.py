@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import yaml
 import numpy as np
 import argparse
