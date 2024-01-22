@@ -115,8 +115,8 @@ public class Drive extends DreadbotSubsystem {
             this::getSpeeds,
             this::followSpeeds,
             new HolonomicPathFollowerConfig(
-                new PIDConstants(2.5), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                new PIDConstants(2),
+                new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                new PIDConstants(2.6, 0.1),
                 AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                 Units.inchesToMeters(23.0),
                 new ReplanningConfig()
@@ -153,7 +153,7 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        SmartDashboard.putNumber("Velocity (m/s)", frontLeftModule.getDriveMotor().getEncoder().getVelocity());
+        
 
         frontLeftModule.putValuesToSmartDashboard("Front Left");
         frontRightModule.putValuesToSmartDashboard("Front Right");
