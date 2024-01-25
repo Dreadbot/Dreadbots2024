@@ -97,7 +97,7 @@ public class Drive extends DreadbotSubsystem {
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
             },
-            PathPlannerAuto.getStaringPoseFromAutoFile("New Auto")
+            PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
         );
         odometry = new SwerveDriveOdometry(
             kinematics, 
@@ -123,10 +123,8 @@ public class Drive extends DreadbotSubsystem {
             ),
             () -> {
                 if(DriverStation.getAlliance().isPresent()) {
-                    SmartDashboard.putBoolean("Flipped Path", DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
                     return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
                 }
-                SmartDashboard.putBoolean("Flipped Path", false);
                 return false;
             },
             this
