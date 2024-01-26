@@ -51,8 +51,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, .2);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, .2);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
 
     public Drive() {
         frontLeftModule = new SwerveModule(
@@ -67,19 +67,18 @@ public class Drive extends DreadbotSubsystem {
             new CANcoder(10), 
             SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
         );
-        backLeftModule = new SwerveModule(
+        backRightModule = new SwerveModule(
             new CANSparkMax(5, MotorType.kBrushless),
             new CANSparkMax(6, MotorType.kBrushless), 
             new CANcoder(11), 
-            SwerveConstants.BACK_LEFT_ENCODER_OFFSET
+            SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
         );
-        backRightModule = new SwerveModule(
+        backLeftModule = new SwerveModule(
             new CANSparkMax(7, MotorType.kBrushless),
             new CANSparkMax(8, MotorType.kBrushless), 
             new CANcoder(12), 
-            SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
+            SwerveConstants.BACK_LEFT_ENCODER_OFFSET
         );
-
         gyro.reset();
 
         kinematics = new SwerveDriveKinematics(

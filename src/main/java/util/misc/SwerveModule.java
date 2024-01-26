@@ -62,6 +62,7 @@ public class SwerveModule {
 
         double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
         this.driveMotor.getPIDController().setReference(optimizedState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
+        SmartDashboard.putNumber("Desired speed", optimizedState.speedMetersPerSecond);
         turningMotor.setVoltage(turnOutput);
     }
 
