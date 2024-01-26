@@ -44,7 +44,7 @@ public class Drive extends DreadbotSubsystem {
     private SwerveDrivePoseEstimator poseEstimator;
     private SwerveDriveOdometry odometry;
 
-    private AHRS gyro = new AHRS(Port.kUSB1);
+    private AHRS gyro = new AHRS(Port.kMXP);
 
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
