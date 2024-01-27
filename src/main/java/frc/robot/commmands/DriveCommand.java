@@ -14,13 +14,14 @@ public class DriveCommand extends Command {
     private final DoubleSupplier joystickX;
     private final DoubleSupplier joystickY;
     private final DoubleSupplier joystickRotatation;
-
+    private double speedModifier; 
 
     public DriveCommand(Drive drive, DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joyStickRotation) {
         this.drive = drive;
         this.joystickX = joystickX;
         this.joystickY = joystickY;
         this.joystickRotatation = joyStickRotation;
+        this.speedModifier = 1;
 
         addRequirements(drive);
     }
@@ -29,9 +30,20 @@ public class DriveCommand extends Command {
     public void execute() {
         Vector2D joystickValue = DreadbotMath.applyDeadbandToVector(new Vector2D(joystickX.getAsDouble(), joystickY.getAsDouble()), DriveConstants.DEADBAND);
         double rotation = DreadbotMath.applyDeadbandToValue(joystickRotatation.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.SPEED_LIMITER;
-        double forward = -joystickValue.x2 * DriveConstants.SPEED_LIMITER;
-        double strafe = -joystickValue.x1 * DriveConstants.SPEED_LIMITER;
+        double forward = -joystickValue.x2 * DriveConstants.SPEED_LIMITER * speedModifier;
+        double strafe = -joystickValue.x1 * DriveConstants.SPEED_LIMITER * speedModifier;
 
         drive.drive(forward, strafe, -rotation, true);
+    }
+
+    public void enableTurtle() {
+
+        speedModifier = 0.5;
+
+    }
+
+    public void disableTurtle() {
+
+        speedModifier = 1;
     }
 }

@@ -14,8 +14,8 @@ public abstract class Constants {
     }
 
     public static class DriveConstants {
-      public static final double SPEED_LIMITER = 1.5; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
-      public static final double DEADBAND = 0.1;
+      public static final double SPEED_LIMITER = 1; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
+      public static final double DEADBAND = 0.14;
     }
 
     public static class SwerveConstants {

@@ -117,7 +117,7 @@ public class Drive extends DreadbotSubsystem {
                 new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
                 new PIDConstants(2.6, 0.1),
                 AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
-                Units.inchesToMeters(23.0),
+                Units.inchesToMeters(30.0),
                 new ReplanningConfig()
             ),
             () -> {
