@@ -2,27 +2,34 @@ import cv2
 import numpy as np
 
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(4)
     
     while True:
         ret, frame = cap.read()
-        if not ret: break
+        if not ret: break 
 
-        # rgb_hoop_img = cv2.cvtColor()
-        gray_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        hsvim = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        circles = cv2.HoughCircles(gray_img, cv2.HOUGH_GRADIENT, 2, 100, minRadius=40, maxRadius=600)
+        upper_bound = np.array([25, 255, 255])
+        lower_bound = np.array([0, 75, 125])
+        ring_imrange = cv2.inRange(hsvim, lower_bound, upper_bound)
 
-        if circles is not None:
-            circles = np.uint16(np.around(circles))
-            mean_center = circles.mean(axis=1)[0]
-            center = (int(mean_center[0]), int(mean_center[1]))
-            cv2.circle(gray_img, center, 1, (0, 100, 100), 3)
-            radius = int(mean_center[2])
-            cv2.circle(gray_img, center, radius, (255, 0, 255), 3)
+        red_upper_bound = np.array([5, 255, 255])
+        red_lower_bound = np.array([0, 75, 0])
+        red_imrange = cv2.inRange(hsvim, red_lower_bound, red_upper_bound)
 
-        cv2.imshow("frame", gray_img)
+        not_imrange = cv2.bitwise_not(red_imrange)
 
+        imrange = cv2.bitwise_and(not_imrange, ring_imrange)
+
+        kernel = np.ones((5, 5), np.uint8)
+
+        blurim = cv2.GaussianBlur(imrange, (1, 1), 0)
+        erodeim = cv2.erode(blurim, kernel)
+        dilateim = cv2.dilate(erodeim, kernel)
+        
+        cv2.imshow("frame", dilateim)
+                 
         if cv2.waitKey(1) == ord('q') & 0xff:
             break
 
