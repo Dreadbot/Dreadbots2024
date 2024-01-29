@@ -12,6 +12,9 @@ def main():
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
 
+    with open("field.yaml", 'r') as f:
+        tag_positions = yaml.safe_load(f)
+
     at_detector = Detector(searchpath=['apriltags'],
                            families='tag36h11',
                            nthreads=2,
@@ -20,7 +23,8 @@ def main():
 
     camera_params = [0] * 4
 
-    with open(args.intrinsics_file) as f:
+    print(args.intrinsics_file);
+    with open(args.intrinsics_file, 'r') as f:
         params = yaml.safe_load(f)
         camera_params[0] = params["fx"]
         camera_params[1] = params["fy"]
@@ -43,11 +47,13 @@ def main():
                                       tag_size=0.163525)
 
         for tag in all_tags:
-            dx = tag.pose_t[0]
-            dz = tag.pose_t[2]
-            theta = math.atan(dx/dz)
-            rmat = np.array(((np.cos(theta), np.sin(theta))))
-            print(f"{round(math.degrees(theta), 2)}")
+            tag_info = tag_positions[f"tag{tag.tag_id}"]
+            tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
+            true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
+
+            print(tag_t)
+            print(tag_t - true_t)
+            
             break
 
         if cv2.waitKey(1) == ord('q') & 0xff:
