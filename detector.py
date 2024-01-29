@@ -51,8 +51,12 @@ def main():
             tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
             true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
 
-            print(tag_t)
-            print(tag_t - true_t)
+            theta = tag_info["theta"]
+
+            Ry_april_world = np.linalg.inv(np.array([math.cos(theta), 0, math.sin(theta)], [0, 1, 0], [-math.sin(theta), 0, math.cos(theta)]))
+            Ry_camera_april = np.linalg.inv(tag.pose_R)
+
+            print(tag_t - np.matmul(Ry_april_world, np.matmul(Ry_camera_april, tag.pose_t)))
             
             break
 
