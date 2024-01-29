@@ -1,4 +1,4 @@
-package frc.robot.subystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
