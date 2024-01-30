@@ -18,7 +18,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
+import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Shooter;
 import util.controls.DreadbotController;
 
 
@@ -32,15 +34,18 @@ import util.controls.DreadbotController;
 public class RobotContainer {
 
     
-    private final XboxController primaryController = new XboxController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
+    private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
-    public final SendableChooser<Command> autoChooser;
-    Drive drive = new Drive();
+    //public final SendableChooser<Command> autoChooser;
+    // Drive drive = new Drive(); 
+    private final Shooter shooter;
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        //autoChooser = AutoBuilder.buildAutoChooser();
+        //SmartDashboard.putData("Auto Chooser", autoChooser);
+        shooter = new Shooter();
         configureButtonBindings();
+        
     }
     
     
@@ -51,9 +56,10 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
-       drive.setDefaultCommand(driveCommand);
-       new Trigger(primaryController::getLeftBumper).whileTrue(new TurtleCommand(driveCommand));
+    //    DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
+    //    drive.setDefaultCommand(driveCommand);
+    //    new Trigger(primaryController::getLeftBumper).whileTrue(new TurtleCommand(driveCommand));  
+        primaryController.getXButton().whileTrue(new ShootCommand(shooter));
     }
     
     
@@ -63,7 +69,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
-        return autoChooser.getSelected();
+      //  drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        //return autoChooser.getSelected();
+        return new Command() {
+            ;
+        };
     }
 }

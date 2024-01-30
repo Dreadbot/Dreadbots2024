@@ -7,28 +7,33 @@ import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
 
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
+    private final CANSparkMax leaderMotor;
+    private final CANSparkMax followerMotor;
 
     public Shooter() {
-        this.leftMotor = new CANSparkMax(16, MotorType.kBrushless);
-        this.rightMotor = new CANSparkMax(17, MotorType.kBrushless);
-
+        this.leaderMotor = new CANSparkMax(1, MotorType.kBrushless);
+        this.followerMotor = new CANSparkMax(2, MotorType.kBrushless);
+        this.leaderMotor.setInverted(true);
+        this.followerMotor.follow(leaderMotor, true);
+        
     }
 
     @Override
     public void close() throws Exception {
-        leftMotor.close();
-        rightMotor.close();
+        leaderMotor.close();
+        followerMotor.close();
     }
 
     @Override
     public void stopMotors() {
-        leftMotor.stopMotor();
-        rightMotor.stopMotor();
+        leaderMotor.stopMotor();
+        
     }
 
-
+    public void shoot(double speed) {
+        leaderMotor.set(speed);
+    }
+    
 
     
 }
