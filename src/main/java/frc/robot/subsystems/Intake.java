@@ -11,7 +11,7 @@ public class Intake extends DreadbotSubsystem {
 
 
     public Intake() { 
-        intakeMotor = new CANSparkMax(15, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(3, MotorType.kBrushless);
     }
 
     public void intake(double speed) {
