@@ -17,7 +17,7 @@ def main():
         lower_bound = np.array([0, 75, 125])
         ring_imrange = cv2.inRange(hsvim, lower_bound, upper_bound)
 
-        red_upper_bound = np.array([5, 255, 255])
+        red_upper_bound = np.array([7, 255, 255])
         red_lower_bound = np.array([0, 75, 0])
         red_imrange = cv2.inRange(hsvim, red_lower_bound, red_upper_bound)
 
@@ -35,7 +35,7 @@ def main():
 
         flen = 652
         cam_pitch = 25
-        cam_height = 21.5
+        cam_height = 0.5461
         
         for c in contours:
             if cv2.contourArea(c) < 1200:
@@ -44,9 +44,9 @@ def main():
             x, y, w, h = cv2.boundingRect(c)
 
             a = x + (w//2)
-            z = y + (h//2)
+            b = y + (h//2)
             
-            bndreclist.append([x,y,w,h,a,z])
+            bndreclist.append([x,y,w,h,a,b])
             
         for b in bndreclist:
             cv2.rectangle(frame, (b[0], b[1]), (b[0]+b[2], b[1]+b[3]), (0, 255, 0), 2)
@@ -59,14 +59,14 @@ def main():
 
             cv2.circle(frame, center_coordinates, 5, color, 2)
 
-            c = math.atan(pixel_y / flen)
-            d = math.radians(90 - cam_pitch)
-            e = flen / math.cos(c)
+            a = math.atan(pixel_y / flen)
+            b = math.radians(90 - cam_pitch)
+            h = flen / math.cos(a)
 
-            trix = math.sin(d-c) * e
-            triy = math.cos(d-c) * e
+            x = math.sin(b-a) * h
+            y = math.cos(b-a) * h
 
-            distance_to_note = trix * (cam_height / triy)
+            distance_to_note = x * (cam_height / y)
 
             print(distance_to_note)
         
