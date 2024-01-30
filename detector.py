@@ -51,13 +51,13 @@ def main():
             tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
             true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
 
-            theta = tag_info["theta"]
+            conv_angle = -(math.pi - math.atan2(tag.pose_R[1][0], tag.pose_R[0][0]) - math.radians(tag_info["theta"]))
 
-            Ry_april_world = np.linalg.inv(np.array([math.cos(theta), 0, math.sin(theta)], [0, 1, 0], [-math.sin(theta), 0, math.cos(theta)]))
-            Ry_camera_april = np.linalg.inv(tag.pose_R)
+            Ry_robot_world = np.linalg.inv(np.array([[math.cos(conv_angle), 0, math.sin(conv_angle)], [0, 1, 0], [-math.sin(conv_angle), 0, math.cos(conv_angle)]]))
+        
 
-            print(tag_t - np.matmul(Ry_april_world, np.matmul(Ry_camera_april, tag.pose_t)))
-            
+            print(tag_t - np.matmul(Ry_robot_world, tag.pose_t))
+
             break
 
         if cv2.waitKey(1) == ord('q') & 0xff:
