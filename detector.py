@@ -51,12 +51,14 @@ def main():
             tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
             true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
 
-            conv_angle = -(math.pi - math.atan2(tag.pose_R[1][0], tag.pose_R[0][0]) - math.radians(tag_info["theta"]))
+            alpha = math.atan2(-tag.pose_R[2][0], math.sqrt(tag.pose_R[2][1]**2 + tag.pose_R[2][2]**2));
+            conv_angle = -(math.pi - alpha - math.radians(tag_info["theta"]))
 
             Ry_robot_world = np.linalg.inv(np.array([[math.cos(conv_angle), 0, math.sin(conv_angle)], [0, 1, 0], [-math.sin(conv_angle), 0, math.cos(conv_angle)]]))
-        
 
+            print(math.degrees(alpha))
             print(tag_t - np.matmul(Ry_robot_world, tag.pose_t))
+            print("---")
 
             break
 
