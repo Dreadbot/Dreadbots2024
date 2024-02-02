@@ -12,7 +12,9 @@ public abstract class Constants {
       public static final int PRIMARY_JOYSTICK_PORT   = 0;
       public static final int SECONDARY_JOYSTICK_PORT = 1;
     }
-
+    public static class SubsystemConstants {
+      public static final boolean DRIVE_ENABLED = true;
+    }
     public static class DriveConstants {
       public static final double SPEED_LIMITER = 1; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
       public static final double DEADBAND = 0.14;
