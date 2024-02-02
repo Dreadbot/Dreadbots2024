@@ -36,6 +36,10 @@ public abstract class Constants {
         public static final double MAX_SPEED_METERS_PER_SECOND = 2.5;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1.25;
       }
+
+      public static class IntakeConstants {
+        public static final double INTAKE_SPEED = 0.35;
+      }
       
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");
