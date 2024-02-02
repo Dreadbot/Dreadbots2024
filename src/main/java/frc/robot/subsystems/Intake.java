@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import util.misc.DreadbotSubsystem;
 
 public class Intake extends DreadbotSubsystem { 
-    private final CANSparkMax intakeMotor;
+    private CANSparkMax intakeMotor;
 
 
 

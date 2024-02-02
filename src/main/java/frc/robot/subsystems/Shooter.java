@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants;
 
@@ -10,8 +12,9 @@ import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
 
-    private final CANSparkMax leaderMotor;
-    private final CANSparkMax followerMotor;
+    private CANSparkMax leaderMotor;
+    private CANSparkMax followerMotor;
+    private SparkPIDController pidController;
 
     public Shooter() {
          if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
@@ -22,6 +25,10 @@ public class Shooter extends DreadbotSubsystem {
         this.leaderMotor.setInverted(true);
         this.followerMotor.follow(leaderMotor, true);
         
+        pidController = leaderMotor.getPIDController();
+        pidController.setP(0.5);
+        pidController.setI(0.0);
+        pidController.setD(0.0);
     }
 
     @Override
@@ -46,7 +53,7 @@ public class Shooter extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
-        leaderMotor.set(speed);
+        pidController.setReference(speed, ControlType.kVelocity);
     }
     
 
