@@ -37,6 +37,12 @@ public abstract class Constants {
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1.25;
       }
       
+
+      public static class ClimberConstants {
+        public static final double EXTEND_SPEED = 0.25;
+        public static final double MAX_HEIGHT = 100; // This is a placeholder; change for real values
+      }
+
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");
     }
