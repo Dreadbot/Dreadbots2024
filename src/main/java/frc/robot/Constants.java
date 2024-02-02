@@ -14,6 +14,11 @@ public abstract class Constants {
     }
     public static class SubsystemConstants {
       public static final boolean DRIVE_ENABLED = true;
+      public static final boolean ARM_ENABLED = true;
+      public static final boolean CLIMBER_ENABLED = true;
+      public static final boolean INTAKE_ENABLED = true;
+      public static final boolean SHOOTER_ENABLED = true;
+
     }
     public static class DriveConstants {
       public static final double SPEED_LIMITER = 1; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
