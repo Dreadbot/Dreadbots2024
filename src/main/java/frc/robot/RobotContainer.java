@@ -18,7 +18,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
+import frc.robot.commmands.intakeCommands.IntakeCommand;
+import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
 import util.controls.DreadbotController;
 
 
@@ -32,10 +35,11 @@ import util.controls.DreadbotController;
 public class RobotContainer {
 
     
-    private final XboxController primaryController = new XboxController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
+    private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
     public final SendableChooser<Command> autoChooser;
     Drive drive = new Drive();
+    Intake intake = new Intake();
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -51,9 +55,12 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
+       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
        drive.setDefaultCommand(driveCommand);
-       new Trigger(primaryController::getLeftBumper).whileTrue(new TurtleCommand(driveCommand));
+       primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
+       primaryController.getAButton().whileTrue(new IntakeCommand(intake));
+       primaryController.getBButton().whileTrue(new OuttakeCommand(intake));
+
     }
     
     
