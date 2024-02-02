@@ -9,4 +9,6 @@ public class ClimbCommand extends Command {
     public ClimbCommand(Climber climber) {
         this.climber = climber;
     }
+
+    
 }
