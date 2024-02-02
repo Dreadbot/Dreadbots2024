@@ -40,7 +40,7 @@ public abstract class Constants {
       }
 
       public static class IntakeConstants {
-        public static final double INTAKE_SPEED = 0.45;
+        public static final double INTAKE_SPEED = 0.35;
       }
       
     private Constants() throws IllegalStateException {
