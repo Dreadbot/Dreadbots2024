@@ -234,6 +234,10 @@ public class Drive extends DreadbotSubsystem {
         resetOdometry(getPosition());
     }
 
+    public AHRS getGyro() {
+        return gyro;
+    }
+
     public void resetGyro(){
         gyro.reset();
         resetOdometry(getPosition());
