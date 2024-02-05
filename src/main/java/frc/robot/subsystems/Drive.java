@@ -1,4 +1,4 @@
-package frc.robot.subystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
@@ -7,8 +7,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.pathplanner.lib.util.PPLibTelemetry;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -25,7 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -51,8 +48,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, .2);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, .2);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(9 , -9, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(9, -9, 0);
 
     public Drive() {
         frontLeftModule = new SwerveModule(
@@ -80,56 +77,81 @@ public class Drive extends DreadbotSubsystem {
             SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
         );
 
-        gyro.reset();
+        
+            frontLeftModule = new SwerveModule(
+                new CANSparkMax(1, MotorType.kBrushless),
+                new CANSparkMax(2, MotorType.kBrushless), 
+                new CANcoder(9), 
+                SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+            );
+            frontRightModule = new SwerveModule(
+                new CANSparkMax(3, MotorType.kBrushless),
+                new CANSparkMax(4, MotorType.kBrushless), 
+                new CANcoder(10), 
+                SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
+            );  
+            backLeftModule = new SwerveModule(
+                new CANSparkMax(5, MotorType.kBrushless),
+                new CANSparkMax(6, MotorType.kBrushless), 
+                new CANcoder(11), 
+                SwerveConstants.BACK_LEFT_ENCODER_OFFSET
+            );
+             backRightModule = new SwerveModule(
+                new CANSparkMax(7, MotorType.kBrushless),
+                new CANSparkMax(8, MotorType.kBrushless), 
+                new CANcoder(12), 
+                SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
+            );
+            gyro.reset();
 
-        kinematics = new SwerveDriveKinematics(
-            frontLeftLocation,
-            frontRightLocation,
-            backLeftLocation,
-            backRightLocation
-        );
-        //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
-        poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
-            gyro.getRotation2d(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            },
-            PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
-        );
-        odometry = new SwerveDriveOdometry(
-            kinematics, 
-            getGyroRotation(), 
-            new SwerveModulePosition[] {
+            kinematics = new SwerveDriveKinematics(
+                frontLeftLocation,
+                frontRightLocation,
+                backLeftLocation,
+                backRightLocation
+            );
+            //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
+            poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
+                gyro.getRotation2d(),
+                new SwerveModulePosition[] {
                     frontLeftModule.getPosition(),
                     frontRightModule.getPosition(),
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
-            }
-        );
-        AutoBuilder.configureHolonomic(
-            this::getPosition, 
-            this::resetOdometry,
-            this::getSpeeds,
-            this::followSpeeds,
-            new HolonomicPathFollowerConfig(
-                new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                new PIDConstants(2.6, 0.1),
-                AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
-                Units.inchesToMeters(23.0),
-                new ReplanningConfig()
-            ),
-            () -> {
-                if(DriverStation.getAlliance().isPresent()) {
-                    return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+                },
+                PathPlannerAuto.getStaringPoseFromAutoFile("Middle-2Note") // CHANGE THIS ON ACTUAL BOT!
+            );
+            odometry = new SwerveDriveOdometry(
+                kinematics, 
+                getGyroRotation(), 
+                new SwerveModulePosition[] {
+                        frontLeftModule.getPosition(),
+                        frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
+                        backRightModule.getPosition()
                 }
-                return false;
-            },
-            this
-        );
-    }
+            );
+            AutoBuilder.configureHolonomic(
+                this::getPosition, 
+                this::resetOdometry,
+                this::getSpeeds,
+                this::followSpeeds,
+                new HolonomicPathFollowerConfig(
+                    new PIDConstants(2), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                    new PIDConstants(2),
+                    AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
+                    Units.inchesToMeters(30.0),
+                    new ReplanningConfig()
+                ),
+                () -> {
+                    if(DriverStation.getAlliance().isPresent()) {
+                        return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this
+            );
+        }
 
     @Override
     public void periodic() {
@@ -174,6 +196,7 @@ public class Drive extends DreadbotSubsystem {
         );
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
+        SmartDashboard.putNumber("Front left Commanded Velocity", swerveModuleStates[0].speedMetersPerSecond);
         setDesiredStates(swerveModuleStates);
     }
 

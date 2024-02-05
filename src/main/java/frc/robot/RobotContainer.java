@@ -6,6 +6,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
@@ -14,10 +15,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Drive;
 import frc.robot.commmands.DriveCommand;
+import frc.robot.commmands.shooterCommands.ShootCommand;
+import pabeles.concurrency.ConcurrencyOps.NewInstance;
 import util.controls.DreadbotController;
-import frc.robot.subystems.Drive;
 
 
 
@@ -32,12 +38,15 @@ public class RobotContainer {
     
     private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
+
     public final SendableChooser<Command> autoChooser;
-    Drive drive = new Drive();
+    private final Drive drive = new Drive(); 
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        registerCommands();
         configureButtonBindings();
     }
     
@@ -52,6 +61,11 @@ public class RobotContainer {
        DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
        drive.setDefaultCommand(driveCommand);
     }
+
+    private void registerCommands() {
+        NamedCommands.registerCommand("Intake", new InstantCommand());
+        NamedCommands.registerCommand("Shoot", new WaitCommand(1.3));
+    }
     
     
     /**
@@ -60,7 +74,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+       drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
         return autoChooser.getSelected();
     }
 }
