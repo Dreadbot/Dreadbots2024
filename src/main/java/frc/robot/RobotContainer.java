@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drive;
 import frc.robot.commmands.DriveCommand;
-import frc.robot.commmands.shooterCommands.ShootCommand;
 import pabeles.concurrency.ConcurrencyOps.NewInstance;
 import util.controls.DreadbotController;
 
