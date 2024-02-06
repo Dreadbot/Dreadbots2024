@@ -1,4 +1,4 @@
 # Dreadbots 2024
-Project for the 2024 season crescendo!
+Project for FIRST Robotics Competition: Crescendo
 
 See the orphan branch `vision` for all apriltag and note detection code.
