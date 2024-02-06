@@ -8,8 +8,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,11 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drive;
 import frc.robot.commmands.DriveCommand;
-import pabeles.concurrency.ConcurrencyOps.NewInstance;
 import util.controls.DreadbotController;
 
 
@@ -43,9 +39,9 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        registerCommands();
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-        registerCommands();
         configureButtonBindings();
     }
     
@@ -64,8 +60,9 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand("Intake", new InstantCommand());
         NamedCommands.registerCommand("Shoot", new WaitCommand(1.3));
+        NamedCommands.registerCommand("Stop", new DriveCommand(drive, () -> 0, () -> 0, () -> 0));
     }
-    
+    ;
     
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

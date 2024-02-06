@@ -18,6 +18,7 @@ public class SwerveModule {
     private CANSparkMax turningMotor;
     private CANcoder turningCanCoder;
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
+    private double turningOutput;
     
     public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
@@ -27,6 +28,7 @@ public class SwerveModule {
         config.MagnetSensor.MagnetOffset = -canCoderOffset;
         this.turningCanCoder.getConfigurator().apply(config);
         this.turningMotor.setInverted(true);
+        this.turningOutput = 0;
         driveMotor.getPIDController().setP(0);
         driveMotor.getPIDController().setFF(0.23);
         this.driveMotor.getEncoder().setPositionConversionFactor(SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO); //convert from revolutions to meters
@@ -62,12 +64,13 @@ public class SwerveModule {
 
         double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
         this.driveMotor.getPIDController().setReference(optimizedState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
+        this.turningOutput = turnOutput;
         turningMotor.setVoltage(turnOutput);
     }
 
     public void putValuesToSmartDashboard(String name) {
         SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
-        SmartDashboard.putNumber(name + " Velocity", driveMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber(name + " Turning Output", this.turningOutput);
     }
 
     public CANSparkMax getDriveMotor() {

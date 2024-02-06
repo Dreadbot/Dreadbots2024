@@ -20,13 +20,13 @@ public abstract class Constants {
       public static final boolean SHOOTER_ENABLED = false;
     }
     public static class DriveConstants {
-      public static final double SPEED_LIMITER = 3.5; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
-      public static final double DEADBAND = 0.14;
-      public static final double ROT_LIMITER = 1.5 * Math.PI;
+      public static final double SPEED_LIMITER = 2.5; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
+      public static final double DEADBAND = 0.08;
+      public static final double ROT_LIMITER = 1 * Math.PI;
     }
 
     public static class SwerveConstants {
-        public static final double ATTAINABLE_MAX_SPEED = 3;
+        public static final double ATTAINABLE_MAX_SPEED = 3.0;
         public static final double MODULE_Y_OFFSET = Units.inchesToMeters(26.0) / 2; // Between the front and back
         public static final double MODULE_X_OFFSET = Units.inchesToMeters(23.0) / 2; // Between the left and right
         // Encoder offsets are in rotations now???? ok

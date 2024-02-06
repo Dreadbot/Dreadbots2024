@@ -29,8 +29,8 @@ public class DriveCommand extends Command {
     public void execute() {
         Vector2D joystickValue = DreadbotMath.applyDeadbandToVector(new Vector2D(joystickX.getAsDouble(), joystickY.getAsDouble()), DriveConstants.DEADBAND);
         double rotation = DreadbotMath.applyDeadbandToValue(joystickRotatation.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.ROT_LIMITER;
-        double forward = -joystickValue.x2 * DriveConstants.SPEED_LIMITER * DriveConstants.SPEED_LIMITER;
-        double strafe = -joystickValue.x1 * DriveConstants.SPEED_LIMITER * DriveConstants.SPEED_LIMITER;
+        double forward = -joystickValue.x2 * DriveConstants.SPEED_LIMITER;
+        double strafe = -joystickValue.x1 * DriveConstants.SPEED_LIMITER;
 
         drive.drive(forward, strafe, -rotation, true);
     }

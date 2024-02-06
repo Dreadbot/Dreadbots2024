@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -38,6 +44,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -45,6 +57,12 @@
           "type": "path",
           "data": {
             "pathName": "CenterNote-SourceNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
           }
         },
         {
