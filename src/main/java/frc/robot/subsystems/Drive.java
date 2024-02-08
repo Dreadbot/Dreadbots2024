@@ -250,13 +250,16 @@ public class Drive extends DreadbotSubsystem {
         frontLeftModule.close();
         frontRightModule.close();
         backLeftModule.close();
-        backLeftModule.close();
+        backRightModule.close();
 
     }
 
     @Override
     public void stopMotors() {
-        drive(0, 0, 0, false);
+        frontLeftModule.stopMotors();
+        frontRightModule.stopMotors();
+        backLeftModule.stopMotors();
+        backRightModule.stopMotors();
     }
     
 }

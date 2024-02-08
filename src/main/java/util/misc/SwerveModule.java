@@ -81,6 +81,10 @@ public class SwerveModule {
         return this.turningMotor;
     }
 
+    public void stopMotors() {
+        driveMotor.stopMotor();
+        turningMotor.stopMotor();
+    }
     public void close() throws Exception{
         driveMotor.close();
         turningMotor.close();

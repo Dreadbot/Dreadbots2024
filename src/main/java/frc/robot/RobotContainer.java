@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drive;
 import frc.robot.commmands.DriveCommand;
+import frc.robot.commmands.StopDriveCommand;
 import util.controls.DreadbotController;
 
 
@@ -60,9 +61,8 @@ public class RobotContainer {
     private void registerCommands() {
         NamedCommands.registerCommand("Intake", new InstantCommand());
         NamedCommands.registerCommand("Shoot", new WaitCommand(1.3));
-        NamedCommands.registerCommand("Stop", new DriveCommand(drive, () -> 0, () -> 0, () -> 0));
+        NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
     }
-    ;
     
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
