@@ -6,11 +6,19 @@ import yaml
 import math
 import cv2
 import os
+import ntcore
+
+def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
+    inst = ntcore.NetworkTableInstance.getDefault()
+    table = inst.getTable("SmartDashboard")
+    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
 
 def main():
     parser = argparse.ArgumentParser(prog='Apriltag Detector')
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
+
+    xPub, zPub, thetaPub = init_network_tables()
 
     with open("field.yaml", 'r') as f:
         tag_positions = yaml.safe_load(f)
@@ -57,8 +65,14 @@ def main():
             Ry_robot_world = np.linalg.inv(np.array([[math.cos(conv_angle), 0, math.sin(conv_angle)], [0, 1, 0], [-math.sin(conv_angle), 0, math.cos(conv_angle)]]))
 
             print(math.degrees(alpha))
-            print(tag_t - np.matmul(Ry_robot_world, tag.pose_t))
+            print(np.matmul(Ry_robot_world, tag.pose_t))
+            full_t = tag_t - np.matmul(Ry_robot_world, tag.pose_t)
+            print(full_t)
             print("---")
+
+            xPub.set(full_t[0])
+            zPub.set(full_t[2])
+            thetaPub.set(conv_angle)
 
             break
 
