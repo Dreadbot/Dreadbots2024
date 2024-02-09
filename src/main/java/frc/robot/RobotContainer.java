@@ -21,7 +21,12 @@ import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
 import frc.robot.subsystems.Climber;
+import frc.robot.commmands.intakeCommands.IntakeCommand;
+import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
+import frc.robot.commmands.shooterCommands.ShootCommand;
+import frc.robot.subsystems.Shooter;
 import util.controls.DreadbotController;
 
 
@@ -37,14 +42,22 @@ public class RobotContainer {
     
     private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
-    public final SendableChooser<Command> autoChooser;
+   // public final SendableChooser<Command> autoChooser;
     private final Drive drive = new Drive();
     private final Climber climber = new Climber();
+
+   // public final SendableChooser<Command> autoChooser; 
+    private final Shooter shooter;
+    private final Intake intake; 
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+       // autoChooser = AutoBuilder.buildAutoChooser();
+       // SmartDashboard.putData("Auto Chooser", autoChooser);
+        shooter = new Shooter();
+        intake = new Intake();
         configureButtonBindings();
+        
     }
     
     
@@ -59,6 +72,12 @@ public class RobotContainer {
        drive.setDefaultCommand(driveCommand);
        primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
        primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+
+        primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
+        primaryController.getAButton().whileTrue(new IntakeCommand(intake));
+        primaryController.getBButton().whileTrue(new OuttakeCommand(intake));
+       // primaryController.getXButton().whileTrue(new ShootCommand(shooter));
+
     }
     
     
@@ -68,7 +87,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
-        return autoChooser.getSelected();
+      //  drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        //return autoChooser.getSelected();
+        return new Command() {
+            ;
+        };
     }
 }

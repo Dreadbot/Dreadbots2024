@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.misc.DreadbotSubsystem;
@@ -55,83 +56,90 @@ public class Drive extends DreadbotSubsystem {
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
 
     public Drive() {
-        frontLeftModule = new SwerveModule(
-            new CANSparkMax(1, MotorType.kBrushless),
-            new CANSparkMax(2, MotorType.kBrushless), 
-            new CANcoder(9), 
-            SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
-        );
-        frontRightModule = new SwerveModule(
-            new CANSparkMax(3, MotorType.kBrushless),
-            new CANSparkMax(4, MotorType.kBrushless), 
-            new CANcoder(10), 
-            SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
-        );
-        backRightModule = new SwerveModule(
-            new CANSparkMax(5, MotorType.kBrushless),
-            new CANSparkMax(6, MotorType.kBrushless), 
-            new CANcoder(11), 
-            SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
-        );
-        backLeftModule = new SwerveModule(
-            new CANSparkMax(7, MotorType.kBrushless),
-            new CANSparkMax(8, MotorType.kBrushless), 
-            new CANcoder(12), 
-            SwerveConstants.BACK_LEFT_ENCODER_OFFSET
-        );
-        gyro.reset();
+        if(Constants.SubsystemConstants.DRIVE_ENABLED) {
 
-        kinematics = new SwerveDriveKinematics(
-            frontLeftLocation,
-            frontRightLocation,
-            backLeftLocation,
-            backRightLocation
-        );
-        //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
-        poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
-            gyro.getRotation2d(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            },
-            PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
-        );
-        odometry = new SwerveDriveOdometry(
-            kinematics, 
-            getGyroRotation(), 
-            new SwerveModulePosition[] {
+        
+            frontLeftModule = new SwerveModule(
+                new CANSparkMax(1, MotorType.kBrushless),
+                new CANSparkMax(2, MotorType.kBrushless), 
+                new CANcoder(9), 
+                SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+            );
+            frontRightModule = new SwerveModule(
+                new CANSparkMax(3, MotorType.kBrushless),
+                new CANSparkMax(4, MotorType.kBrushless), 
+                new CANcoder(10), 
+                SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
+            );
+            backRightModule = new SwerveModule(
+                new CANSparkMax(5, MotorType.kBrushless),
+                new CANSparkMax(6, MotorType.kBrushless), 
+                new CANcoder(11), 
+                SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
+            );
+            backLeftModule = new SwerveModule(
+                new CANSparkMax(7, MotorType.kBrushless),
+                new CANSparkMax(8, MotorType.kBrushless), 
+                new CANcoder(12), 
+                SwerveConstants.BACK_LEFT_ENCODER_OFFSET
+            );
+            gyro.reset();
+
+            kinematics = new SwerveDriveKinematics(
+                frontLeftLocation,
+                frontRightLocation,
+                backLeftLocation,
+                backRightLocation
+            );
+            //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
+            poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
+                gyro.getRotation2d(),
+                new SwerveModulePosition[] {
                     frontLeftModule.getPosition(),
                     frontRightModule.getPosition(),
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
-            }
-        );
-        AutoBuilder.configureHolonomic(
-            this::getPosition, 
-            this::resetOdometry,
-            this::getSpeeds,
-            this::followSpeeds,
-            new HolonomicPathFollowerConfig(
-                new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                new PIDConstants(2.6, 0.1),
-                AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
-                Units.inchesToMeters(30.0),
-                new ReplanningConfig()
-            ),
-            () -> {
-                if(DriverStation.getAlliance().isPresent()) {
-                    return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+                },
+                PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
+            );
+            odometry = new SwerveDriveOdometry(
+                kinematics, 
+                getGyroRotation(), 
+                new SwerveModulePosition[] {
+                        frontLeftModule.getPosition(),
+                        frontRightModule.getPosition(),
+                        backLeftModule.getPosition(),
+                        backRightModule.getPosition()
                 }
-                return false;
-            },
-            this
-        );
+            );
+            AutoBuilder.configureHolonomic(
+                this::getPosition, 
+                this::resetOdometry,
+                this::getSpeeds,
+                this::followSpeeds,
+                new HolonomicPathFollowerConfig(
+                    new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                    new PIDConstants(2.6, 0.1),
+                    AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
+                    Units.inchesToMeters(30.0),
+                    new ReplanningConfig()
+                ),
+                () -> {
+                    if(DriverStation.getAlliance().isPresent()) {
+                        return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this
+            );
+        }
     }
 
     @Override
     public void periodic() {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
         poseEstimator.update(
             getGyroRotation(),
             new SwerveModulePosition[] {
@@ -162,6 +170,9 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
@@ -177,6 +188,9 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void setDesiredStates(SwerveModuleState[] swerveModuleStates) {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
@@ -184,6 +198,9 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetOdometry(Pose2d pose) {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
         poseEstimator.resetPosition(gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
@@ -195,19 +212,19 @@ public class Drive extends DreadbotSubsystem {
         );
     }
 
-    public Pose2d getPosition() {
+    private Pose2d getPosition() {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Rotation2d getGyroRotation() {
+    private Rotation2d getGyroRotation() {
         return gyro.getRotation2d();
     }
 
-    public ChassisSpeeds getSpeeds() {
+    private ChassisSpeeds getSpeeds() {
         return kinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public SwerveModuleState[] getModuleStates() {
+    private SwerveModuleState[] getModuleStates() {
         return new SwerveModuleState[] {
             frontLeftModule.getState(),
             frontRightModule.getState(),
@@ -216,7 +233,7 @@ public class Drive extends DreadbotSubsystem {
         };
     }
 
-    public void followSpeeds(ChassisSpeeds speed) {
+    private void followSpeeds(ChassisSpeeds speed) {
         ChassisSpeeds targetSpeed = ChassisSpeeds.discretize(speed, 0.02); // not sure why this is here, but lets try it anyways? lol
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(targetSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
@@ -225,7 +242,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
 
-    public void resetModules() {
+    private void resetModules() {
         frontLeftModule.resetEncoder();
         frontRightModule.resetEncoder();
         backLeftModule.resetEncoder();
@@ -247,6 +264,9 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
 
         stopMotors();
         frontLeftModule.close();
@@ -258,6 +278,9 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void stopMotors() {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
         drive(0, 0, 0, false);
     }
     

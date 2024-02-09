@@ -17,13 +17,17 @@ public class Climber extends DreadbotSubsystem {
     public Climber() { 
         this.leftClimberMotor = new CANSparkMax(1, MotorType.kBrushless);
         this.rightClimberMotor = new CANSparkMax(2, MotorType.kBrushless);
+        rightClimberMotor.setInverted(true);
         this.climberDrive = new DifferentialDrive(leftClimberMotor, rightClimberMotor);
 
+        climberDrive.setSafetyEnabled(false);
+        climberDrive.setExpiration(.1);
     }
 
     public void climb(double vetricalSpeed, double rotationSpeed) {
 
         climberDrive.arcadeDrive(vetricalSpeed, rotationSpeed, false); //false for not squaring inputs
+        climberDrive.feed();
     }
 
     /**

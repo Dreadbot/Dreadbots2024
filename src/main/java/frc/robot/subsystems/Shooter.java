@@ -1,34 +1,61 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+
+import frc.robot.Constants;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
 
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
+    private CANSparkMax leaderMotor;
+    private CANSparkMax followerMotor;
+    private SparkPIDController pidController;
 
     public Shooter() {
-        this.leftMotor = new CANSparkMax(16, MotorType.kBrushless);
-        this.rightMotor = new CANSparkMax(17, MotorType.kBrushless);
-
+         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
+            return;
+        }
+        this.leaderMotor = new CANSparkMax(1, MotorType.kBrushless);
+        this.followerMotor = new CANSparkMax(2, MotorType.kBrushless);
+        this.leaderMotor.setInverted(true);
+        this.followerMotor.follow(leaderMotor, true);
+        
+        pidController = leaderMotor.getPIDController();
+        pidController.setP(0.5);
+        pidController.setI(0.0);
+        pidController.setD(0.0);
     }
 
     @Override
     public void close() throws Exception {
-        leftMotor.close();
-        rightMotor.close();
+        if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
+            return;
+        }
+        leaderMotor.close();
+        followerMotor.close();
     }
 
     @Override
     public void stopMotors() {
-        leftMotor.stopMotor();
-        rightMotor.stopMotor();
+        if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
+            return;
+        }
+        leaderMotor.stopMotor();
+        
     }
 
-
+    public void shoot(double speed) {
+        if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
+            return;
+        }
+        pidController.setReference(speed, ControlType.kVelocity);
+    }
+    
 
     
 }

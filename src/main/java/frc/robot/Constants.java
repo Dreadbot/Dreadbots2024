@@ -12,7 +12,14 @@ public abstract class Constants {
       public static final int PRIMARY_JOYSTICK_PORT   = 0;
       public static final int SECONDARY_JOYSTICK_PORT = 1;
     }
+    public static class SubsystemConstants {
+      public static final boolean DRIVE_ENABLED = false;
+      public static final boolean ARM_ENABLED = false;
+      public static final boolean CLIMBER_ENABLED = true;
+      public static final boolean INTAKE_ENABLED = false;
+      public static final boolean SHOOTER_ENABLED = false;
 
+    }
     public static class DriveConstants {
       public static final double SPEED_LIMITER = 1; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
       public static final double DEADBAND = 0.14;
@@ -40,9 +47,9 @@ public abstract class Constants {
         public static final double INTAKE_SPEED = 0.3;
       }
       public static class ClimberConstants {
-        public static final double EXTEND_SPEED = 0.05;
+        public static final double EXTEND_SPEED = 0.1;
         public static final double MAX_HEIGHT = 100; //placeholder number
-        public static final double RETRACT_SPEED = -0.05;
+        public static final double RETRACT_SPEED = -0.1;
         public static final double P_GAIN = 0.02;
         public static final double MIN_HEIGHT = 10; 
       }

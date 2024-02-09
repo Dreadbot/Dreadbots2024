@@ -22,6 +22,11 @@ public class RetractClimbCommand extends Command {
     } 
 
     @Override
+    public void end(boolean interupted) {
+        climber.stopMotors();
+    }
+
+    @Override
     public boolean isFinished() {
         double[] climberPositions = climber.getClimberPositions();
         return climberPositions[0] <= ClimberConstants.MIN_HEIGHT || climberPositions[1] <= ClimberConstants.MIN_HEIGHT;
