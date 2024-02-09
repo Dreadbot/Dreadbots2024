@@ -40,9 +40,9 @@ public abstract class Constants {
         public static final double INTAKE_SPEED = 0.3;
       }
       public static class ClimberConstants {
-        public static final double EXTEND_SPEED = 0.25;
+        public static final double EXTEND_SPEED = 0.05;
         public static final double MAX_HEIGHT = 100; //placeholder number
-        public static final double RETRACT_SPEED = -0.10;
+        public static final double RETRACT_SPEED = -0.05;
         public static final double P_GAIN = 0.02;
         public static final double MIN_HEIGHT = 10; 
       }

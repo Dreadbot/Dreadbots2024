@@ -15,8 +15,8 @@ public class Climber extends DreadbotSubsystem {
     private final DifferentialDrive climberDrive;
     
     public Climber() { 
-        this.leftClimberMotor = new CANSparkMax(18, MotorType.kBrushless);
-        this.rightClimberMotor = new CANSparkMax(19, MotorType.kBrushless);
+        this.leftClimberMotor = new CANSparkMax(1, MotorType.kBrushless);
+        this.rightClimberMotor = new CANSparkMax(2, MotorType.kBrushless);
         this.climberDrive = new DifferentialDrive(leftClimberMotor, rightClimberMotor);
 
     }
