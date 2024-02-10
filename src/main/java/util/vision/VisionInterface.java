@@ -13,6 +13,8 @@ import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.TimestampedDouble;
+import util.misc.TimestampedPose2d;
 
 public class VisionInterface {
     private NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
@@ -20,6 +22,7 @@ public class VisionInterface {
     private DoubleSubscriber robotPoseX = ntTable.getDoubleTopic("robotposX").subscribe(0.0);
     private DoubleSubscriber robotPoseZ = ntTable.getDoubleTopic("robotposZ").subscribe(0.0);
     private DoubleSubscriber robotPoseTheta = ntTable.getDoubleTopic("posTheta").subscribe(1000); // Change default to something better later
+
 
     public Pose2d getVisionPose() {
         double robotX = robotPoseX.get();
@@ -33,15 +36,17 @@ public class VisionInterface {
         return new Pose2d(new Translation2d(robotX, robotZ), new Rotation2d(robotTheta));
     }
 
-    public void onVisionPoseChanged(Runnable callback) {
-        Consumer<NetworkTableEvent> ntCallback = event -> {
-            
-        };
-        ntInstance.addListener(robotPoseX, 
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll), 
-        ntCallback);
-    }
+    public TimestampedPose2d getTimestampedVisionPose() {
+        TimestampedDouble tsValX = robotPoseX.getAtomic();
+        TimestampedDouble tsValZ = robotPoseZ.getAtomic();
+        TimestampedDouble tsValTheta = robotPoseTheta.getAtomic();
 
+        if(tsValX.value == 0 || tsValZ.value == 0 || tsValTheta.value == 1000) {
+            return new TimestampedPose2d(new Pose2d(), tsValX.timestamp);
+        }
+
+        return new TimestampedPose2d(new Pose2d(new Translation2d(tsValX.value, tsValZ.value), new Rotation2d(tsValTheta.value)), tsValX.timestamp);
+    }
 
 
 }
