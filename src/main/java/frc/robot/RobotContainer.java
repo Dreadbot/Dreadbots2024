@@ -44,7 +44,7 @@ public class RobotContainer {
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
    // public final SendableChooser<Command> autoChooser;
     private final Drive drive = new Drive();
-    private final Climber climber = new Climber();
+    private final Climber climber;
 
    // public final SendableChooser<Command> autoChooser; 
     private final Shooter shooter;
@@ -53,7 +53,8 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
        // autoChooser = AutoBuilder.buildAutoChooser();
-       // SmartDashboard.putData("Auto Chooser", autoChooser);
+       // SmartDashboard.putData("Auto Chooser", autoChooser)       
+        climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
         configureButtonBindings();

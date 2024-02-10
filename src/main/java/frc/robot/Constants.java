@@ -47,10 +47,11 @@ public abstract class Constants {
         public static final double INTAKE_SPEED = 0.3;
       }
       public static class ClimberConstants {
-        public static final double EXTEND_SPEED = 0.1;
+        public static final double GYRO_PITCH_OFFSET = -1.3;
+        public static final double EXTEND_SPEED = 0.5;
         public static final double MAX_HEIGHT = 100; //placeholder number
-        public static final double RETRACT_SPEED = -0.1;
-        public static final double P_GAIN = 0.02;
+        public static final double RETRACT_SPEED = -0.5;
+        public static final double P_GAIN = 0.2;
         public static final double MIN_HEIGHT = 10; 
       }
     private Constants() throws IllegalStateException {

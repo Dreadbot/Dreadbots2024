@@ -56,6 +56,7 @@ public class Drive extends DreadbotSubsystem {
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
 
     public Drive() {
+        gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
 
         
@@ -83,7 +84,7 @@ public class Drive extends DreadbotSubsystem {
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
             );
-            gyro.reset();
+            
 
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
