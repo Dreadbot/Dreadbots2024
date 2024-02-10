@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ClimberConstants;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -24,8 +25,8 @@ public class Climber extends DreadbotSubsystem {
     private AHRS gyro;
 
     public Climber(AHRS gyro) { 
-        this.leftClimberMotor = new CANSparkMax(1, MotorType.kBrushless);
-        this.rightClimberMotor = new CANSparkMax(2, MotorType.kBrushless);
+        this.leftClimberMotor = new CANSparkMax(ClimberConstants.LEFT_CLIMB_MOTOR, MotorType.kBrushless);
+        this.rightClimberMotor = new CANSparkMax(ClimberConstants.RIGHT_CLIMB_MOTOR, MotorType.kBrushless);
         leftClimberMotor.setIdleMode(IdleMode.kBrake);
         rightClimberMotor.setIdleMode(IdleMode.kBrake);
 
@@ -34,10 +35,10 @@ public class Climber extends DreadbotSubsystem {
         rightClimberMotor.setInverted(true);
         this.climberDrive = new DifferentialDrive(leftClimberMotor, rightClimberMotor);
 
-        this.leftTopSwitch = new DigitalInput(4);
-        this.rightTopSwitch = new DigitalInput(2);
-        this.leftBottomSwitch = new DigitalInput(3);
-        this.rightBottomSwitch = new DigitalInput(1);
+        this.leftTopSwitch = new DigitalInput(ClimberConstants.TOP_LEFT_LIMIT_SWITCH_ID);
+        this.rightTopSwitch = new DigitalInput(ClimberConstants.TOP_RIGHT_LIMIT_SWITCH_ID);
+        this.leftBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_LEFT_LIMIT_SWITCH_ID);
+        this.rightBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_RIGHT_LIMIT_SWITCH_ID);
 
         climberDrive.setSafetyEnabled(false);
         climberDrive.setExpiration(.1);
@@ -73,9 +74,16 @@ public class Climber extends DreadbotSubsystem {
      */
     public double[] getClimberPositions() {
         return new double[] {
-            leftClimberMotor.getEncoder().getPosition(),
-            rightClimberMotor.getEncoder().getPosition()
+           getLeftClimberPosition(), getRightClimberPosition()
         };
+    }
+
+    public double getLeftClimberPosition() {
+        return leftClimberMotor.getEncoder().getPosition();
+    }
+
+    public double getRightClimberPosition() {
+        return rightClimberMotor.getEncoder().getPosition();
     }
 
     @Override
