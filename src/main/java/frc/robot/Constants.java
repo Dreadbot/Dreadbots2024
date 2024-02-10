@@ -13,7 +13,7 @@ public abstract class Constants {
       public static final int SECONDARY_JOYSTICK_PORT = 1;
     }
     public static class SubsystemConstants {
-      public static final boolean DRIVE_ENABLED = false;
+      public static final boolean DRIVE_ENABLED = true;
       public static final boolean ARM_ENABLED = false;
       public static final boolean CLIMBER_ENABLED = true;
       public static final boolean INTAKE_ENABLED = false;
