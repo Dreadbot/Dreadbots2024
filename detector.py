@@ -7,18 +7,30 @@ import math
 import cv2
 import os
 import ntcore
+import time
 
-def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
+def start_network_table():
     inst = ntcore.NetworkTableInstance.getDefault()
     table = inst.getTable("SmartDashboard")
-    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
+    inst.startClient4("visionclient")
+    inst.setServerTeam(3656)
+    xPub = table.getDoubleTopic("robotposX").publish()
+    zPub = table.getDoubleTopic("robotposZ").publish()
+    thetaPub = table.getDoubleTopic("robotposTheta").publish()
+    return xPub, zPub, thetaPub
+
+#def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
+#    inst = ntcore.NetworkTableInstance.getDefault()
+#    table = inst.getTable("SmartDashboard")
+#    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
 
 def main():
+    xPub, zPub, thetaPub = start_network_table()
     parser = argparse.ArgumentParser(prog='Apriltag Detector')
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
 
-    xPub, zPub, thetaPub = init_network_tables()
+    #xPub, zPub, thetaPub = init_network_tables()
 
     with open("field.yaml", 'r') as f:
         tag_positions = yaml.safe_load(f)
@@ -39,14 +51,17 @@ def main():
         camera_params[2] = params["cx"]
         camera_params[3] = params["cy"]
 
-    cap = cv2.VideoCapture(0)
-
+    cap = cv2.VideoCapture(cv2.CAP_V4L2)
+    ret, frame = cap.read()
+    print(ret)
+    print("is the frame healthy")
+    
     while True:
         ret, frame = cap.read()
         if not ret:
             continue
 
-        cv2.imshow("frame", frame)
+        #cv2.imshow("frame", frame)
 
         grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         all_tags = at_detector.detect(grayscale,
@@ -74,10 +89,8 @@ def main():
             zPub.set(full_t[2])
             thetaPub.set(conv_angle)
 
-            break
-
-        if cv2.waitKey(1) == ord('q') & 0xff:
-            break
+        #if cv2.waitKey(1) == ord('q') & 0xff:
+        #    break
 
 if __name__ == "__main__":
     main()
