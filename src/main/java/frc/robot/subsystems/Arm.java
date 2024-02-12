@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
+import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 
 
@@ -24,7 +25,7 @@ public class Arm extends DreadbotSubsystem {
     private TrapezoidProfile armProfile;
     private State armState;
     private State desiredArmState;
-
+    private double joystickOverride;
     public Arm() {
         if(!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
@@ -72,6 +73,11 @@ public class Arm extends DreadbotSubsystem {
 
         leftPidController.setReference(armState.position, ControlType.kPosition);
         //check limit switches and stop motor
+        if(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08) > 0) {
+            //we should overrride with manual control
+            leftMotor.set(joystickOverride);
+        }
+        
     }
 
     @Override
@@ -92,8 +98,10 @@ public class Arm extends DreadbotSubsystem {
         rightMotor.stopMotor();
 
     }
-
     public void setReference(State target) {
         this.desiredArmState = target;
+    }
+    public void setJoystickOverride(double joystickOverride) {
+        this.joystickOverride = joystickOverride;
     }
 }
