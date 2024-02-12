@@ -63,6 +63,9 @@ public abstract class Constants {
         public static final double P_GAIN = 0.2;
         public static final double MIN_HEIGHT = 10; 
       }
+      public static class ArmConstants {
+        public static final double ARM_GEAR_RATIO = 1 / 100;
+      }
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");
     }
