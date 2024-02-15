@@ -83,9 +83,9 @@ public class Arm extends DreadbotSubsystem {
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
         //leftPidController.setReference(armState.position, ControlType.kPosition);
-        if(Math.abs(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08)) > 0) {
+        if(Math.abs(joystickOverride) > 0) {
             //we should overrride with manual control
-            leftMotor.set(joystickOverride * 0.2);
+            leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2);
             //this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
         }
         //check limit switches and stop motor

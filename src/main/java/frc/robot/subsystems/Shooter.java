@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
@@ -25,7 +26,8 @@ public class Shooter extends DreadbotSubsystem {
         }
         this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
-        this.leaderMotor.setInverted(true);
+        this.followerMotor.restoreFactoryDefaults();
+        this.leaderMotor.setInverted(false);
         this.followerMotor.follow(leaderMotor, true);
 
         this.angleSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 8);
@@ -39,11 +41,15 @@ public class Shooter extends DreadbotSubsystem {
         this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
-        pidController.setP(0.5);
+        pidController.setP(0.0);
         pidController.setI(0.0);
-        pidController.setD(0.0);
+        pidController.setD(0.00);
+        pidController.setFF(0.00025);
     }
-
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Actual Speed", leaderMotor.getEncoder().getVelocity());
+    }
     @Override
     public void close() throws Exception {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
@@ -66,7 +72,9 @@ public class Shooter extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
-        pidController.setReference(speed, ControlType.kVelocity);
+        SmartDashboard.putNumber("Desired Speed", speed);
+        // leaderMotor.set(speed);
+        leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }
     
     public void setSourcePickupPosition() {

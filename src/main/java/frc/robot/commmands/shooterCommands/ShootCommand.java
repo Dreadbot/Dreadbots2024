@@ -11,8 +11,8 @@ public class ShootCommand extends Command {
     }
     
     @Override
-    public void execute() {
-        shooter.shoot(1000);
+    public void initialize() {
+        shooter.shoot(8000);
     }
     
     @Override
