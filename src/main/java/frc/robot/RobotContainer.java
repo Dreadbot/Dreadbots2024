@@ -9,13 +9,17 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
+import frc.robot.commmands.shooterCommands.ShootCommand;
+import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -41,6 +45,7 @@ public class RobotContainer {
    // public final SendableChooser<Command> autoChooser; 
     private final Shooter shooter;
     private final Intake intake; 
+    private final Arm arm;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -49,6 +54,7 @@ public class RobotContainer {
         climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
+        arm = new Arm();
         configureButtonBindings();
         
     }
@@ -63,13 +69,16 @@ public class RobotContainer {
     private void configureButtonBindings() {
        DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
        drive.setDefaultCommand(driveCommand);
-       primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
-       primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+    //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
+    //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
 
-        primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
+        //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         primaryController.getAButton().whileTrue(new IntakeCommand(intake));
         primaryController.getBButton().whileTrue(new OuttakeCommand(intake));
-       // primaryController.getXButton().whileTrue(new ShootCommand(shooter));
+        ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
+        arm.setDefaultCommand(armCommand);  
+        primaryController.getXButton().whileTrue(new ShootCommand(shooter));
+        primaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
     }
     

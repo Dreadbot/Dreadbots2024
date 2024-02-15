@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import util.math.DreadbotMath;
@@ -66,6 +67,7 @@ public class Arm extends DreadbotSubsystem {
 
         armProfile = new TrapezoidProfile(new Constraints(1 / 8, 1 / 8)); // very slow to start
         armState = new State(); //ARM ASSUMES IT STARTS DOWN!!!!
+        desiredArmState = new State();
 
         leftPidController.setP(0.2);
         leftPidController.setI(0.0);
@@ -75,13 +77,16 @@ public class Arm extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
+        if(!Constants.SubsystemConstants.ARM_ENABLED) {
+            return;
+        }
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
         //leftPidController.setReference(armState.position, ControlType.kPosition);
-        if(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08) > 0) {
+        if(Math.abs(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08)) > 0) {
             //we should overrride with manual control
-            //leftMotor.set(joystickOverride);
-            this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
+            leftMotor.set(joystickOverride * 0.2);
+            //this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
         }
         //check limit switches and stop motor
         if(getHorizontalLimitSwitch()) {
@@ -120,6 +125,7 @@ public class Arm extends DreadbotSubsystem {
     }
     public void setJoystickOverride(double joystickOverride) {
         this.joystickOverride = joystickOverride;
+        SmartDashboard.putNumber("Joystick override", joystickOverride);
     }
     public boolean getHorizontalLimitSwitch() {
         return !this.horizontalSwtich.get();

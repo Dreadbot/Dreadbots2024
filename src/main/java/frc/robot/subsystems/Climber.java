@@ -35,25 +35,25 @@ public class Climber extends DreadbotSubsystem {
         rightClimberMotor.setInverted(true);
         this.climberDrive = new DifferentialDrive(leftClimberMotor, rightClimberMotor);
 
-        this.leftTopSwitch = new DigitalInput(ClimberConstants.TOP_LEFT_LIMIT_SWITCH_ID);
-        this.rightTopSwitch = new DigitalInput(ClimberConstants.TOP_RIGHT_LIMIT_SWITCH_ID);
-        this.leftBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_LEFT_LIMIT_SWITCH_ID);
-        this.rightBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_RIGHT_LIMIT_SWITCH_ID);
+        // this.leftTopSwitch = new DigitalInput(ClimberConstants.TOP_LEFT_LIMIT_SWITCH_ID);
+        // this.rightTopSwitch = new DigitalInput(ClimberConstants.TOP_RIGHT_LIMIT_SWITCH_ID);
+        // this.leftBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_LEFT_LIMIT_SWITCH_ID);
+        // this.rightBottomSwitch = new DigitalInput(ClimberConstants.BOTTOM_RIGHT_LIMIT_SWITCH_ID);
 
         climberDrive.setSafetyEnabled(false);
         climberDrive.setExpiration(.1);
     }
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Gyro pitch", gyro.getPitch());
-        SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
-        SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
+    // @Override
+    // public void periodic() {
+    //     SmartDashboard.putNumber("Gyro pitch", gyro.getPitch());
+    //     SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
+    //     SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
 
-        SmartDashboard.putBoolean("leftBottomSwitch", !leftBottomSwitch.get());
-        SmartDashboard.putBoolean("rightBottomSwitch", !rightBottomSwitch.get());
-        SmartDashboard.putBoolean("leftTopSwitch", !leftTopSwitch.get());
-        SmartDashboard.putBoolean("rightTopSwitch", !rightTopSwitch.get());
-    }
+    //     SmartDashboard.putBoolean("leftBottomSwitch", !leftBottomSwitch.get());
+    //     SmartDashboard.putBoolean("rightBottomSwitch", !rightBottomSwitch.get());
+    //     SmartDashboard.putBoolean("leftTopSwitch", !leftTopSwitch.get());
+    //     SmartDashboard.putBoolean("rightTopSwitch", !rightTopSwitch.get());
+    // }
 
     public void climb(double vetricalSpeed, double rotationSpeed) {
         if((!leftBottomSwitch.get() || !rightBottomSwitch.get()) && vetricalSpeed < 0) {

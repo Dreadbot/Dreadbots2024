@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import frc.robot.Constants;
 
@@ -17,7 +18,8 @@ public class Intake extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.INTAKE_ENABLED) {
             return;
         }
-        intakeMotor = new CANSparkMax(3, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(15, MotorType.kBrushless);
+        intakeMotor.setIdleMode(IdleMode.kBrake);
     }
 
     public void intake(double speed) {
