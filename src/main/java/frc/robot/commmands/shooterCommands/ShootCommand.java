@@ -12,7 +12,7 @@ public class ShootCommand extends Command {
     
     @Override
     public void initialize() {
-        shooter.shoot(8000);
+        shooter.shoot(5000);
     }
     
     @Override

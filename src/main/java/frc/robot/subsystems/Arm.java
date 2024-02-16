@@ -58,6 +58,8 @@ public class Arm extends DreadbotSubsystem {
         leftMotor.getEncoder().setVelocityConversionFactor(ArmConstants.ARM_GEAR_RATIO / 60); // rpm -> rps
         rightMotor.getEncoder().setVelocityConversionFactor(ArmConstants.ARM_GEAR_RATIO / 60); // rpm -> rps
 
+
+
         // leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         // leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
 
@@ -88,6 +90,11 @@ public class Arm extends DreadbotSubsystem {
             leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2);
             //this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
         }
+        SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
+        SmartDashboard.putBoolean("Horizontal limit switch", getHorizontalLimitSwitch());
+        SmartDashboard.putBoolean("Vertical limit switch", getVerticalLimitSwitch());
+
+
         //check limit switches and stop motor
         if(getHorizontalLimitSwitch()) {
             this.leftMotor.getEncoder().setPosition(0);

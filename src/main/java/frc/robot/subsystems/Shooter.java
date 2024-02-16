@@ -34,17 +34,17 @@ public class Shooter extends DreadbotSubsystem {
         
         pidController = leaderMotor.getPIDController();
 
-        this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
-        this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
+        // this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
+        // this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
-        this.followerMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
-        this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
+        // this.followerMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
+        // this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
         pidController.setP(0.0);
         pidController.setI(0.0);
         pidController.setD(0.00);
-        pidController.setFF(0.00025);
+        pidController.setFF(0.00012);
     }
     @Override
     public void periodic() {
