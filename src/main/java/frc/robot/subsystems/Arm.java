@@ -83,17 +83,23 @@ public class Arm extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
+       this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, 0.25), desiredArmState.velocity);
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
+        
+        this.armState = new State(armState.position, armState.velocity);
 
         //leftPidController.setReference(armState.position, ControlType.kPosition);
         if(Math.abs(joystickOverride) > 0) {
             //we should overrride with manual control
             leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2 * -1); //inverted joystick
-            //this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
+            this.desiredArmState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.25), 0); //override the desired state with what the user wants
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
         SmartDashboard.putBoolean("Horizontal limit switch", getHorizontalLimitSwitch());
         SmartDashboard.putBoolean("Vertical limit switch", getVerticalLimitSwitch());
+        SmartDashboard.putNumber("Desired State Position", desiredArmState.position);
+        SmartDashboard.putNumber("Arm State Position", armState.position);
+
 
 
         //check limit switches and stop motor

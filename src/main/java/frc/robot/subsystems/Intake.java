@@ -4,6 +4,7 @@ import javax.swing.text.StyleConstants.ColorConstants;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkBase.IdleMode;
 
@@ -13,6 +14,7 @@ import frc.robot.Constants.ColorSensorConstants;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import util.misc.DreadbotSubsystem;
 
 public class Intake extends DreadbotSubsystem { 
@@ -44,6 +46,21 @@ public class Intake extends DreadbotSubsystem {
 
     public boolean hasNote() {
         return colorMatch.matchColor(colorSensor.getColor()) != null;
+    }
+
+    @Override
+    public void periodic() {
+        ColorMatchResult colorResult = colorMatch.matchColor(colorSensor.getColor());
+        SmartDashboard.putBoolean("HasNote", colorResult != null);
+        
+        if(colorResult != null) {
+            SmartDashboard.putNumber("Confidence", colorResult.confidence);
+        } else {
+            SmartDashboard.putNumber("Confidence", 0);
+        }
+       
+        SmartDashboard.putString("Color", colorSensor.getColor().toHexString());
+
     }
 
     @Override

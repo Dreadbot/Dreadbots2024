@@ -31,7 +31,7 @@ public class Shooter extends DreadbotSubsystem {
         this.leaderMotor.setInverted(false);
         this.followerMotor.follow(leaderMotor, true);
 
-        this.angleSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 8);
+        this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
         pidController = leaderMotor.getPIDController();
         // this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
