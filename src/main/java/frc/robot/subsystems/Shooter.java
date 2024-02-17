@@ -76,6 +76,10 @@ public class Shooter extends DreadbotSubsystem {
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }
+
+    public double getFlywheelSpeed() {
+        return 0.0508 * leaderMotor.getEncoder().getVelocity() / 60;
+    }
     
     public void setSourcePickupPosition() {
         angleSolenoid.set(true);
