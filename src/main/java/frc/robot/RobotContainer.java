@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
+import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
@@ -84,6 +85,7 @@ public class RobotContainer {
         secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter));
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
+        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.125));
 
     }
     

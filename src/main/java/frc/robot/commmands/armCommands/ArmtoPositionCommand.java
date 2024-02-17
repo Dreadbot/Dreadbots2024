@@ -16,11 +16,6 @@ public class ArmToPositionCommand extends Command {
     @Override
     public void execute() {
         arm.setReference(new State(position, 0));
-    }
-    
-    @Override
-    public void end(boolean interupted) {
-        arm.stopMotors();
-    }
+    } 
     
 }
