@@ -72,7 +72,7 @@ public class Arm extends DreadbotSubsystem {
         armState = new State(); //ARM ASSUMES IT STARTS DOWN!!!!
         desiredArmState = new State();
 
-        leftPidController.setP(0.2);
+        leftPidController.setP(10);
         leftPidController.setI(0.0);
         leftPidController.setD(0.0);
 

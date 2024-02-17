@@ -67,6 +67,7 @@ public abstract class Constants {
       }
       public static class ArmConstants {
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
+        public static final double ARM_SOURCE_PICKUP_POSITION = 0.2;
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");

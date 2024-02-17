@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
+import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
@@ -21,6 +23,7 @@ import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
+import frc.robot.commmands.shooterCommands.SourceIntakeCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -73,8 +76,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
        DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
        drive.setDefaultCommand(driveCommand);
-    //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
-    //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+    // primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
+    // primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().whileTrue(new IntakeCommand(intake));
@@ -84,7 +87,8 @@ public class RobotContainer {
         secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter));
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
-
+        secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
+        secondaryController.getDpadDown().whileTrue(new SourceIntakeCommand(shooter));
     }
     
     
