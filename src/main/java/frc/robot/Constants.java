@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class Constants {
@@ -13,7 +14,7 @@ public abstract class Constants {
       public static final int SECONDARY_JOYSTICK_PORT = 1;
     }
     public static class SubsystemConstants {
-      public static final boolean DRIVE_ENABLED = false;
+      public static final boolean DRIVE_ENABLED = true;
       public static final boolean ARM_ENABLED = true;
       public static final boolean CLIMBER_ENABLED = false;
       public static final boolean INTAKE_ENABLED = true;
@@ -66,6 +67,10 @@ public abstract class Constants {
       }
       public static class ArmConstants {
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
+      }
+      public static class ColorSensorConstants {
+        public static final Color NOTE_COLOR = new Color(0.616, 0.327, 0.0571);
+        public static final double CONFIDENCE = 0.9;
       }
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");

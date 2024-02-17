@@ -27,13 +27,13 @@ public class Shooter extends DreadbotSubsystem {
         this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
         this.followerMotor.restoreFactoryDefaults();
+        this.leaderMotor.restoreFactoryDefaults();
         this.leaderMotor.setInverted(false);
         this.followerMotor.follow(leaderMotor, true);
 
         this.angleSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 8);
         
         pidController = leaderMotor.getPIDController();
-
         // this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
         // this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 

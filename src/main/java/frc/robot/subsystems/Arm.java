@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -35,9 +36,11 @@ public class Arm extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
-
         leftMotor = new CANSparkMax(13, MotorType.kBrushless);
         rightMotor = new CANSparkMax(14, MotorType.kBrushless);
+
+        leftMotor.restoreFactoryDefaults();
+        rightMotor.restoreFactoryDefaults();
 
         horizontalSwtich = new DigitalInput(1);
         verticalSwtich = new DigitalInput(2);
@@ -59,13 +62,11 @@ public class Arm extends DreadbotSubsystem {
         rightMotor.getEncoder().setVelocityConversionFactor(ArmConstants.ARM_GEAR_RATIO / 60); // rpm -> rps
 
 
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.25f);
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.006f);
 
-        // leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
-        // leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
-
-        // rightMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
-        // rightMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
-
+        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
+        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
 
         armProfile = new TrapezoidProfile(new Constraints(1 / 8, 1 / 8)); // very slow to start
         armState = new State(); //ARM ASSUMES IT STARTS DOWN!!!!
@@ -87,7 +88,7 @@ public class Arm extends DreadbotSubsystem {
         //leftPidController.setReference(armState.position, ControlType.kPosition);
         if(Math.abs(joystickOverride) > 0) {
             //we should overrride with manual control
-            leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2);
+            leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2 * -1); //inverted joystick
             //this.desiredArmState = new State(leftMotor.getEncoder().getPosition(), 0); //override the desired state with what the user wants
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
@@ -96,16 +97,12 @@ public class Arm extends DreadbotSubsystem {
 
 
         //check limit switches and stop motor
-        if(getHorizontalLimitSwitch()) {
-            this.leftMotor.getEncoder().setPosition(0);
-        }
-        if(getVerticalLimitSwitch()) {
-            this.leftMotor.getEncoder().setPosition(0.25);
-        }
-
-        if(this.leftMotor.getEncoder().getPosition() < 0) { //uh oh, not good
-
-        }
+        // if(getHorizontalLimitSwitch()) {
+        //     this.leftMotor.getEncoder().setPosition(0);
+        // }
+        // if(getVerticalLimitSwitch()) {
+        //     this.leftMotor.getEncoder().setPosition(0.25);
+        // }
         
     }
 

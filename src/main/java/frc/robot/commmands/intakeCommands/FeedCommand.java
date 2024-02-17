@@ -1,22 +1,21 @@
 package frc.robot.commmands.intakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Intake;
 
-public class IntakeCommand extends Command {
+public class FeedCommand extends Command {
 
     private final Intake intake;
 
 
-    public IntakeCommand(Intake intake) {
+    public FeedCommand(Intake intake) {
         this.intake = intake;
         addRequirements(intake);
     }
 
     @Override
     public void execute() {
-        intake.intake(IntakeConstants.INTAKE_SPEED);
+        intake.intake(1);
     }
     
     @Override
@@ -24,8 +23,4 @@ public class IntakeCommand extends Command {
         intake.stopMotors();
     }
 
-    @Override
-    public boolean isFinished() {
-        return intake.hasNote();
-    }
 }

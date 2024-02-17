@@ -17,6 +17,7 @@ import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
+import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
@@ -70,8 +71,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-    //    DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
-    //    drive.setDefaultCommand(driveCommand);
+       DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
+       drive.setDefaultCommand(driveCommand);
     //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
     //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
 
@@ -79,8 +80,9 @@ public class RobotContainer {
         secondaryController.getAButton().whileTrue(new IntakeCommand(intake));
         secondaryController.getBButton().whileTrue(new OuttakeCommand(intake));
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
-        arm.setDefaultCommand(armCommand);  
-        secondaryController.getXButton().whileTrue(new ShootCommand(shooter));
+        arm.setDefaultCommand(armCommand);
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter));
+        secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
     }
