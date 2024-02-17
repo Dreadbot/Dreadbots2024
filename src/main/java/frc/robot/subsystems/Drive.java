@@ -29,7 +29,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
+import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
 
@@ -44,6 +46,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
     private SwerveDriveOdometry odometry;
+
+    public double lockRotationOverride = 0.0;
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
@@ -171,6 +175,10 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        if (lockRotationOverride != 0) {
+            rot = DreadbotMath.applyDeadbandToValue(Math.max(-1, Math.min(1, lockRotationOverride)), DriveConstants.DEADBAND) * DriveConstants.ROT_SPEED_LIMITER;
+        }
+        
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
