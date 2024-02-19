@@ -17,5 +17,10 @@ public class ArmToPositionCommand extends Command {
     public void execute() {
         arm.setReference(new State(position, 0));
     } 
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
     
 }

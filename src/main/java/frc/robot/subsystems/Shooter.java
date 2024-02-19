@@ -72,7 +72,7 @@ public class Shooter extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
-        SmartDashboard.putNumber("Desired Speed", speed);
+        SmartDashboard.putNumber("Shooter Desired Speed", speed);
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }

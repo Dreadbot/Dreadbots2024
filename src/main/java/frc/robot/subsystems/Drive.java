@@ -52,13 +52,12 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, 0);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(9 , -9, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(9, -9, 0);
 
     public Drive() {
         gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
-
         
             frontLeftModule = new SwerveModule(
                 new CANSparkMax(1, MotorType.kBrushless),
@@ -165,6 +164,7 @@ public class Drive extends DreadbotSubsystem {
         frontRightModule.putValuesToSmartDashboard("Front Right");
         backLeftModule.putValuesToSmartDashboard("Back Left");
         backRightModule.putValuesToSmartDashboard("Back Right");
+        SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
 
     }
 
@@ -178,7 +178,6 @@ public class Drive extends DreadbotSubsystem {
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
         SmartDashboard.putNumber("ySpeed", ySpeed);
         SmartDashboard.putNumber("xSpeed", xSpeed);
-
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
             fieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rot)

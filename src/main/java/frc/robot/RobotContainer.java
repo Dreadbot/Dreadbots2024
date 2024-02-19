@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -42,7 +43,7 @@ public class RobotContainer {
     private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
    // public final SendableChooser<Command> autoChooser;
-    private final Drive drive = new Drive();
+    private final Drive drive;
     private final Climber climber;
 
    // public final SendableChooser<Command> autoChooser; 
@@ -52,6 +53,8 @@ public class RobotContainer {
     private final PneumaticHub pneumaticHub;
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        drive = new Drive();
+        drive.getGyro().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
        // autoChooser = AutoBuilder.buildAutoChooser();
@@ -82,10 +85,12 @@ public class RobotContainer {
         secondaryController.getBButton().whileTrue(new OuttakeCommand(intake));
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
         arm.setDefaultCommand(armCommand);
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter));
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 5000));
+        secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
+
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
-        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.125));
+        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.08261)); //center note position: 0.11285, 
 
     }
     
@@ -101,5 +106,10 @@ public class RobotContainer {
         return new Command() {
             ;
         };
+    }
+
+    public void teleopInit() {
+        arm.setReference(new State(0, 0));
+        arm.setArmStartState();
     }
 }
