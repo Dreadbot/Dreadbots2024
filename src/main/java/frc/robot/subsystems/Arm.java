@@ -33,6 +33,7 @@ public class Arm extends DreadbotSubsystem {
     private State armState;
     private State desiredArmState;
     private double joystickOverride;
+
     public Arm() {
         if(!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
@@ -87,7 +88,7 @@ public class Arm extends DreadbotSubsystem {
         this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, 0.25), desiredArmState.velocity);
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
-        if(Math.abs(joystickOverride) > 0.01) {
+        if(Math.abs(joystickOverride) > 0.06) {
             //we should overrride with manual control
             leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2 * -1); //inverted joystick
             System.out.println("joystick override: " + joystickOverride);
@@ -132,6 +133,15 @@ public class Arm extends DreadbotSubsystem {
         rightMotor.stopMotor();
 
     }
+
+    public double getEncoderPosition() {
+        return leftMotor.getEncoder().getPosition();
+    }
+
+    public boolean isAtDesiredState() {
+        return Math.abs(this.desiredArmState.position - this.armState.position) < Constants.ArmConstants.ARM_POSITION_ERROR_MARGIN;
+    }
+
     public void setReference(State target) {
         this.desiredArmState = target;
     }

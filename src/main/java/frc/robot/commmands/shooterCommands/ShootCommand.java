@@ -15,9 +15,9 @@ public class ShootCommand extends Command {
     public void initialize() {
         shooter.shoot(speed);
     }
-    
+
     @Override
-    public void end(boolean interupted) {
-        shooter.stopMotors();
+    public boolean isFinished() {
+        return shooter.isAtSpeed();
     }
 }

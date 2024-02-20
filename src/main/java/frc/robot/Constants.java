@@ -47,6 +47,10 @@ public abstract class Constants {
       }
       public static class IntakeConstants {
         public static final double INTAKE_SPEED = 0.5;
+        public static final double OUTTAKE_SPEED = 0.3;
+      }
+      public static class ShooterConstants {
+        public static final double FLYWHEEL_ERROR_MARGIN = 50;
       }
       public static class ClimberConstants {
         public static final int LEFT_CLIMB_MOTOR = 18;
@@ -66,6 +70,7 @@ public abstract class Constants {
         public static final double MIN_HEIGHT = 10; 
       }
       public static class ArmConstants {
+        public static final double ARM_POSITION_ERROR_MARGIN = 0.00004;
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
         public static final double KG = 0.15; //0.27
       }

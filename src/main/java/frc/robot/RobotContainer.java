@@ -5,17 +5,21 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
+import frc.robot.commmands.driveCommands.StopDriveCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -24,6 +28,7 @@ import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
+import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -85,7 +90,14 @@ public class RobotContainer {
         secondaryController.getBButton().whileTrue(new OuttakeCommand(intake));
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
         arm.setDefaultCommand(armCommand);
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 5000));
+        secondaryController.getRightBumper().onTrue(
+            (new ShootCommand(shooter, 3750))
+                .alongWith(new ArmToPositionCommand(arm, 0.08261))
+                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
+                .andThen(new FeedCommand(intake)
+                .raceWith(new WaitCommand(0.4)))
+                .andThen(new StopShootCommand(shooter)));
+        //secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
         secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
 
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
@@ -109,7 +121,12 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
-        arm.setReference(new State(0, 0));
+        arm.setReference(new State(arm.getEncoderPosition(), 0));
         arm.setArmStartState();
+    }
+
+    public void initializeAutonCommands() {
+        NamedCommands.registerCommand("Shoot", (new ShootCommand(shooter, -2000)).andThen(new FeedCommand(intake)));
+        NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
     }
 }

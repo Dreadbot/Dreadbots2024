@@ -19,6 +19,7 @@ public class Shooter extends DreadbotSubsystem {
     private CANSparkMax followerMotor;
     private SparkPIDController pidController;
     private Solenoid angleSolenoid;
+    private double targetSpeed = 0.0;
 
     public Shooter() {
          if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
@@ -44,7 +45,7 @@ public class Shooter extends DreadbotSubsystem {
         pidController.setP(0.0);
         pidController.setI(0.0);
         pidController.setD(0.00);
-        pidController.setFF(0.00012);
+        pidController.setFF(0.00013);
     }
     @Override
     public void periodic() {
@@ -73,8 +74,13 @@ public class Shooter extends DreadbotSubsystem {
             return;
         }
         SmartDashboard.putNumber("Shooter Desired Speed", speed);
+        this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
+    }
+
+    public boolean isAtSpeed() {
+        return Math.abs(leaderMotor.getEncoder().getVelocity() - targetSpeed) < Constants.ShooterConstants.FLYWHEEL_ERROR_MARGIN;
     }
     
     public void setSourcePickupPosition() {

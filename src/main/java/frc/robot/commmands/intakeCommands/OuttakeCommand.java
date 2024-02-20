@@ -15,7 +15,7 @@ public class OuttakeCommand extends Command{
 
     @Override
     public void execute() {
-       intake.intake(-IntakeConstants.INTAKE_SPEED);
+       intake.intake(-IntakeConstants.OUTTAKE_SPEED);
     }
     
     @Override

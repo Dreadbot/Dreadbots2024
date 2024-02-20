@@ -17,6 +17,11 @@ public class FeedCommand extends Command {
     public void execute() {
         intake.intake(1);
     }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
     
     @Override
     public void end(boolean interupted) {

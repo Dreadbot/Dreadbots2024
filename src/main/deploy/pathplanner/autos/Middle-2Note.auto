@@ -26,13 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Stop"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "CenterNote-SourceNote"
+            "name": "Shoot"
           }
         }
       ]
