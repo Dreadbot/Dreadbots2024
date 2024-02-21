@@ -22,7 +22,7 @@ public abstract class Constants {
 
     }
     public static class DriveConstants {
-      public static final double SPEED_LIMITER = 2; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
+      public static final double SPEED_LIMITER = 4; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
       public static final double DEADBAND = 0.14;
       public static final double ROT_SPEED_LIMITER = 1 * Math.PI;
     }

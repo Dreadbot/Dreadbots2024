@@ -50,6 +50,7 @@ public class Shooter extends DreadbotSubsystem {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Actual Speed", leaderMotor.getEncoder().getVelocity());
+        SmartDashboard.putBoolean("At Speed", isAtSpeed());
     }
     @Override
     public void close() throws Exception {

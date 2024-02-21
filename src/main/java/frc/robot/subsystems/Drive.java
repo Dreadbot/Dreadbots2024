@@ -279,9 +279,12 @@ public class Drive extends DreadbotSubsystem {
     @Override
     public void stopMotors() {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
+            return;
         }
         drive(0, 0, 0, false);
+        frontLeftModule.stopMotors();
+        frontRightModule.stopMotors();
+        backLeftModule.stopMotors();
+        backRightModule.stopMotors();
     }
-    
 }

@@ -82,4 +82,9 @@ public class SwerveModule {
         driveMotor.close();
         turningMotor.close();
     }
+
+    public  void stopMotors() {
+        driveMotor.stopMotor();
+        turningMotor.stopMotor();
+    }
 }
