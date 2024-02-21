@@ -102,7 +102,7 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 4500));
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 5000));
         secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
         secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
         secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));

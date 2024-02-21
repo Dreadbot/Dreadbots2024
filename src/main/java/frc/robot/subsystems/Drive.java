@@ -52,8 +52,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(9 , -9, 0);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(9, -9, 0);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(Constants.DriveConstants.SLEW , -Constants.DriveConstants.SLEW, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(Constants.DriveConstants.SLEW, -Constants.DriveConstants.SLEW, 0);
 
     public Drive() {
         gyro.reset();

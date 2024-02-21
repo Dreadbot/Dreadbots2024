@@ -50,8 +50,8 @@ public class Intake extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
-        ColorMatchResult colorResult = colorMatch.matchColor(colorSensor.getColor());
-        SmartDashboard.putBoolean("HasNote", colorResult != null);
+        //ColorMatchResult colorResult = colorMatch.matchColor(colorSensor.getColor());
+        /*SmartDashboard.putBoolean("HasNote", colorResult != null);
         
         if(colorResult != null) {
             SmartDashboard.putNumber("Confidence", colorResult.confidence);
@@ -59,7 +59,7 @@ public class Intake extends DreadbotSubsystem {
             SmartDashboard.putNumber("Confidence", 0);
         }
        
-        SmartDashboard.putString("Color", colorSensor.getColor().toHexString());
+        SmartDashboard.putString("Color", colorSensor.getColor().toHexString());*/
 
     }
 

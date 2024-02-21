@@ -24,8 +24,8 @@ public class IntakeCommand extends Command {
         intake.stopMotors();
     }
 
-    @Override
-    public boolean isFinished() {
-        return intake.hasNote();
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return intake.hasNote();
+    // }
 }
