@@ -91,7 +91,7 @@ def main():
             zPub.set(full_t[2])
             thetaPub.set(conv_angle)
             thetaTagPub.set(math.atan(tag.pose_t[0]/tag.pose_t[2]))
-            distancePub.set(tag.pose_t[2])
+            distancePub.set(math.sqrt(math.sqr(tag.pose_t[2])+math.sqr(tag.pose_t[0])))
 
         #if cv2.waitKey(1) == ord('q') & 0xff:
         #    break
