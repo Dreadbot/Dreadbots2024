@@ -98,11 +98,6 @@ public class Arm extends DreadbotSubsystem {
              leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
-        SmartDashboard.putBoolean("Horizontal limit switch", getHorizontalLimitSwitch());
-        SmartDashboard.putBoolean("Vertical limit switch", getVerticalLimitSwitch());
-        SmartDashboard.putNumber("Desired State Position", desiredArmState.position);
-        SmartDashboard.putNumber("Arm State Position", armState.position);
-        SmartDashboard.putNumber("Feed Forward", Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
 
 
         // check limit switches and stop motor

@@ -159,11 +159,6 @@ public class Drive extends DreadbotSubsystem {
             }
         );
         
-
-        frontLeftModule.putValuesToSmartDashboard("Front Left");
-        frontRightModule.putValuesToSmartDashboard("Front Right");
-        backLeftModule.putValuesToSmartDashboard("Back Left");
-        backRightModule.putValuesToSmartDashboard("Back Right");
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
 
     }

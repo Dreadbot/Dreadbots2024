@@ -49,21 +49,6 @@ public class Intake extends DreadbotSubsystem {
     }
 
     @Override
-    public void periodic() {
-        //ColorMatchResult colorResult = colorMatch.matchColor(colorSensor.getColor());
-        /*SmartDashboard.putBoolean("HasNote", colorResult != null);
-        
-        if(colorResult != null) {
-            SmartDashboard.putNumber("Confidence", colorResult.confidence);
-        } else {
-            SmartDashboard.putNumber("Confidence", 0);
-        }
-       
-        SmartDashboard.putString("Color", colorSensor.getColor().toHexString());*/
-
-    }
-
-    @Override
     public void close() throws Exception {
          if(!Constants.SubsystemConstants.INTAKE_ENABLED) {
             return;
