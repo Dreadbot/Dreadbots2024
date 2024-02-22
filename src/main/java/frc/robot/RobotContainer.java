@@ -5,12 +5,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
+import frc.robot.commmands.armCommands.ArmTargeting;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
@@ -48,6 +52,7 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
+    private final NetworkTable table;
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pneumaticHub = new PneumaticHub(21);
@@ -58,8 +63,10 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         arm = new Arm();
+
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("SmartDashboard");
         configureButtonBindings();
-        
     }
     
     
@@ -83,6 +90,8 @@ public class RobotContainer {
         secondaryController.getXButton().whileTrue(new ShootCommand(shooter));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
+        DoubleTopic dblTopic = table.getDoubleTopic("distanceToTag");
+        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, dblTopic.subscribe(0, null)));
     }
     
     
