@@ -17,7 +17,9 @@ def start_network_table():
     xPub = table.getDoubleTopic("robotposX").publish()
     zPub = table.getDoubleTopic("robotposZ").publish()
     thetaPub = table.getDoubleTopic("robotposTheta").publish()
-    return xPub, zPub, thetaPub
+    thetaTagPub = table.getDoubleTopic("thetaTagPub").publish()
+    distancePub = table.getDoubleTopic("distanceToTag").publish()
+    return xPub, zPub, thetaPub, thetaTagPub, distancePub
 
 #def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
 #    inst = ntcore.NetworkTableInstance.getDefault()
@@ -25,7 +27,7 @@ def start_network_table():
 #    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
 
 def main():
-    xPub, zPub, thetaPub = start_network_table()
+    xPub, zPub, thetaPub, thetaTagPub, distancePub = start_network_table()
     parser = argparse.ArgumentParser(prog='Apriltag Detector')
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
@@ -88,6 +90,8 @@ def main():
             xPub.set(full_t[0])
             zPub.set(full_t[2])
             thetaPub.set(conv_angle)
+            thetaTagPub.set(math.atan(tag.pose_t[0]/tag.pose_t[2]))
+            distancePub.set(tag.pose_t[2])
 
         #if cv2.waitKey(1) == ord('q') & 0xff:
         #    break
