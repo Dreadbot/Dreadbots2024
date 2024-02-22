@@ -90,7 +90,7 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
         DoubleTopic dblTopic = table.getDoubleTopic("thetaTagPub");
-        secondaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
+        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
     }
 
     
