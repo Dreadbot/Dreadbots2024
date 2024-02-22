@@ -33,7 +33,7 @@ public class DriveCommand extends Command {
         double forward = joystickValue.x2 * DriveConstants.SPEED_LIMITER * speedModifier;
         double strafe = joystickValue.x1 * DriveConstants.SPEED_LIMITER * speedModifier;
 
-        drive.drive(forward, strafe, rotation, false);
+        drive.drive(forward, strafe, rotation, true);
     }
 
     public void enableTurtle() {

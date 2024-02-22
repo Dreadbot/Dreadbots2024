@@ -22,21 +22,21 @@ public abstract class Constants {
 
     }
     public static class DriveConstants {
-      public static final double SPEED_LIMITER = 6; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
+      public static final double SPEED_LIMITER = 3.5; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
       public static final double DEADBAND = 0.14;
       public static final double ROT_SPEED_LIMITER = 1 * Math.PI;
       public static final double SLEW = 17;
     }
 
     public static class SwerveConstants {
-        public static final double ATTAINABLE_MAX_SPEED = 3;
+        public static final double ATTAINABLE_MAX_SPEED = 4;
         public static final double MODULE_Y_OFFSET = Units.inchesToMeters(25.0) / 2; // Between the front and back
         public static final double MODULE_X_OFFSET = Units.inchesToMeters(25.0) / 2; // Between the left and right
         // Encoder offsets are in rotations now???? ok
-        public static final double FRONT_LEFT_ENCODER_OFFSET = 0.1328125 + 0.5;
-        public static final double FRONT_RIGHT_ENCODER_OFFSET = -0.470947265625;
-        public static final double BACK_LEFT_ENCODER_OFFSET = -0.34130859375 + 0.5;
-        public static final double BACK_RIGHT_ENCODER_OFFSET = -0.388427734375;
+        public static final double FRONT_LEFT_ENCODER_OFFSET = 0.131591796875 + 0.5;
+        public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.0234375 + 0.5;
+        public static final double BACK_LEFT_ENCODER_OFFSET = -0.357421875 + 0.5;
+        public static final double BACK_RIGHT_ENCODER_OFFSET = 0.1064453125 + 0.5;
         public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         public static final double TURN_GEAR_RATIO = 150 / 7;
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);

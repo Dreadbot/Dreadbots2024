@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
+import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
@@ -91,8 +93,12 @@ public class RobotContainer {
         primaryController.getStartButton().onTrue(new ResetGyroCommand(drive));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
-        secondaryController.getAButton().whileTrue(new IntakeCommand(intake));
-        secondaryController.getBButton().whileTrue(new OuttakeCommand(intake));
+        secondaryController.getAButton().onTrue(new IntakeCommand(intake));
+        secondaryController.getAButton().onFalse(new StopIntakeCommand(intake));
+
+        secondaryController.getBButton().onTrue(new OuttakeCommand(intake));
+        secondaryController.getBButton().onFalse(new StopIntakeCommand(intake));
+
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
@@ -130,13 +136,27 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot", (new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.07261))
+        NamedCommands.registerCommand("Shoot-Subwoofer", (new WaitCommand(0.1)
+                .deadlineWith(new OuttakeCommand(intake)))
+                .andThen(new ShootCommand(shooter, 3750))
+                .alongWith(new ArmToPositionCommand(arm, 0.1161))
                 .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter)));
-        NamedCommands.registerCommand("DropArm", (new ArmToPositionCommand(arm, 0)));
+        NamedCommands.registerCommand("Shoot-MiddleNote", (new WaitCommand(0.1)
+                .deadlineWith(new OuttakeCommand(intake)))
+                .andThen(new ShootCommand(shooter, 3750))
+                .alongWith(new ArmToPositionCommand(arm, 0.11285))
+                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
+                .andThen(new FeedCommand(intake)
+                .raceWith(new WaitCommand(0.4)))
+                .andThen(new StopShootCommand(shooter)));
+        NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
+        NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+        NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
+
+
     }
 }

@@ -20,7 +20,7 @@ public class OuttakeCommand extends Command{
     
     @Override
     public void end(boolean interupted) {
-        intake.intake(0);
+        intake.stopMotors();
     }
     
 }

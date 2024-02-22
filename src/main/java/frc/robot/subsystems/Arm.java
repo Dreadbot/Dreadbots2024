@@ -98,10 +98,11 @@ public class Arm extends DreadbotSubsystem {
              leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
-
+        SmartDashboard.putBoolean("Lower Limit Switch", getHorizontalLimitSwitch());
+        SmartDashboard.putBoolean("Upper Limit Switch", getVerticalLimitSwitch());
 
         // check limit switches and stop motor
-        if(getHorizontalLimitSwitch()) {
+        if(getHorizontalLimitSwitch() && (Math.signum(leftMotor.getEncoder().getVelocity()) < 0)) {
             this.leftMotor.getEncoder().setPosition(0);
         }
         if(getVerticalLimitSwitch()) {
@@ -130,6 +131,9 @@ public class Arm extends DreadbotSubsystem {
     }
 
     public double getEncoderPosition() {
+         if(!Constants.SubsystemConstants.ARM_ENABLED) {
+            return 0.0;
+        }
         return leftMotor.getEncoder().getPosition();
     }
 

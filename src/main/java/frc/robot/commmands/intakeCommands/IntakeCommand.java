@@ -18,11 +18,6 @@ public class IntakeCommand extends Command {
     public void execute() {
         intake.intake(IntakeConstants.INTAKE_SPEED);
     }
-    
-    @Override
-    public void end(boolean interupted) {
-        intake.stopMotors();
-    }
 
     // @Override
     // public boolean isFinished() {

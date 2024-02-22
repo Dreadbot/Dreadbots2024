@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
@@ -52,8 +53,8 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(Constants.DriveConstants.SLEW , -Constants.DriveConstants.SLEW, 0);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(Constants.DriveConstants.SLEW, -Constants.DriveConstants.SLEW, 0);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
     public Drive() {
         gyro.reset();
@@ -160,7 +161,6 @@ public class Drive extends DreadbotSubsystem {
         );
         
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
-
     }
 
     // make sure to input speed, not percentage!!!!!
@@ -171,8 +171,6 @@ public class Drive extends DreadbotSubsystem {
         }
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("xSpeed", xSpeed);
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
             fieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rot)
