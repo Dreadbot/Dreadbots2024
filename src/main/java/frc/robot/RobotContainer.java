@@ -5,6 +5,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -14,6 +17,7 @@ import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
+import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.TurtleCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -48,6 +52,7 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
+    private final NetworkTable table;
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pneumaticHub = new PneumaticHub(21);
@@ -59,7 +64,8 @@ public class RobotContainer {
         intake = new Intake();
         arm = new Arm();
         configureButtonBindings();
-        
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("SmartDashboard");
     }
     
     
@@ -83,7 +89,10 @@ public class RobotContainer {
         secondaryController.getXButton().whileTrue(new ShootCommand(shooter));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
+        DoubleTopic dblTopic = table.getDoubleTopic("thetaTagPub");
+        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
     }
+
     
     
     /**
