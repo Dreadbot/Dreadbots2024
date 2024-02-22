@@ -90,10 +90,9 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
         DoubleTopic dblTopic = table.getDoubleTopic("thetaTagPub");
-        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
+        secondaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
     }
 
-    
     
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
