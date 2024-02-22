@@ -63,9 +63,10 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         arm = new Arm();
-        configureButtonBindings();
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         table = inst.getTable("SmartDashboard");
+
+        configureButtonBindings();
     }
     
     
