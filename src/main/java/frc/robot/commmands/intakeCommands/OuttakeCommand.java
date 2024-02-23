@@ -15,12 +15,12 @@ public class OuttakeCommand extends Command{
 
     @Override
     public void execute() {
-       intake.intake(-IntakeConstants.INTAKE_SPEED);
+       intake.intake(-IntakeConstants.OUTTAKE_SPEED);
     }
     
     @Override
     public void end(boolean interupted) {
-        intake.intake(0);
+        intake.stopMotors();
     }
     
 }

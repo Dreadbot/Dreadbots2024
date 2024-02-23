@@ -5,18 +5,19 @@ import frc.robot.subsystems.Shooter;
 
 public class ShootCommand extends Command {
     private final Shooter shooter;
-    public ShootCommand(Shooter shooter) {
+    private final double speed;
+    public ShootCommand(Shooter shooter, double speed) {
         this.shooter = shooter;
-
+        this.speed = speed;
     }
     
     @Override
     public void initialize() {
-        shooter.shoot(8000);
+        shooter.shoot(speed);
     }
-    
+
     @Override
-    public void end(boolean interupted) {
-        shooter.stopMotors();
+    public boolean isFinished() {
+        return shooter.isAtSpeed();
     }
 }

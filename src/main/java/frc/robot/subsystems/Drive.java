@@ -56,13 +56,12 @@ public class Drive extends DreadbotSubsystem {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, 0);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
     public Drive() {
         gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
-
         
             frontLeftModule = new SwerveModule(
                 new CANSparkMax(1, MotorType.kBrushless),
@@ -164,12 +163,7 @@ public class Drive extends DreadbotSubsystem {
             }
         );
         
-
-        frontLeftModule.putValuesToSmartDashboard("Front Left");
-        frontRightModule.putValuesToSmartDashboard("Front Right");
-        backLeftModule.putValuesToSmartDashboard("Back Left");
-        backRightModule.putValuesToSmartDashboard("Back Right");
-
+        SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
     }
 
     // make sure to input speed, not percentage!!!!!
@@ -184,9 +178,6 @@ public class Drive extends DreadbotSubsystem {
         }
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
             fieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rot)
@@ -288,9 +279,12 @@ public class Drive extends DreadbotSubsystem {
     @Override
     public void stopMotors() {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
+            return;
         }
         drive(0, 0, 0, false);
+        frontLeftModule.stopMotors();
+        frontRightModule.stopMotors();
+        backLeftModule.stopMotors();
+        backRightModule.stopMotors();
     }
-    
 }

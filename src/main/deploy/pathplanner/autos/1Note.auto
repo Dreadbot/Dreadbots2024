@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3473171105886368,
-      "y": 5.507946742389212
+      "x": 1.2521906186974767,
+      "y": 5.58399108429271
     },
     "rotation": 0
   },
@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Example Path"
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         }
       ]

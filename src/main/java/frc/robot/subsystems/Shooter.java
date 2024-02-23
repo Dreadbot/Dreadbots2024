@@ -19,6 +19,7 @@ public class Shooter extends DreadbotSubsystem {
     private CANSparkMax followerMotor;
     private SparkPIDController pidController;
     private Solenoid angleSolenoid;
+    private double targetSpeed = 0.0;
 
     public Shooter() {
          if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
@@ -27,28 +28,29 @@ public class Shooter extends DreadbotSubsystem {
         this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
         this.followerMotor.restoreFactoryDefaults();
+        this.leaderMotor.restoreFactoryDefaults();
         this.leaderMotor.setInverted(false);
         this.followerMotor.follow(leaderMotor, true);
 
-        this.angleSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 8);
+        this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
         pidController = leaderMotor.getPIDController();
+        // this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
+        // this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
-        this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
-        this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
-
-        this.followerMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
-        this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
+        // this.followerMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
+        // this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
         pidController.setP(0.0);
         pidController.setI(0.0);
         pidController.setD(0.00);
-        pidController.setFF(0.00025);
+        pidController.setFF(0.00013);
     }
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Actual Speed", leaderMotor.getEncoder().getVelocity());
+        SmartDashboard.putBoolean("At Speed", isAtSpeed());
     }
     @Override
     public void close() throws Exception {
@@ -72,9 +74,14 @@ public class Shooter extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
-        SmartDashboard.putNumber("Desired Speed", speed);
+        SmartDashboard.putNumber("Shooter Desired Speed", speed);
+        this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
+    }
+
+    public boolean isAtSpeed() {
+        return Math.abs(leaderMotor.getEncoder().getVelocity() - targetSpeed) < Constants.ShooterConstants.FLYWHEEL_ERROR_MARGIN;
     }
     
     public void setSourcePickupPosition() {
