@@ -22,7 +22,9 @@ public class LockonCommand extends Command {
     @Override
     public void execute() {
         double theta = thetaSub.get();
-        drive.lockRotationOverride = theta;
+        
+
+        drive.lockRotationOverride = 0;
     }
     @Override
     public void end(boolean isCancelled){

@@ -124,7 +124,7 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
 
-        final DoubleSubscriber thetaToTag = table.getDoubleTopic("thetaTagPub").subscribe(0.0);
+        final DoubleSubscriber thetaToTag = table.getDoubleTopic("thetaToTag").subscribe(0.0);
         primaryController.getAButton().whileTrue(new LockonCommand(drive, thetaToTag));
     }
 
