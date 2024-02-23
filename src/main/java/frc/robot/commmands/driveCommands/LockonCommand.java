@@ -12,20 +12,22 @@ import util.math.DreadbotMath;
 
 public class LockonCommand extends Command {
     private final Drive drive;
-    private final DoubleSubscriber thetaTopic;
+    private final DoubleSubscriber thetaSub;
+    private boolean isCancelled = false;
 
     public LockonCommand(Drive drive, DoubleSubscriber doubleSubscriber) {
         this.drive = drive;
-        this.thetaTopic = doubleSubscriber;
+        this.thetaSub = doubleSubscriber;
     }
     @Override
     public void execute() {
-        double theta = thetaTopic.get();
-        SmartDashboard.putNumber("Theta", theta);
+        double theta = thetaSub.get();
         drive.lockRotationOverride = theta;
     }
     @Override
-    public void end(boolean isCanceled){
-        drive.lockRotationOverride = 0;
+    public void end(boolean isCancelled){
+        if (!isCancelled) {
+            drive.lockRotationOverride = 0;
+        }
     }
 }

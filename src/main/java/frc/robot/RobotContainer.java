@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -74,8 +75,9 @@ public class RobotContainer {
         intake = new Intake();
         arm = new Arm();
 
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        table = inst.getTable("azathoth");
+        final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
+        table = ntInstance.getTable("azathoth");
+        
 
         configureButtonBindings();
         initializeAutonCommands();
@@ -122,8 +124,8 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
 
-        DoubleTopic dblTopic = table.getDoubleTopic("thetaTagPub");
-        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0)));
+        final DoubleSubscriber thetaToTag = table.getDoubleTopic("thetaTagPub").subscribe(0.0);
+        primaryController.getAButton().whileTrue(new LockonCommand(drive, thetaToTag));
     }
 
     
