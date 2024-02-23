@@ -99,13 +99,14 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
         SmartDashboard.putBoolean("Lower Limit Switch", getHorizontalLimitSwitch());
         SmartDashboard.putBoolean("Upper Limit Switch", getVerticalLimitSwitch());
+        SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
 
         // check limit switches and stop motor
         if(getHorizontalLimitSwitch() && (Math.signum(leftMotor.getEncoder().getVelocity()) < 0)) {
             this.leftMotor.getEncoder().setPosition(0);
         }
         if(getVerticalLimitSwitch()) {
-            this.leftMotor.getEncoder().setPosition(0.25);
+            this.leftMotor.getEncoder().setPosition(0.2602);
         }
         
     }

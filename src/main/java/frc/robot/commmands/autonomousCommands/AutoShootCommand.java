@@ -1,5 +1,6 @@
-package frc.robot.AutonomousCommands;
+package frc.robot.commmands.autonomousCommands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -18,8 +19,7 @@ public class AutoShootCommand extends SequentialCommandGroup {
             new WaitCommand(0.18)
                 .deadlineWith(new OuttakeCommand(intake)),
             new ShootCommand(shooter, rpm)
-                .alongWith(new ArmToPositionCommand(arm, armPosition))
-                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState()),
+                .alongWith(new ArmToPositionCommand(arm, armPosition)),
             new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)),
             new StopShootCommand(shooter)

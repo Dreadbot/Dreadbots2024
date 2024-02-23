@@ -42,10 +42,10 @@ public class Shooter extends DreadbotSubsystem {
         // this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
-        pidController.setP(0.0);
+        pidController.setP(0.0004);
         pidController.setI(0.0);
         pidController.setD(0.00);
-        pidController.setFF(0.00013);
+        pidController.setFF(0.00012);
     }
     @Override
     public void periodic() {

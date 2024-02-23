@@ -20,7 +20,7 @@ public class ArmToPositionCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return arm.isAtDesiredState();
     }
     
 }

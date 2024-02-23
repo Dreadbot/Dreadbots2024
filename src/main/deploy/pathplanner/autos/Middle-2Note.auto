@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3682953829607902,
-      "y": 5.52
+      "x": 1.2537638750491173,
+      "y": 5.578111669043852
     },
     "rotation": 0
   },
@@ -33,12 +33,6 @@
           "type": "named",
           "data": {
             "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot-MiddleNote"
           }
         }
       ]
