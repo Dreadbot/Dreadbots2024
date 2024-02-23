@@ -26,8 +26,6 @@ public class LockonCommand extends Command {
     }
     @Override
     public void end(boolean isCancelled){
-        if (!isCancelled) {
-            drive.lockRotationOverride = 0;
-        }
+        drive.lockRotationOverride = 0;
     }
 }
