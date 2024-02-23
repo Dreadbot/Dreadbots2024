@@ -12,25 +12,21 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
-import frc.robot.commmands.climberCommands.ExtendClimbCommand;
-import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
+import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
-import frc.robot.commmands.driveCommands.TurtleCommand;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
@@ -38,6 +34,8 @@ import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -75,6 +73,9 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         arm = new Arm();
+
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("azathoth");
 
         configureButtonBindings();
         initializeAutonCommands();
@@ -122,7 +123,7 @@ public class RobotContainer {
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
 
         DoubleTopic dblTopic = table.getDoubleTopic("thetaTagPub");
-        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0, null)));
+        primaryController.getAButton().whileTrue(new LockonCommand(drive, dblTopic.subscribe(0)));
     }
 
     
