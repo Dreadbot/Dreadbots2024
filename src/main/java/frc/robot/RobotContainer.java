@@ -108,14 +108,14 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 5000));
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 3750));
         secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
         secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
         secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
 
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
-        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
+        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
 
     }
     
@@ -136,18 +136,18 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", (new WaitCommand(0.1)
-                .deadlineWith(new OuttakeCommand(intake)))
-                .andThen(new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.1161))
+        NamedCommands.registerCommand("Shoot-Subwoofer", new WaitCommand(0.1)
+                .deadlineWith(new OuttakeCommand(intake))
+                .andThen((new ShootCommand(shooter, 3750))
+                .alongWith(new ArmToPositionCommand(arm, 0.09476)))
                 .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
-                .andThen(new FeedCommand(intake)
-                .raceWith(new WaitCommand(0.4)))
+                .andThen((new FeedCommand(intake)
+                .raceWith(new WaitCommand(0.4))))
                 .andThen(new StopShootCommand(shooter)));
         NamedCommands.registerCommand("Shoot-MiddleNote", (new WaitCommand(0.1)
                 .deadlineWith(new OuttakeCommand(intake)))
-                .andThen(new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.11285))
+                .andThen(new ShootCommand(shooter, 5000))
+                .alongWith(new ArmToPositionCommand(arm, 0.1216))
                 .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))

@@ -166,9 +166,6 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
-        }
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
@@ -181,9 +178,6 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void setDesiredStates(SwerveModuleState[] swerveModuleStates) {
-        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
-        }
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
