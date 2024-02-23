@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.AutonomousCommands.AutoShootCommand;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -136,23 +138,12 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new WaitCommand(0.1)
-                .deadlineWith(new OuttakeCommand(intake))
-                .andThen((new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.09476)))
-                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
-                .andThen((new FeedCommand(intake)
-                .raceWith(new WaitCommand(0.4))))
-                .andThen(new StopShootCommand(shooter)));
-        NamedCommands.registerCommand("Shoot-MiddleNote", (new WaitCommand(0.1)
-                .deadlineWith(new OuttakeCommand(intake)))
-                .andThen(new ShootCommand(shooter, 5000))
-                .alongWith(new ArmToPositionCommand(arm, 0.1216))
-                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
-                .andThen(new FeedCommand(intake)
-                .raceWith(new WaitCommand(0.4)))
-                .andThen(new StopShootCommand(shooter)));
-        NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0));
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.09476, 3750));
+        NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.1216, 5000));
+        NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0)
+            .andThen(new InstantCommand().repeatedly()
+            .until(() -> arm.isAtDesiredState()))
+        );
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
         NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
