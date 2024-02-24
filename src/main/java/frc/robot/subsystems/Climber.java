@@ -68,6 +68,24 @@ public class Climber extends DreadbotSubsystem {
         climberDrive.arcadeDrive(vetricalSpeed, rotationSpeed, false); //false for not squaring inputs
         climberDrive.feed();
     }
+    public void retract(double speed) {
+        double leftSpeed = speed;
+        double rightSpeed = speed;
+
+        if(!leftBottomSwitch.get() && speed < 0) {
+            leftSpeed = 0;
+        }
+        if(!rightBottomSwitch.get() && speed < 0) {
+                    rightSpeed = 0;
+                }
+
+        if((!leftTopSwitch.get() || !rightTopSwitch.get()) && speed > 0) {
+            leftSpeed = 0;
+            rightSpeed = 0;
+        }
+        climberDrive.tankDrive(leftSpeed, rightSpeed);
+        
+    }
 
     /**
     * Returns the climber positions in a double array

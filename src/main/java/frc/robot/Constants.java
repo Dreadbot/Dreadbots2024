@@ -16,7 +16,7 @@ public abstract class Constants {
     public static class SubsystemConstants {
       public static final boolean DRIVE_ENABLED = true;
       public static final boolean ARM_ENABLED = true;
-      public static final boolean CLIMBER_ENABLED = false;
+      public static final boolean CLIMBER_ENABLED = true;
       public static final boolean INTAKE_ENABLED = true;
       public static final boolean SHOOTER_ENABLED = true;
 
@@ -56,10 +56,10 @@ public abstract class Constants {
       public static class ClimberConstants {
         public static final int LEFT_CLIMB_MOTOR = 18;
         public static final int RIGHT_CLIMB_MOTOR = 19;
-        public static final int TOP_LEFT_LIMIT_SWITCH_ID = 4;
-        public static final int TOP_RIGHT_LIMIT_SWITCH_ID = 2;
-        public static final int BOTTOM_LEFT_LIMIT_SWITCH_ID = 3;
-        public static final int BOTTOM_RIGHT_LIMIT_SWITCH_ID = 1;
+        public static final int TOP_LEFT_LIMIT_SWITCH_ID = 6;
+        public static final int TOP_RIGHT_LIMIT_SWITCH_ID = 4;
+        public static final int BOTTOM_LEFT_LIMIT_SWITCH_ID = 5;
+        public static final int BOTTOM_RIGHT_LIMIT_SWITCH_ID = 3;
 
 
         public static final double GYRO_ANGLE_CONVERSION_FACTOR = 90.0;

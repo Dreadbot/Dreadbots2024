@@ -24,6 +24,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
+import frc.robot.commmands.climberCommands.ExtendClimbCommand;
+import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
@@ -88,8 +90,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
         drive.setDefaultCommand(driveCommand);
-    //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
-    //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+        new Trigger(primaryController::getSquareButton).whileTrue(new ExtendClimbCommand(climber));
+        new Trigger(primaryController::getTriangleButton).whileTrue(new ClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
