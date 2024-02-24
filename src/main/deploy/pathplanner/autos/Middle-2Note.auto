@@ -34,6 +34,30 @@
           "data": {
             "name": "Stop"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterNote-Middle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
         }
       ]
     }
