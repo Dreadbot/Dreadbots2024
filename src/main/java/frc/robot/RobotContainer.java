@@ -5,11 +5,13 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
@@ -17,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -124,11 +127,11 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
 
-        final DoubleSubscriber thetaToTag = table.getDoubleTopic("thetaToTag").subscribe(0.0);
-        primaryController.getAButton().whileTrue(new LockonCommand(drive, thetaToTag));
+        final DoubleSubscriber thetaToTagPub = table.getDoubleTopic("thetaToTag").subscribe(0.0);
+        final BooleanSubscriber tagSeenPub = table.getBooleanTopic("tagSeen").subscribe(false);
+        primaryController.getAButton().whileTrue(new LockonCommand(drive, table));
     }
 
-    
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

@@ -47,7 +47,10 @@ public class Drive extends DreadbotSubsystem {
     private SwerveDrivePoseEstimator poseEstimator;
     private SwerveDriveOdometry odometry;
 
-    public double lockRotationOverride = 0.0;
+    public boolean doLockon = false;
+    public double lockonTarget = 0.0;
+    public double aprilTagX;
+    public double aprilTagZ;
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
@@ -169,8 +172,16 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        if (lockRotationOverride != 0) {
-            rot = DreadbotMath.applyDeadbandToValue(Math.max(-1, Math.min(1, lockRotationOverride)), DriveConstants.DEADBAND) * DriveConstants.ROT_SPEED_LIMITER;
+        System.out.println(doLockon);
+        if (doLockon) {
+            //change this if statement later
+            if (gyro.getVelocityX() != 0 || gyro.getVelocityZ() != 0) {
+                double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
+                double distToTagZ = 5.547868 - poseEstimator.getEstimatedPosition().getX();
+                lockonTarget = Math.atan(distToTagX / distToTagZ) + gyro.getYaw();
+            }
+            double rotationLockon = Math.toRadians(gyro.getYaw())-lockonTarget;
+            rot = Math.max(-1, Math.min(1, 3*DreadbotMath.applyDeadbandToValue(rotationLockon,.01))) * DriveConstants.ROT_SPEED_LIMITER;
         }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
