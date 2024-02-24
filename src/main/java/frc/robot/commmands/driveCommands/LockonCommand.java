@@ -31,8 +31,6 @@ public class LockonCommand extends Command {
         drive.doLockon = true;
         boolean tagSeen = tagSeenSub.get();
         if (tagSeen) {
-            drive.lockonInitialRobotPosX = robotPosXSub.get();
-            drive.lockonInitialRobotPosZ = robotPosZSub.get();
             drive.lockonTarget = Math.toRadians(drive.getGyro().getYaw()) + thetaSub.get();
         }
     }
