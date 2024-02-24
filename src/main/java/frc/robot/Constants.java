@@ -49,6 +49,7 @@ public abstract class Constants {
       public static class IntakeConstants {
         public static final double INTAKE_SPEED = 0.5;
         public static final double OUTTAKE_SPEED = 0.3;
+        public static final int BEAM_BREAK_SENSOR = 1;
       }
       public static class ShooterConstants {
         public static final double FLYWHEEL_ERROR_MARGIN = 50;
