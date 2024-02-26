@@ -19,8 +19,8 @@ public class IntakeCommand extends Command {
         intake.intake(IntakeConstants.INTAKE_SPEED);
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     return intake.hasNote();
-    // }
+    @Override
+    public boolean isFinished() {
+        return intake.hasNote();
+    }
 }
