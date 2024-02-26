@@ -64,8 +64,8 @@ public class RobotContainer {
         intake = new Intake();
         arm = new Arm();
 
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        table = inst.getTable("SmartDashboard");
+        final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
+        table = ntInstance.getTable("azathoth");
         configureButtonBindings();
     }
     
@@ -90,8 +90,7 @@ public class RobotContainer {
         secondaryController.getXButton().whileTrue(new ShootCommand(shooter));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
-        DoubleTopic dblTopic = table.getDoubleTopic("distanceToTag");
-        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, dblTopic.subscribe(0, null)));
+        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, table));
     }
     
     

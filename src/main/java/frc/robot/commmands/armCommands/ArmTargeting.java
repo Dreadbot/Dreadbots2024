@@ -2,6 +2,7 @@ package frc.robot.commmands.armCommands;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
@@ -11,15 +12,15 @@ public class ArmTargeting extends Command{
     private DoubleSubscriber dist;
     private final Shooter shooter;
 
-    public ArmTargeting(Arm arm, Shooter shooter, DoubleSubscriber distSub) {
+    public ArmTargeting(Arm arm, Shooter shooter, NetworkTable table) {
         this.arm = arm;
-        this.dist = distSub;
+        this.dist = table.getDoubleTopic("distanceToTag").subscribe(0.0);
         this.shooter = shooter;
     }
 
     @Override
     public void execute() {
-        double speed = shooter.getFlywheelSpeed();
+        double speed = shooter.getFlywheelSpeed()*4*Math.PI*60*0.0254;
         double distance = dist.get();
         double theta = -1.6090 + (7.2587/speed) + (0.4664/distance) + (0.1147*speed) + (0.3058*distance) + (-0.0312*speed*distance);
         arm.setReference(new State(theta/(2*Math.PI), 0));
