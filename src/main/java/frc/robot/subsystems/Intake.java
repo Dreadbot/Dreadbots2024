@@ -20,20 +20,13 @@ import util.misc.DreadbotSubsystem;
 public class Intake extends DreadbotSubsystem { 
 
     private CANSparkMax intakeMotor;
-    private ColorSensorV3 colorSensor;
-    private ColorMatch colorMatch;
 
     public Intake() { 
         if(!Constants.SubsystemConstants.INTAKE_ENABLED) {
             return;
         }
         intakeMotor = new CANSparkMax(15, MotorType.kBrushless);
-        colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-        colorMatch = new ColorMatch();
-
-        colorMatch.addColorMatch(ColorSensorConstants.NOTE_COLOR);
-        colorMatch.setConfidenceThreshold(ColorSensorConstants.CONFIDENCE);
-
+        intakeMotor.setInverted(true);
         intakeMotor.setIdleMode(IdleMode.kBrake);
     }
 
@@ -45,7 +38,7 @@ public class Intake extends DreadbotSubsystem {
     }
 
     public boolean hasNote() {
-        return colorMatch.matchColor(colorSensor.getColor()) != null;
+        return false;
     }
 
     @Override

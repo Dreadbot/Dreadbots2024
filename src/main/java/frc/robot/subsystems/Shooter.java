@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import frc.robot.Constants;
 
@@ -29,8 +30,10 @@ public class Shooter extends DreadbotSubsystem {
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
         this.followerMotor.restoreFactoryDefaults();
         this.leaderMotor.restoreFactoryDefaults();
-        this.leaderMotor.setInverted(false);
+        this.leaderMotor.setInverted(true);
         this.followerMotor.follow(leaderMotor, true);
+        this.leaderMotor.setIdleMode(IdleMode.kCoast);
+        this.followerMotor.setIdleMode(IdleMode.kCoast);
 
         this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
@@ -42,10 +45,10 @@ public class Shooter extends DreadbotSubsystem {
         // this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
-        pidController.setP(0.0004);
+        pidController.setP(0.000);
         pidController.setI(0.0);
         pidController.setD(0.00);
-        pidController.setFF(0.00012);
+        pidController.setFF(0.00014);
     }
     @Override
     public void periodic() {

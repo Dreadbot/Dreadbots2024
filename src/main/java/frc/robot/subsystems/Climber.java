@@ -76,8 +76,8 @@ public class Climber extends DreadbotSubsystem {
             leftSpeed = 0;
         }
         if(!rightBottomSwitch.get() && speed < 0) {
-                    rightSpeed = 0;
-                }
+            rightSpeed = 0;
+        }   
 
         if((!leftTopSwitch.get() || !rightTopSwitch.get()) && speed > 0) {
             leftSpeed = 0;

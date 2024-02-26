@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7626093884666401,
+      "y": 4.478861151454497
+    },
+    "rotation": -59.53445508054013
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceShoot-SourceNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceNote-Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

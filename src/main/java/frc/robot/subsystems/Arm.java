@@ -74,7 +74,7 @@ public class Arm extends DreadbotSubsystem {
 
 
         leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.25f);
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.006f);
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.0064f);
 
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
@@ -107,8 +107,6 @@ public class Arm extends DreadbotSubsystem {
              leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
-        SmartDashboard.putBoolean("Lower Limit Switch", horizontalEvent.rising().getAsBoolean());
-        SmartDashboard.putBoolean("Upper Limit Switch", getVerticalLimitSwitch());
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
 
         limitSwitchEventLoop.poll();

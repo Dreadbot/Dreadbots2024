@@ -25,6 +25,7 @@ import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
+import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
@@ -93,6 +94,7 @@ public class RobotContainer {
         new Trigger(primaryController::getSquareButton).whileTrue(new ExtendClimbCommand(climber));
         new Trigger(primaryController::getTriangleButton).whileTrue(new ClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
+        new Trigger(primaryController::getR1Button).whileTrue(new RetractClimbCommand(climber));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().onTrue(new IntakeCommand(intake));

@@ -44,7 +44,6 @@ public class Drive extends DreadbotSubsystem {
 
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
-    private SwerveDriveOdometry odometry;
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
@@ -103,16 +102,6 @@ public class Drive extends DreadbotSubsystem {
                 },
                 PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
             );
-            odometry = new SwerveDriveOdometry(
-                kinematics, 
-                getGyroRotation(), 
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                }
-            );
             AutoBuilder.configureHolonomic(
                 this::getPosition, 
                 this::resetOdometry,
@@ -150,16 +139,6 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        odometry.update(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            }
-        );
-        
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
     }
 
@@ -268,7 +247,6 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
             return;
         }
-        drive(0, 0, 0, false);
         frontLeftModule.stopMotors();
         frontRightModule.stopMotors();
         backLeftModule.stopMotors();
