@@ -31,6 +31,10 @@ public class Arm extends DreadbotSubsystem {
     private State armState;
     private State desiredArmState;
     private double joystickOverride;
+
+    public Boolean autoAimArm = false;
+    public double initialDistanceToTag = 0.0;
+
     public Arm() {
         if(!Constants.SubsystemConstants.ARM_ENABLED) {
             return;

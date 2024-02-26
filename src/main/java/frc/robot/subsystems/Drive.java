@@ -47,6 +47,9 @@ public class Drive extends DreadbotSubsystem {
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
+    public Boolean autoAimArm = false;
+    public double initialDistanceToTag = 0.0;
+
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
     private SwerveModule backLeftModule;
