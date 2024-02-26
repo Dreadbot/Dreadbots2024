@@ -14,25 +14,13 @@ import util.math.DreadbotMath;
 
 public class LockonCommand extends Command {
     private final Drive drive;
-    private final DoubleSubscriber thetaSub;
-    private final BooleanSubscriber tagSeenSub;
-    private final DoubleSubscriber robotPosXSub;
-    private final DoubleSubscriber robotPosZSub;
 
-    public LockonCommand(Drive drive, NetworkTable table) {
+    public LockonCommand(Drive drive) {
         this.drive = drive;
-        this.thetaSub = table.getDoubleTopic("thetaToTag").subscribe(0.0);
-        this.tagSeenSub = table.getBooleanTopic("tagSeen").subscribe(false);
-        this.robotPosXSub = table.getDoubleTopic("robotposXFromTag").subscribe(0.0);
-        this.robotPosZSub = table.getDoubleTopic("robotposZFromTag").subscribe(0.0);
     }
     @Override
     public void execute() {
         drive.doLockon = true;
-        boolean tagSeen = tagSeenSub.get();
-        if (tagSeen) {
-            drive.lockonTarget = Math.toRadians(drive.getGyro().getYaw()) + thetaSub.get();
-        }
     }
     @Override
     public void end(boolean isCancelled){

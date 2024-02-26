@@ -23,6 +23,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -48,9 +53,16 @@ public class Drive extends DreadbotSubsystem {
     private SwerveDriveOdometry odometry;
 
     public boolean doLockon = false;
-    public double lockonTarget = 0.0;
+    public double deltaTheta = 0.0;
     public double aprilTagX;
     public double aprilTagZ;
+    public NetworkTable table = NetworkTableInstance.getDefault().getTable("azathoth");
+
+    private DoubleSubscriber poseX = table.getDoubleTopic("robotposX").subscribe(0.0);
+    private DoubleSubscriber poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
+    private DoubleSubscriber rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
+    private BooleanSubscriber tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
+
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
@@ -147,6 +159,10 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        if (tagSeen.get()){
+            long timestamp = NetworkTableInstance.getDefault().getEntry("tagSeen").getLastChange();
+            poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get()+Math.PI)), timestamp);
+        }
         poseEstimator.update(
             getGyroRotation(),
             new SwerveModulePosition[] {
@@ -172,16 +188,13 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        System.out.println(doLockon);
         if (doLockon) {
-            //change this if statement later
-            if (gyro.getVelocityX() != 0 || gyro.getVelocityZ() != 0) {
-                double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
-                double distToTagZ = 5.547868 - poseEstimator.getEstimatedPosition().getX();
-                lockonTarget = Math.atan(distToTagX / distToTagZ) + gyro.getYaw();
-            }
-            double rotationLockon = Math.toRadians(gyro.getYaw())-lockonTarget;
-            rot = Math.max(-1, Math.min(1, 3*DreadbotMath.applyDeadbandToValue(rotationLockon,.01))) * DriveConstants.ROT_SPEED_LIMITER;
+            double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
+            double distToTagY = 5.547868 - poseEstimator.getEstimatedPosition().getY();
+            
+            deltaTheta = Math.atan2(distToTagY, distToTagX) - gyro.getYaw();
+
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * .2;
         }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {

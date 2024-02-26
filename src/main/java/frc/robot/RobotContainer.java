@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import java.sql.PseudoColumnUsage;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -17,6 +19,7 @@ import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -24,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -56,7 +60,7 @@ import util.controls.DreadbotController;
 public class RobotContainer {
 
     
-    private final DreadbotController primaryController = new DreadbotController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
+    private final PS4Controller primaryController = new PS4Controller(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
     private final Drive drive;
     private final Climber climber;
@@ -66,7 +70,7 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
-    private final NetworkTable table;
+   
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         drive = new Drive();
@@ -76,11 +80,7 @@ public class RobotContainer {
         climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
-        arm = new Arm();
-
-        final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-        table = ntInstance.getTable("azathoth");
-        
+        arm = new Arm();       
 
         configureButtonBindings();
         initializeAutonCommands();
@@ -96,11 +96,11 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        DriveCommand driveCommand = new DriveCommand(drive, primaryController::getXAxis, primaryController::getYAxis, primaryController::getZAxis);
+        DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
         drive.setDefaultCommand(driveCommand);
     //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
     //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
-        primaryController.getStartButton().onTrue(new ResetGyroCommand(drive));
+        new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().onTrue(new IntakeCommand(intake));
@@ -127,9 +127,7 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
 
-        final DoubleSubscriber thetaToTagPub = table.getDoubleTopic("thetaToTag").subscribe(0.0);
-        final BooleanSubscriber tagSeenPub = table.getBooleanTopic("tagSeen").subscribe(false);
-        primaryController.getAButton().whileTrue(new LockonCommand(drive, table));
+        new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
     }
 
     /**
