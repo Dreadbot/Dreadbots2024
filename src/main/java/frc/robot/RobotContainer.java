@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -37,6 +38,7 @@ import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
+import frc.robot.commmands.shooterCommands.SourceIntakeCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Drive;
@@ -121,6 +123,8 @@ public class RobotContainer {
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
 
+        secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
+        secondaryController.getDpadDown().whileTrue(new SourceIntakeCommand(shooter));
     }
     
     

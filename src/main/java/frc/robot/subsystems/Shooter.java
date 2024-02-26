@@ -89,6 +89,7 @@ public class Shooter extends DreadbotSubsystem {
     
     public void setSourcePickupPosition() {
         angleSolenoid.set(true);
+        
     }
     public void setStowPosition() {
         angleSolenoid.set(false);

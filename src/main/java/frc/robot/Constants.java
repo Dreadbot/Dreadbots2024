@@ -49,6 +49,7 @@ public abstract class Constants {
       public static class IntakeConstants {
         public static final double INTAKE_SPEED = 0.7;
         public static final double OUTTAKE_SPEED = 0.3;
+        public static final int BEAM_BREAK_SENSOR = 1;
       }
       public static class ShooterConstants {
         public static final double FLYWHEEL_ERROR_MARGIN = 50;
@@ -75,6 +76,7 @@ public abstract class Constants {
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
         public static final double KG = 0.15; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical
+        public static final double ARM_SOURCE_PICKUP_POSITION = 0.2;
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");
