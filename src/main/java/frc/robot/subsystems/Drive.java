@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -257,6 +258,10 @@ public class Drive extends DreadbotSubsystem {
 
     public AHRS getGyro() {
         return gyro;
+    }
+
+    public SwerveDrivePoseEstimator getPoseEstimator() {
+        return poseEstimator;
     }
 
     public void resetGyro(){

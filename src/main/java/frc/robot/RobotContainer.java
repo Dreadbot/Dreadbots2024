@@ -90,7 +90,7 @@ public class RobotContainer {
         secondaryController.getXButton().whileTrue(new ShootCommand(shooter));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
 
-        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, table));
+        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, drive, table).alongWith(new ShootCommand(shooter)));
     }
     
     
