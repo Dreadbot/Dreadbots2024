@@ -58,7 +58,7 @@ public class Drive extends DreadbotSubsystem {
     public double aprilTagZ;
     public NetworkTable table = NetworkTableInstance.getDefault().getTable("azathoth");
 
-    private DoubleSubscriber poseX = table.getDoubleTopic("robotposX").subscribe(0.0);
+    private DoubleSubscriber poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
     private DoubleSubscriber poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
     private DoubleSubscriber rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
     private BooleanSubscriber tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
@@ -160,8 +160,8 @@ public class Drive extends DreadbotSubsystem {
           return;
         }
         if (tagSeen.get()){
-            long timestamp = NetworkTableInstance.getDefault().getEntry("tagSeen").getLastChange();
-            poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get()+Math.PI)), timestamp);
+            long timestamp = table.getEntry("tagSeen").getLastChange();
+            poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get())), timestamp);
         }
         poseEstimator.update(
             getGyroRotation(),
@@ -192,9 +192,10 @@ public class Drive extends DreadbotSubsystem {
             double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = 5.547868 - poseEstimator.getEstimatedPosition().getY();
             
-            deltaTheta = Math.atan2(distToTagY, distToTagX) - gyro.getYaw();
+            System.out.println(poseEstimator.getEstimatedPosition());
+            deltaTheta = Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
 
-            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * .2;
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER;
         }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
