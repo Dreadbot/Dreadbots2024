@@ -16,9 +16,7 @@ public class ExtendClimbCommand extends Command {
     @Override
     public void execute() {
         climber.climb(ClimberConstants.EXTEND_SPEED, 0); // no rotation on extension for obvious
-        
     }
-
 
     @Override
     public void end(boolean interupted) {

@@ -5,9 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
 public class ArmToPositionCommand extends Command {
+
     private Arm arm;
     private double position;
-     public ArmToPositionCommand(Arm arm, double position) {
+
+    public ArmToPositionCommand(Arm arm, double position) {
         this.arm = arm;
         this.position = position;
         addRequirements(arm);
@@ -22,5 +24,4 @@ public class ArmToPositionCommand extends Command {
     public boolean isFinished() {
         return arm.isAtDesiredState();
     }
-    
 }

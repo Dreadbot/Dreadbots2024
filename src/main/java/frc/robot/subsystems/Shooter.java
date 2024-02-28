@@ -18,7 +18,8 @@ public class Shooter extends DreadbotSubsystem {
 
     private CANSparkMax leaderMotor;
     private CANSparkMax followerMotor;
-    private SparkPIDController pidController;
+    private SparkPIDController leaderPidController;
+    private SparkPIDController followerPidController;
     private Solenoid angleSolenoid;
     private double targetSpeed = 0.0;
 
@@ -31,13 +32,13 @@ public class Shooter extends DreadbotSubsystem {
         this.followerMotor.restoreFactoryDefaults();
         this.leaderMotor.restoreFactoryDefaults();
         this.leaderMotor.setInverted(true);
-        this.followerMotor.follow(leaderMotor, true);
         this.leaderMotor.setIdleMode(IdleMode.kCoast);
         this.followerMotor.setIdleMode(IdleMode.kCoast);
 
         this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
-        pidController = leaderMotor.getPIDController();
+        leaderPidController = leaderMotor.getPIDController();
+        followerPidController = followerMotor.getPIDController();
         // this.leaderMotor.getEncoder().setPositionConversionFactor(1.0 / 3.0);
         // this.leaderMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
@@ -45,10 +46,15 @@ public class Shooter extends DreadbotSubsystem {
         // this.followerMotor.getEncoder().setVelocityConversionFactor(1.0 / 3.0);
 
 
-        pidController.setP(0.000);
-        pidController.setI(0.0);
-        pidController.setD(0.00);
-        pidController.setFF(0.00014);
+        leaderPidController.setP(0.000);
+        leaderPidController.setI(0.0);
+        leaderPidController.setD(0.00);
+        leaderPidController.setFF(0.00014);
+
+        followerPidController.setP(0.000);
+        followerPidController.setI(0.0);
+        followerPidController.setD(0.00);
+        followerPidController.setFF(0.00014);
     }
     @Override
     public void periodic() {
@@ -81,6 +87,7 @@ public class Shooter extends DreadbotSubsystem {
         this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
+        followerPidController.setReference(speed, ControlType.kVelocity);
     }
 
     public boolean isAtSpeed() {

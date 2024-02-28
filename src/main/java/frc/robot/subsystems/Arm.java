@@ -33,6 +33,7 @@ public class Arm extends DreadbotSubsystem {
     private BooleanEvent horizontalEvent;
     private BooleanEvent verticalEvent;
     private EventLoop limitSwitchEventLoop;
+    private Boolean horizontalSwitchCalibrated;
 
     private TrapezoidProfile armProfile;
     private State armState;
@@ -53,6 +54,7 @@ public class Arm extends DreadbotSubsystem {
         verticalSwitch = new DigitalInput(2);
 
         limitSwitchEventLoop = new EventLoop();
+        horizontalSwitchCalibrated = false;
 
         horizontalEvent = new BooleanEvent(limitSwitchEventLoop, this::getHorizontalLimitSwitch);
         verticalEvent = new BooleanEvent(limitSwitchEventLoop, this::getVerticalLimitSwitch);
@@ -86,9 +88,12 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setP(8);
         leftPidController.setI(0.0);
         leftPidController.setD(0.0);
-         horizontalEvent
-            .and(() -> Math.signum(leftMotor.getEncoder().getVelocity()) < 0)
-            .ifHigh(() -> leftMotor.getEncoder().setPosition(0));
+        horizontalEvent
+            .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
+            .ifHigh(() -> {
+                leftMotor.getEncoder().setPosition(0);
+                horizontalSwitchCalibrated = true;
+            });
     }
     @Override
     public void periodic() {
@@ -104,9 +109,10 @@ public class Arm extends DreadbotSubsystem {
             this.armState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.25), 0); //override the desired state with what the user wants
             this.desiredArmState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.25), 0); //override the desired state with what the user wants
         } else {
-             leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
+            leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
+        SmartDashboard.putBoolean("Lower limit switch triggered", getHorizontalLimitSwitch());
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
 
         limitSwitchEventLoop.poll();
@@ -154,7 +160,6 @@ public class Arm extends DreadbotSubsystem {
     }
     public void setJoystickOverride(double joystickOverride) {
         this.joystickOverride = joystickOverride;
-        SmartDashboard.putNumber("Joystick override", joystickOverride);
     }
     public void setArmStartState() {
         this.armState = new State(this.leftMotor.getEncoder().getPosition(), 0);

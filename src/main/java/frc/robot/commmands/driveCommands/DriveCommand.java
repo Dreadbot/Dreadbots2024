@@ -1,7 +1,6 @@
 package frc.robot.commmands.driveCommands;
 
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
@@ -35,13 +34,10 @@ public class DriveCommand extends Command {
     }
 
     public void enableTurtle() {
-
         speedModifier = 0.5;
-
     }
 
     public void disableTurtle() {
-
         speedModifier = 1;
     }
 }

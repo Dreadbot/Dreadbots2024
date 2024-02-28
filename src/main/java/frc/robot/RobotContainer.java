@@ -99,7 +99,9 @@ public class RobotContainer {
         new Trigger(primaryController::getR1Button).whileTrue(new RetractClimbCommand(climber));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
-        secondaryController.getAButton().onTrue(new IntakeCommand(intake));
+        secondaryController.getAButton().onTrue(new IntakeCommand(intake)
+            .andThen(new ArmToPositionCommand(arm, 0.054).onlyIf(intake::hasNote)
+        ));
         secondaryController.getAButton().onFalse(new StopIntakeCommand(intake));
 
         secondaryController.getBButton().onTrue(new OuttakeCommand(intake));
@@ -153,7 +155,5 @@ public class RobotContainer {
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
         NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
-
-
     }
 }

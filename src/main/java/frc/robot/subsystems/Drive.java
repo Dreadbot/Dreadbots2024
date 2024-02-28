@@ -100,7 +100,7 @@ public class Drive extends DreadbotSubsystem {
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
                 },
-                PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
+                PathPlannerAuto.getStaringPoseFromAutoFile("Middle-2Note")
             );
             AutoBuilder.configureHolonomic(
                 this::getPosition, 

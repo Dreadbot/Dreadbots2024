@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
 public class ShootCommand extends Command {
+
     private final Shooter shooter;
     private final double speed;
+    
     public ShootCommand(Shooter shooter, double speed) {
         this.shooter = shooter;
         this.speed = speed;

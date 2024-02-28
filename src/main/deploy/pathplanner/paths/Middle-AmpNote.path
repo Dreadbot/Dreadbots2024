@@ -35,7 +35,7 @@
       "name": "New Event Marker",
       "waypointRelativePos": 0.7,
       "command": {
-        "type": "deadline",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -48,6 +48,12 @@
               "type": "wait",
               "data": {
                 "waitTime": 1.5
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIntake"
               }
             }
           ]

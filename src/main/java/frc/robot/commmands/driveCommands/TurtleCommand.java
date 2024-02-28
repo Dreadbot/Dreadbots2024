@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class TurtleCommand extends Command {
     
     private final DriveCommand driveCommand;
+
     public TurtleCommand(DriveCommand command) {
         this.driveCommand = command;
-
     }
 
     @Override

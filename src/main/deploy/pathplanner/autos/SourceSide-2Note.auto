@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "SourceShoot-SourceNote"
