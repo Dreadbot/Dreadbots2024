@@ -56,12 +56,12 @@ public class Drive extends DreadbotSubsystem {
     public double deltaTheta = 0.0;
     public double aprilTagX;
     public double aprilTagZ;
-    public NetworkTable table = NetworkTableInstance.getDefault().getTable("azathoth");
+    private final NetworkTable table;
 
-    private DoubleSubscriber poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
-    private DoubleSubscriber poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
-    private DoubleSubscriber rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
-    private BooleanSubscriber tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
+    private DoubleSubscriber poseX;
+    private DoubleSubscriber poseY;
+    private DoubleSubscriber rotation;
+    private BooleanSubscriber tagSeen;
 
 
     private AHRS gyro = new AHRS(Port.kMXP);
@@ -74,7 +74,13 @@ public class Drive extends DreadbotSubsystem {
     private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
-    public Drive() {
+    public Drive(NetworkTable table) {
+        this.table = table;
+        this.poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
+        this.poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
+        this.rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
+        this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
+
         gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
         
@@ -172,15 +178,6 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        odometry.update(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            }
-        );
         
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
     }
@@ -190,12 +187,12 @@ public class Drive extends DreadbotSubsystem {
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         if (doLockon) {
             double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
-            double distToTagY = 5.547868 - poseEstimator.getEstimatedPosition().getY();
+            double distToTagY = (8.2042 - 5.547868) - poseEstimator.getEstimatedPosition().getY();
             
             System.out.println(poseEstimator.getEstimatedPosition());
             deltaTheta = Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
 
-            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER;
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
         }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
@@ -226,6 +223,7 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        System.out.println("Target pose: " + pose);
         poseEstimator.resetPosition(gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),

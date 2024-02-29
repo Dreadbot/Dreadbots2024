@@ -91,7 +91,7 @@ public class Arm extends DreadbotSubsystem {
         if(Math.abs(joystickOverride) > 0.06) {
             //we should overrride with manual control
             leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.06) * 0.2 * -1); //inverted joystick
-            System.out.println("joystick override: " + joystickOverride);
+            // System.out.println("joystick override: " + joystickOverride);
             this.armState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.25), 0); //override the desired state with what the user wants
             this.desiredArmState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.25), 0); //override the desired state with what the user wants
         } else {

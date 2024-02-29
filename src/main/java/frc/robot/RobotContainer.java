@@ -34,6 +34,7 @@ import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
+import frc.robot.commmands.driveCommands.ResetPoseCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
@@ -70,10 +71,13 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
+
+    private NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
+    private NetworkTable visionTable = ntInst.getTable("azathoth");
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive();
+        drive = new Drive(visionTable);
         drive.getGyro().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
@@ -101,6 +105,7 @@ public class RobotContainer {
     //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
     //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
+        new Trigger(primaryController::getShareButton).onTrue(new ResetPoseCommand(drive, visionTable));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().onTrue(new IntakeCommand(intake));
