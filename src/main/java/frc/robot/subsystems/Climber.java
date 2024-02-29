@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.SubsystemConstants;
@@ -20,6 +22,7 @@ public class Climber extends DreadbotSubsystem {
     private CANSparkMax leftClimberMotor;
     private CANSparkMax rightClimberMotor;
     private DifferentialDrive climberDrive;
+    private Solenoid lockPiston;
     private DigitalInput leftTopSwitch;
     private DigitalInput rightTopSwitch;
     private DigitalInput leftBottomSwitch;
@@ -34,6 +37,8 @@ public class Climber extends DreadbotSubsystem {
         this.rightClimberMotor = new CANSparkMax(ClimberConstants.RIGHT_CLIMB_MOTOR, MotorType.kBrushless);
         leftClimberMotor.setIdleMode(IdleMode.kBrake);
         rightClimberMotor.setIdleMode(IdleMode.kBrake);
+
+        this.lockPiston = new Solenoid(21, PneumaticsModuleType.REVPH, 9);
 
         this.gyro = gyro;
 
@@ -68,6 +73,7 @@ public class Climber extends DreadbotSubsystem {
         climberDrive.arcadeDrive(vetricalSpeed, rotationSpeed, false); //false for not squaring inputs
         climberDrive.feed();
     }
+
     public void retract(double speed) {
         double leftSpeed = speed;
         double rightSpeed = speed;
@@ -103,6 +109,13 @@ public class Climber extends DreadbotSubsystem {
 
     public double getRightClimberPosition() {
         return rightClimberMotor.getEncoder().getPosition();
+    }
+
+    public void lock() {
+        this.lockPiston.set(true);
+    }
+    public void unlock() {
+        this.lockPiston.set(false);
     }
 
     @Override

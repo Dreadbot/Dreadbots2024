@@ -12,6 +12,11 @@ public class RetractClimbCommand extends Command {
         this.climber = climber;
         addRequirements(climber);
     }
+
+    @Override
+    public void initialize() {
+        climber.unlock();
+    }
     
     @Override
     public void execute() {
@@ -21,5 +26,6 @@ public class RetractClimbCommand extends Command {
     @Override
     public void end(boolean interupted) {
         climber.stopMotors();
+        climber.lock();
     }
 }
