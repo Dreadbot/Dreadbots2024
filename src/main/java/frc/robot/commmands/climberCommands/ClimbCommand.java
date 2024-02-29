@@ -18,13 +18,8 @@ public class ClimbCommand extends Command {
     }
 
     @Override
-    public void initialize() {
-        climber.unlock();
-    }
-
-    @Override
     public void execute() {
-        climber.climb(ClimberConstants.RETRACT_SPEED, (gyro.getPitch() - ClimberConstants.GYRO_PITCH_OFFSET) / ClimberConstants.GYRO_ANGLE_CONVERSION_FACTOR);
+        climber.climb(ClimberConstants.RETRACT_SPEED, (-gyro.getRoll()) / ClimberConstants.GYRO_ANGLE_CONVERSION_FACTOR);
         SmartDashboard.putNumber("leftClimberPosition", climber.getLeftClimberPosition());
         SmartDashboard.putNumber("rightClimberPosition", climber.getRightClimberPosition());
     } 

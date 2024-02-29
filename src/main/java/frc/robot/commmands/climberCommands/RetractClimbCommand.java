@@ -12,15 +12,10 @@ public class RetractClimbCommand extends Command {
         this.climber = climber;
         addRequirements(climber);
     }
-
-    @Override
-    public void initialize() {
-        climber.unlock();
-    }
     
     @Override
     public void execute() {
-        climber.retract(ClimberConstants.RETRACT_SPEED);
+        climber.retract(-ClimberConstants.EXTEND_SPEED);
     }
 
     @Override

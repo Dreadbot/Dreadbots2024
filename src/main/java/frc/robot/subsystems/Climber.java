@@ -61,6 +61,11 @@ public class Climber extends DreadbotSubsystem {
     //     SmartDashboard.putBoolean("rightTopSwitch", !rightTopSwitch.get());
     // }
 
+    @Override
+    public void periodic() {
+        System.out.println(gyro.getRoll());
+    }
+
     public void climb(double vetricalSpeed, double rotationSpeed) {
         if((!leftBottomSwitch.get() || !rightBottomSwitch.get()) && vetricalSpeed < 0) {
             vetricalSpeed = 0;
@@ -112,10 +117,10 @@ public class Climber extends DreadbotSubsystem {
     }
 
     public void lock() {
-        this.lockPiston.set(true);
+        this.lockPiston.set(false);
     }
     public void unlock() {
-        this.lockPiston.set(false);
+        this.lockPiston.set(true);
     }
 
     @Override
