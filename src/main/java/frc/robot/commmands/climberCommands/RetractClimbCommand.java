@@ -15,11 +15,12 @@ public class RetractClimbCommand extends Command {
     
     @Override
     public void execute() {
-        climber.retract(ClimberConstants.RETRACT_SPEED);
+        climber.retract(-ClimberConstants.EXTEND_SPEED);
     }
 
     @Override
     public void end(boolean interupted) {
         climber.stopMotors();
+        climber.lock();
     }
 }

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -26,7 +27,9 @@ import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
+import frc.robot.commmands.climberCommands.LockCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
+import frc.robot.commmands.climberCommands.UnlockCommand;
 import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
@@ -93,10 +96,22 @@ public class RobotContainer {
     private void configureButtonBindings() {
         DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
         drive.setDefaultCommand(driveCommand);
-        new Trigger(primaryController::getSquareButton).whileTrue(new ExtendClimbCommand(climber));
-        new Trigger(primaryController::getTriangleButton).whileTrue(new ClimbCommand(climber, drive.getGyro()));
+        new Trigger(primaryController::getSquareButton).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new ExtendClimbCommand(climber))
+        );
+        new Trigger(primaryController::getTriangleButton).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new ClimbCommand(climber, drive.getGyro()))
+        );
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
-        new Trigger(primaryController::getR1Button).whileTrue(new RetractClimbCommand(climber));
+        new Trigger(primaryController::getR1Button).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new RetractClimbCommand(climber))
+        );
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().onTrue(new IntakeCommand(intake));

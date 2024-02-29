@@ -21,6 +21,7 @@ public class ExtendClimbCommand extends Command {
     @Override
     public void end(boolean interupted) {
         climber.stopMotors();
+        climber.lock();
     }
 
     @Override
