@@ -87,7 +87,7 @@ public class Shooter extends DreadbotSubsystem {
         this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
-        followerPidController.setReference(speed, ControlType.kVelocity);
+        followerMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }
 
     public boolean isAtSpeed() {

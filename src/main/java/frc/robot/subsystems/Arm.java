@@ -76,7 +76,7 @@ public class Arm extends DreadbotSubsystem {
 
 
         leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.25f);
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.0064f);
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.0013f);
 
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
@@ -90,8 +90,8 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setD(0.0);
         horizontalEvent
             .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
-            .ifHigh(() -> {
-                leftMotor.getEncoder().setPosition(0);
+            .ifHigh(() -> { 
+                leftMotor.getEncoder().setPosition(0); 
                 horizontalSwitchCalibrated = true;
             });
     }

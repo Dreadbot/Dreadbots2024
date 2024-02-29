@@ -99,9 +99,7 @@ public class RobotContainer {
         new Trigger(primaryController::getR1Button).whileTrue(new RetractClimbCommand(climber));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
-        secondaryController.getAButton().onTrue(new IntakeCommand(intake)
-            .andThen(new ArmToPositionCommand(arm, 0.054).onlyIf(intake::hasNote)
-        ));
+        secondaryController.getAButton().onTrue(new IntakeCommand(intake));
         secondaryController.getAButton().onFalse(new StopIntakeCommand(intake));
 
         secondaryController.getBButton().onTrue(new OuttakeCommand(intake));
@@ -126,7 +124,7 @@ public class RobotContainer {
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
 
         secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
-        secondaryController.getDpadDown().whileTrue(new SourceIntakeCommand(shooter));
+        secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
     }
     
     
