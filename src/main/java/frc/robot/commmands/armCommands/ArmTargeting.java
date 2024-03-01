@@ -15,34 +15,23 @@ import frc.robot.subsystems.Shooter;
 
 public class ArmTargeting extends Command{
     private final Arm arm;
-    private final DoubleSubscriber dist;
     private final Shooter shooter;
-    private final BooleanSubscriber tagSeen;
     private final Drive drive;
 
-    public ArmTargeting(Arm arm, Shooter shooter, Drive drive, NetworkTable table) {
+    public ArmTargeting(Arm arm, Shooter shooter, Drive drive) {
         this.arm = arm;
-        this.dist = table.getDoubleTopic("distanceToTag").subscribe(0.0);
-        this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
         this.shooter = shooter;
         this.drive = drive;
     }
 
     @Override
     public void execute() {
-        
-        double distance = dist.get();
         AHRS gyro = drive.getGyro();
         SwerveDrivePoseEstimator poseEstimator = drive.getPoseEstimator();
  
-        if (gyro.getVelocityX() != 0 || gyro.getVelocityZ() != 0) {
-            double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
-            double distToTagZ = 5.547868 - poseEstimator.getEstimatedPosition().getX();
-            distance = Math.sqrt(Math.pow(distToTagX, 2) + Math.pow(distToTagZ, 2));
-        }
-        if (tagSeen.get()) {
-            distance = dist.get();
-        }
+        double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
+        double distToTagZ = 5.547868 - poseEstimator.getEstimatedPosition().getX();
+        distance = Math.sqrt(Math.pow(distToTagX, 2) + Math.pow(distToTagZ, 2));
 
         distance += 0.1651;
         double speed = shooter.getFlywheelSpeed()*4*Math.PI*60*0.0254;
