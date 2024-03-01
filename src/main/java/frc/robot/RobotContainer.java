@@ -40,6 +40,7 @@ import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.LockCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.climberCommands.UnlockCommand;
+import frc.robot.commmands.controllerCommands.RumbleController;
 import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
@@ -134,9 +135,10 @@ public class RobotContainer {
                 .andThen(new WaitCommand(0.1))
                 .andThen(new RetractClimbCommand(climber))
         );
+        new Trigger(primaryController::getCircleButton).whileTrue(new RumbleController(primaryController));
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
-        secondaryController.getAButton().onTrue(new IntakeCommand(intake));
+        secondaryController.getAButton().onTrue(new IntakeCommand(intake, primaryController));
         secondaryController.getAButton().onFalse(new StopIntakeCommand(intake));
 
         secondaryController.getBButton().onTrue(new OuttakeCommand(intake));
@@ -190,7 +192,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.1216, 4750));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
-        NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
+        NamedCommands.registerCommand("Intake", new IntakeCommand(intake, null));
         NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
     }
 }
