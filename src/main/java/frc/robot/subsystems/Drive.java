@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,6 +18,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -24,7 +27,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -55,9 +60,14 @@ public class Drive extends DreadbotSubsystem {
     private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
+    private Field2d field2d;
+
     public Drive() {
         gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
+            field2d = new Field2d();
+
+            SmartDashboard.putData(field2d);
         
             frontLeftModule = new SwerveModule(
                 new CANSparkMax(1, MotorType.kBrushless),
@@ -93,14 +103,14 @@ public class Drive extends DreadbotSubsystem {
             );
             //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
             poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
-                gyro.getRotation2d(),
+                getGyroRotation(),
                 new SwerveModulePosition[] {
                     frontLeftModule.getPosition(),
                     frontRightModule.getPosition(),
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
                 },
-                PathPlannerAuto.getStaringPoseFromAutoFile("Middle-2Note")
+                new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0)))
             );
             AutoBuilder.configureHolonomic(
                 this::getPosition, 
@@ -140,18 +150,30 @@ public class Drive extends DreadbotSubsystem {
             }
         );
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
+        frontLeftModule.putValuesToSmartDashboard("Front Left");
+        frontRightModule.putValuesToSmartDashboard("Front Right");
+        backLeftModule.putValuesToSmartDashboard("Back Left");
+        backRightModule.putValuesToSmartDashboard("Back Right");
+
+        field2d.setRobotPose(poseEstimator.getEstimatedPosition());
+        
     }
 
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        int invert = 1;
+        SmartDashboard.putNumber("Desired Forward Speed", xSpeed);
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
-            fieldRelative ? 
-            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rot)
-        );
 
+        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+            invert = -1;
+        }
+        ChassisSpeeds desiredSpeeds = 
+        ChassisSpeeds.discretize(fieldRelative ? 
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getGyroRotation()) : new ChassisSpeeds(xSpeed, ySpeed, rot), 0.02);
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         setDesiredStates(swerveModuleStates);
     }
@@ -167,7 +189,7 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
-        poseEstimator.resetPosition(gyro.getRotation2d(),
+        poseEstimator.resetPosition(getGyroRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -183,7 +205,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     private Rotation2d getGyroRotation() {
-        return gyro.getRotation2d();
+        return new Rotation2d(gyro.getRotation2d().getRadians() - Math.PI);
     }
 
     private ChassisSpeeds getSpeeds() {
@@ -224,6 +246,10 @@ public class Drive extends DreadbotSubsystem {
     public void resetGyro(){
         gyro.reset();
         resetOdometry(getPosition());
+    }
+    public void resetPose() {
+        gyro.reset();
+        resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0))));
     }
 
 

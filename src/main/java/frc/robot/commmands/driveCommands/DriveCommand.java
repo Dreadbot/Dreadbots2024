@@ -1,6 +1,8 @@
 package frc.robot.commmands.driveCommands;
 
 import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
@@ -29,7 +31,12 @@ public class DriveCommand extends Command {
     public void execute() {
         double forward = -DreadbotMath.applyDeadbandToValue(joystickY.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.SPEED_LIMITER * speedModifier;
         double strafe = -DreadbotMath.applyDeadbandToValue(joystickX.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.SPEED_LIMITER * speedModifier;
-        double rotation = -DreadbotMath.applyDeadbandToValue(joystickRotatation.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.ROT_SPEED_LIMITER;
+        double rotation = DreadbotMath.applyDeadbandToValue(joystickRotatation.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.ROT_SPEED_LIMITER;
+
+        SmartDashboard.putNumber("Forward", forward);
+        SmartDashboard.putNumber("Strafe", strafe);
+        SmartDashboard.putNumber("Rotation", rotation);
+
         drive.drive(forward, strafe, rotation, true);
     }
 
