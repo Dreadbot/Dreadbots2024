@@ -5,15 +5,24 @@
 
 package frc.robot;
 
+import java.sql.PseudoColumnUsage;
+
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.simulation.PS4ControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +41,9 @@ import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.climberCommands.UnlockCommand;
 import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
+import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
+import frc.robot.commmands.driveCommands.ResetPoseCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -44,6 +55,8 @@ import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.SourceIntakeCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -70,16 +83,21 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
+
+    private NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
+    private NetworkTable visionTable = ntInst.getTable("azathoth");
+   
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive();
+        drive = new Drive(visionTable);
         drive.getGyro().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
         climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
-        arm = new Arm();
+        arm = new Arm();       
+
         configureButtonBindings();
         initializeAutonCommands();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -96,6 +114,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
         DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
         drive.setDefaultCommand(driveCommand);
+    //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
+    //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+        new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
+        new Trigger(primaryController::getShareButton).onTrue(new ResetPoseCommand(drive, visionTable));
         new Trigger(primaryController::getSquareButton).whileTrue(
             new UnlockCommand(climber)
                 .andThen(new WaitCommand(0.1))
@@ -106,7 +128,6 @@ public class RobotContainer {
                 .andThen(new WaitCommand(0.1))
                 .andThen(new ClimbCommand(climber, drive.getGyro()))
         );
-        new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
         new Trigger(primaryController::getR1Button).whileTrue(
             new UnlockCommand(climber)
                 .andThen(new WaitCommand(0.1))
@@ -137,12 +158,12 @@ public class RobotContainer {
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
-
+      
+        new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
         secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
     }
-    
-    
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
