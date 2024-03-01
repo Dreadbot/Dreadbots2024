@@ -2,37 +2,67 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.3781811779110285,
-      "y": 6.805833564830556
+      "x": 0.7338532709852313,
+      "y": 6.728931490649867
     },
-    "rotation": 0
+    "rotation": 61.049004792533225
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "AmpSide-LeftShoot"
+            "name": "CalibrateArm"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftShoot-AmpNote"
+            "name": "Shoot-Subwoofer"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "DropArm"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpSide-AmpNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpNote-AmpSide"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         }
       ]

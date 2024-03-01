@@ -166,7 +166,7 @@ public class Drive extends DreadbotSubsystem {
         }
         if (tagSeen.get()){
             long timestamp = table.getEntry("tagSeen").getLastChange();
-            poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get())), timestamp);
+            //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get())), timestamp);
         }
         poseEstimator.update(
             getGyroRotation(),
@@ -179,11 +179,6 @@ public class Drive extends DreadbotSubsystem {
         );
 
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
-        frontLeftModule.putValuesToSmartDashboard("Front Left");
-        frontRightModule.putValuesToSmartDashboard("Front Right");
-        backLeftModule.putValuesToSmartDashboard("Back Left");
-        backRightModule.putValuesToSmartDashboard("Back Right");
-
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
         
     }
@@ -194,11 +189,9 @@ public class Drive extends DreadbotSubsystem {
         if (doLockon) {
             double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = (5.547868) - poseEstimator.getEstimatedPosition().getY();
-            
-            System.out.println(poseEstimator.getEstimatedPosition());
             deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
 
-            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER;
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
         }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
@@ -242,7 +235,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     private Rotation2d getGyroRotation() {
-        return new Rotation2d(gyro.getRotation2d().getRadians() - Math.PI);
+        return gyro.getRotation2d();
     }
 
     private ChassisSpeeds getSpeeds() {

@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "CalibrateArm"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot-Subwoofer"
           }
         },

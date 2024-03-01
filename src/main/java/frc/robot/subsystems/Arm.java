@@ -75,8 +75,8 @@ public class Arm extends DreadbotSubsystem {
         rightMotor.getEncoder().setVelocityConversionFactor(ArmConstants.ARM_GEAR_RATIO / 60); // rpm -> rps
 
 
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.25f);
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.0013f);
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.26f);
+        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.005f);
 
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
@@ -91,7 +91,7 @@ public class Arm extends DreadbotSubsystem {
         horizontalEvent
             .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
             .ifHigh(() -> { 
-                leftMotor.getEncoder().setPosition(0); 
+                leftMotor.getEncoder().setPosition(0);
                 horizontalSwitchCalibrated = true;
             });
     }
@@ -113,6 +113,7 @@ public class Arm extends DreadbotSubsystem {
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
         SmartDashboard.putBoolean("Lower limit switch triggered", getHorizontalLimitSwitch());
+        SmartDashboard.putBoolean("Upper limit switch triggered", getVerticalLimitSwitch());
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
 
         limitSwitchEventLoop.poll();
@@ -163,6 +164,11 @@ public class Arm extends DreadbotSubsystem {
     }
     public void setArmStartState() {
         this.armState = new State(this.leftMotor.getEncoder().getPosition(), 0);
+    }
+    public void overrideArmState(double rotations) {
+        this.leftMotor.getEncoder().setPosition(rotations);
+        this.armState = new State(rotations, 0);
+        this.desiredArmState = this.armState;
     }
 
     public boolean getHorizontalLimitSwitch() {

@@ -34,6 +34,7 @@ public class Shooter extends DreadbotSubsystem {
         this.leaderMotor.setInverted(true);
         this.leaderMotor.setIdleMode(IdleMode.kCoast);
         this.followerMotor.setIdleMode(IdleMode.kCoast);
+        this.followerMotor.follow(leaderMotor, true);
 
         this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
@@ -50,11 +51,6 @@ public class Shooter extends DreadbotSubsystem {
         leaderPidController.setI(0.0);
         leaderPidController.setD(0.00);
         leaderPidController.setFF(0.00014);
-
-        followerPidController.setP(0.000);
-        followerPidController.setI(0.0);
-        followerPidController.setD(0.00);
-        followerPidController.setFF(0.00014);
     }
     @Override
     public void periodic() {
@@ -87,7 +83,6 @@ public class Shooter extends DreadbotSubsystem {
         this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
-        followerMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }
 
     public boolean isAtSpeed() {

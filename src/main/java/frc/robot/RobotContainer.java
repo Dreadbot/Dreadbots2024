@@ -34,6 +34,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
+import frc.robot.commmands.armCommands.CalibrateArmCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.LockCommand;
@@ -156,11 +157,12 @@ public class RobotContainer {
         secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
 
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
-        secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
+        //secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
       
         new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
-        secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
+        secondaryController.getYButton().whileTrue(new CalibrateArmCommand(arm));
+        //secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
     }
 
@@ -183,6 +185,7 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
+        NamedCommands.registerCommand("CalibrateArm", new CalibrateArmCommand(arm));
         NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.09476, 3750));
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.1216, 4750));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0));

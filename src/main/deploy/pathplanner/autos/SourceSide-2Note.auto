@@ -2,15 +2,21 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7626093884666401,
-      "y": 4.478861151454497
+      "x": 0.7509152340242001,
+      "y": 4.432084533684738
     },
-    "rotation": 0.0
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "CalibrateArm"
+          }
+        },
         {
           "type": "named",
           "data": {
