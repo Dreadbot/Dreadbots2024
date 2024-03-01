@@ -30,8 +30,9 @@ public abstract class Constants {
 
     public static class SwerveConstants {
         public static final double ATTAINABLE_MAX_SPEED = 5;
-        public static final double MODULE_Y_OFFSET = Units.inchesToMeters(25.0) / 2; // Between the front and back
-        public static final double MODULE_X_OFFSET = Units.inchesToMeters(25.0) / 2; // Between the left and right
+        public static final double MODULE_Y_OFFSET = Units.inchesToMeters(24.75) / 2; // Between the left and right
+        public static final double MODULE_X_OFFSET = Units.inchesToMeters(24.75) / 2; //Between the front and back
+
         // Encoder offsets are in rotations now???? ok
         public static final double FRONT_LEFT_ENCODER_OFFSET = 0.131591796875 + 0.5;
         public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.0234375 + 0.5;
