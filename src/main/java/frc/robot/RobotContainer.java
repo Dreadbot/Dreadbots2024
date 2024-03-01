@@ -5,9 +5,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
@@ -52,7 +49,6 @@ public class RobotContainer {
     private final Intake intake; 
     private final Arm arm;
     private final PneumaticHub pneumaticHub;
-    private final NetworkTable table;
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pneumaticHub = new PneumaticHub(21);
@@ -64,8 +60,6 @@ public class RobotContainer {
         intake = new Intake();
         arm = new Arm();
 
-        final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-        table = ntInstance.getTable("azathoth");
         configureButtonBindings();
     }
     

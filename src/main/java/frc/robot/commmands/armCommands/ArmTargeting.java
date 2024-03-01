@@ -1,13 +1,7 @@
 package frc.robot.commmands.armCommands;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.networktables.BooleanSubscriber;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
@@ -27,7 +21,6 @@ public class ArmTargeting extends Command{
 
     @Override
     public void execute() {
-        AHRS gyro = drive.getGyro();
         SwerveDrivePoseEstimator poseEstimator = drive.getPoseEstimator();
  
         double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
