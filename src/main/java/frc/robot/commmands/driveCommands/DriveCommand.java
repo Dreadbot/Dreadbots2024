@@ -1,7 +1,6 @@
 package frc.robot.commmands.driveCommands;
 
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
@@ -32,18 +31,15 @@ public class DriveCommand extends Command {
         double rotation = -DreadbotMath.applyDeadbandToValue(joystickRotatation.getAsDouble(), DriveConstants.DEADBAND) * DriveConstants.ROT_SPEED_LIMITER;
         double forward = -joystickValue.x2 * DriveConstants.SPEED_LIMITER * speedModifier;
         double strafe = -joystickValue.x1 * DriveConstants.SPEED_LIMITER * speedModifier;
-
+      
         drive.drive(forward, strafe, rotation, true);
     }
 
     public void enableTurtle() {
-
         speedModifier = 0.5;
-
     }
 
     public void disableTurtle() {
-
         speedModifier = 1;
     }
 }

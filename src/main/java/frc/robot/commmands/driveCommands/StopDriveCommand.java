@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drive;
 
 public class StopDriveCommand extends Command {
+    
     private final Drive drive;
 
     public StopDriveCommand(Drive drive) {
@@ -13,7 +14,7 @@ public class StopDriveCommand extends Command {
 
     @Override
     public void execute() {
-        
+        drive.stopMotors();
     }
 
     @Override

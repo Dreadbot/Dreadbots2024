@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2537638750491173,
-      "y": 5.578111669043852
+      "x": 0.7626093884666401,
+      "y": 4.478861151454497
     },
-    "rotation": 0
+    "rotation": -59.53445508054013
   },
   "command": {
     "type": "sequential",
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle-CenterNote"
+            "pathName": "SourceShoot-SourceNote"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CenterNote-Middle"
+            "pathName": "SourceNote-Source"
           }
         },
         {

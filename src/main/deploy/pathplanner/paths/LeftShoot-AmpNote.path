@@ -35,13 +35,25 @@
       "name": "Intake",
       "waypointRelativePos": 0.5,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Intake"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.75
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIntake"
               }
             }
           ]
@@ -51,7 +63,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

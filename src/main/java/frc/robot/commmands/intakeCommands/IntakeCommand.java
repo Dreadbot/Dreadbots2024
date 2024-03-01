@@ -8,7 +8,6 @@ public class IntakeCommand extends Command {
 
     private final Intake intake;
 
-
     public IntakeCommand(Intake intake) {
         this.intake = intake;
         addRequirements(intake);
@@ -19,8 +18,13 @@ public class IntakeCommand extends Command {
         intake.intake(IntakeConstants.INTAKE_SPEED);
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     return intake.hasNote();
-    // }
+
+    @Override
+    public void end(boolean interrupted) {
+        intake.stopMotors();
+    }
+    @Override
+    public boolean isFinished() {
+        return intake.hasNote();
+    }
 }

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drive;
 
 public class ResetGyroCommand extends Command {
+    
     private final Drive drive;
 
     public ResetGyroCommand(Drive drive) {

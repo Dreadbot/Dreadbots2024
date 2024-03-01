@@ -5,8 +5,7 @@ import frc.robot.subsystems.Intake;
 
 public class StopIntakeCommand extends Command {
 
-     private final Intake intake;
-
+    private final Intake intake;
 
     public StopIntakeCommand(Intake intake) {
         this.intake = intake;

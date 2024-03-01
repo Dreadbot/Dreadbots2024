@@ -23,24 +23,36 @@ import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.simulation.PS4ControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
+import frc.robot.commmands.autonomousCommands.AutoShootCommand;
+import frc.robot.commmands.climberCommands.ExtendClimbCommand;
+import frc.robot.commmands.climberCommands.LockCommand;
+import frc.robot.commmands.climberCommands.RetractClimbCommand;
+import frc.robot.commmands.climberCommands.UnlockCommand;
+import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.ResetPoseCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
+import frc.robot.commmands.shooterCommands.SourceIntakeCommand;
 import frc.robot.commmands.shooterCommands.SourcePickupCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Arm;
@@ -106,6 +118,21 @@ public class RobotContainer {
     //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
         new Trigger(primaryController::getShareButton).onTrue(new ResetPoseCommand(drive, visionTable));
+        new Trigger(primaryController::getSquareButton).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new ExtendClimbCommand(climber))
+        );
+        new Trigger(primaryController::getTriangleButton).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new ClimbCommand(climber, drive.getGyro()))
+        );
+        new Trigger(primaryController::getR1Button).whileTrue(
+            new UnlockCommand(climber)
+                .andThen(new WaitCommand(0.1))
+                .andThen(new RetractClimbCommand(climber))
+        );
 
         //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
         secondaryController.getAButton().onTrue(new IntakeCommand(intake));
@@ -123,16 +150,18 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 5000));
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 3750));
         secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
         secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
         secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
 
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
-        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.07261)); //center note position: 0.11285, 
-
+        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
+      
         new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
+        secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
+        secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
     }
 
     /**
@@ -149,29 +178,16 @@ public class RobotContainer {
         arm.setReference(new State(arm.getEncoderPosition(), 0));
         arm.setArmStartState();
     }
+    public void autonInit() {
+        arm.autonomousInit();
+    }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", (new WaitCommand(0.1)
-                .deadlineWith(new OuttakeCommand(intake)))
-                .andThen(new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.1161))
-                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
-                .andThen(new FeedCommand(intake)
-                .raceWith(new WaitCommand(0.4)))
-                .andThen(new StopShootCommand(shooter)));
-        NamedCommands.registerCommand("Shoot-MiddleNote", (new WaitCommand(0.1)
-                .deadlineWith(new OuttakeCommand(intake)))
-                .andThen(new ShootCommand(shooter, 3750))
-                .alongWith(new ArmToPositionCommand(arm, 0.11285))
-                .until(() -> shooter.isAtSpeed() && arm.isAtDesiredState())
-                .andThen(new FeedCommand(intake)
-                .raceWith(new WaitCommand(0.4)))
-                .andThen(new StopShootCommand(shooter)));
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.09476, 3750));
+        NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.1216, 4750));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake));
         NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
-
-
     }
 }

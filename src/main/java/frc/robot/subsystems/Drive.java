@@ -50,7 +50,6 @@ public class Drive extends DreadbotSubsystem {
 
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
-    private SwerveDriveOdometry odometry;
 
     public boolean doLockon = false;
     public double deltaTheta = 0.0;
@@ -125,17 +124,7 @@ public class Drive extends DreadbotSubsystem {
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
                 },
-                PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
-            );
-            odometry = new SwerveDriveOdometry(
-                kinematics, 
-                getGyroRotation(), 
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                }
+                PathPlannerAuto.getStaringPoseFromAutoFile("Middle-2Note")
             );
             AutoBuilder.configureHolonomic(
                 this::getPosition, 
@@ -178,7 +167,7 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        
+
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
     }
 
@@ -198,6 +187,7 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+      
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
@@ -210,9 +200,6 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void setDesiredStates(SwerveModuleState[] swerveModuleStates) {
-        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
-        }
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
@@ -304,7 +291,6 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
             return;
         }
-        drive(0, 0, 0, false);
         frontLeftModule.stopMotors();
         frontRightModule.stopMotors();
         backLeftModule.stopMotors();

@@ -7,7 +7,6 @@ public class FeedCommand extends Command {
 
     private final Intake intake;
 
-
     public FeedCommand(Intake intake) {
         this.intake = intake;
         addRequirements(intake);

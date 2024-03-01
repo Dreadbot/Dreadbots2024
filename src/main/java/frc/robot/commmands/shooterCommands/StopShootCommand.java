@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
 public class StopShootCommand extends Command {
+    
     Shooter shooter;
 
     public StopShootCommand(Shooter shooter) {
