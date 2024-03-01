@@ -31,7 +31,7 @@ public class ArmTargeting extends Command{
  
         double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getY();
         double distToTagZ = 5.547868 - poseEstimator.getEstimatedPosition().getX();
-        distance = Math.sqrt(Math.pow(distToTagX, 2) + Math.pow(distToTagZ, 2));
+        double distance = Math.sqrt(Math.pow(distToTagX, 2) + Math.pow(distToTagZ, 2));
 
         distance += 0.1651;
         double speed = shooter.getFlywheelSpeed()*4*Math.PI*60*0.0254;
