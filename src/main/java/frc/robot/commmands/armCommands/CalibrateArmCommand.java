@@ -20,7 +20,7 @@ public class CalibrateArmCommand extends Command {
         arm.setJoystickOverride(0);
         if(!interrupted) {
             System.out.println("Setting arm state to 0.2");
-            arm.overrideArmState(0.20);
+            arm.overrideArmState(0.2288);
         }
     }
 

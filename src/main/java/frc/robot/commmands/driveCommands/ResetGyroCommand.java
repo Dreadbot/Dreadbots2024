@@ -13,7 +13,7 @@ public class ResetGyroCommand extends Command {
 
     @Override
     public void execute() {
-        this.drive.resetPose();
+        this.drive.resetGyro();
     }
 
     @Override

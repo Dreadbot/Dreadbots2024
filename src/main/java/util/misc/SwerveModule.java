@@ -73,6 +73,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(name +" Velocity", driveMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber(name +" Commanded Velocity", desiredSpeed);
         SmartDashboard.putNumber(name +" Desired Angle", desiredAngle);
+
     }
 
     public CANSparkMax getDriveMotor() {

@@ -179,6 +179,7 @@ public class Drive extends DreadbotSubsystem {
         );
 
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
+        System.out.println(poseEstimator.getEstimatedPosition());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
         
     }
