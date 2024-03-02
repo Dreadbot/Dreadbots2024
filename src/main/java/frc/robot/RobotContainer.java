@@ -47,6 +47,7 @@ import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.ResetPoseCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
+import frc.robot.commmands.driveCommands.TurtleCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.FeedCommand;
@@ -76,7 +77,7 @@ public class RobotContainer {
 
     
     private final PS4Controller primaryController = new PS4Controller(OperatorConstants.PRIMARY_JOYSTICK_PORT);
-    private final DreadbotController secondaryController = new DreadbotController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
+    private final PS4Controller secondaryController = new PS4Controller(OperatorConstants.SECONDARY_JOYSTICK_PORT);
     private final Drive drive;
     private final Climber climber;
 
@@ -116,8 +117,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         DriveCommand driveCommand = new DriveCommand(drive, primaryController::getLeftX, primaryController::getLeftY, primaryController::getRightX);
         drive.setDefaultCommand(driveCommand);
-    //    primaryController.getXButton().whileTrue(new ExtendClimbCommand(climber));
-    //    primaryController.getYButton().whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
+        // new Trigger(primaryController::getSquareButton).whileTrue(new ExtendClimbCommand(climber));
+        // new Trigger(primaryController::getTriangleButton).whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getOptionsButton).onTrue(new ResetGyroCommand(drive));
         new Trigger(primaryController::getShareButton).onTrue(new ResetPoseCommand(drive, visionTable));
         new Trigger(primaryController::getSquareButton).whileTrue(
@@ -136,15 +137,15 @@ public class RobotContainer {
                 .andThen(new RetractClimbCommand(climber))
         );
         new Trigger(primaryController::getCircleButton).whileTrue(new RumbleController(primaryController));
+        
+        // new Trigger(primaryController::getL1Button).whileTrue(new TurtleCommand(driveCommand));
+        new Trigger(secondaryController::getCrossButton).onTrue(new IntakeCommand(intake, primaryController));
+        new Trigger(secondaryController::getCrossButton).onFalse(new StopIntakeCommand(intake));
 
-        //primaryController.getLeftBumper().whileTrue(new TurtleCommand(driveCommand));
-        secondaryController.getAButton().onTrue(new IntakeCommand(intake, primaryController));
-        secondaryController.getAButton().onFalse(new StopIntakeCommand(intake));
+        new Trigger(secondaryController::getCircleButton).onTrue(new OuttakeCommand(intake));
+        new Trigger(secondaryController::getCircleButton).onFalse(new StopIntakeCommand(intake));
 
-        secondaryController.getBButton().onTrue(new OuttakeCommand(intake));
-        secondaryController.getBButton().onFalse(new StopIntakeCommand(intake));
-
-        ArmCommand armCommand = new ArmCommand(arm, secondaryController::getYAxis);
+        ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
             (new ShootCommand(shooter, 3750))
@@ -153,19 +154,20 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 3750));
-        secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
-        secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
-        secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
-
-        secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
-        //secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
-        secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
+        new Trigger(secondaryController::getR1Button).whileTrue(new ShootCommand(shooter, 3750));
+        new Trigger(secondaryController::getR1Button).onFalse(new StopShootCommand(shooter));
+        new Trigger(secondaryController::getL1Button).whileTrue(new ShootCommand(shooter, -2000));
+        new Trigger(secondaryController::getL1Button).onFalse(new StopShootCommand(shooter));
+        
+        new Trigger(secondaryController::getR2Button).whileTrue(new FeedCommand(intake));
+        // new Trigger(secondaryController::getTriangleButton).whileTrue(new SourcePickupCommand(shooter));
+        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
       
         new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
-        secondaryController.getYButton().whileTrue(new CalibrateArmCommand(arm));
-        //secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
-        secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
+        new Trigger(secondaryController::getTriangleButton).whileTrue(new CalibrateArmCommand(arm));
+        // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
+        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.05));
+        new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.25));
     }
 
     /**
