@@ -1,16 +1,11 @@
 package frc.robot.subsystems;
 
-import org.opencv.core.Mat;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.pathplanner.lib.util.PPLibTelemetry;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -18,24 +13,18 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
@@ -69,6 +58,9 @@ public class Drive extends DreadbotSubsystem {
 
 
     private AHRS gyro = new AHRS(Port.kMXP);
+
+    public Boolean autoAimArm = false;
+    public double initialDistanceToTag = 0.0;
 
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
@@ -179,7 +171,6 @@ public class Drive extends DreadbotSubsystem {
         );
 
         SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
-        System.out.println(poseEstimator.getEstimatedPosition());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
         
     }
@@ -231,7 +222,7 @@ public class Drive extends DreadbotSubsystem {
         );
     }
 
-    private Pose2d getPosition() {
+    public Pose2d getPosition() {
         return poseEstimator.getEstimatedPosition();
     }
 
@@ -274,13 +265,17 @@ public class Drive extends DreadbotSubsystem {
         return gyro;
     }
 
+    public SwerveDrivePoseEstimator getPoseEstimator() {
+        return poseEstimator;
+    }
+
     public void resetGyro(){
         gyro.reset();
         resetOdometry(getPosition());
     }
     public void resetPose() {
         gyro.reset();
-        resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0))));
+        resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(180))));
     }
 
 

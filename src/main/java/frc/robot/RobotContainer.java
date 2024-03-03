@@ -7,6 +7,7 @@ package frc.robot;
 
 import java.sql.PseudoColumnUsage;
 
+import com.fasterxml.jackson.databind.jsontype.impl.AsArrayTypeDeserializer;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -36,6 +37,7 @@ import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.armCommands.CalibrateArmCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
+import frc.robot.commmands.armCommands.ArmTargeting;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.LockCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
@@ -153,19 +155,22 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 3750));
+        secondaryController.getRightBumper().whileTrue(new ShootCommand(shooter, 6000));
         secondaryController.getRightBumper().onFalse(new StopShootCommand(shooter));
-        secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
-        secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
+        // secondaryController.getLeftBumper().whileTrue(new ShootCommand(shooter, -2000));
+        // secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
 
         secondaryController.getRightTrigger().whileTrue(new FeedCommand(intake));
         //secondaryController.getYButton().whileTrue(new SourcePickupCommand(shooter));
         secondaryController.getDpadLeft().onTrue(new ArmToPositionCommand(arm, 0.09476)); //center note position: 0.11285, 
+        secondaryController.getDpadRight().onTrue(new ArmToPositionCommand(arm, 0.125000));
       
         new Trigger(primaryController::getCrossButton).whileTrue(new LockonCommand(drive));
         secondaryController.getYButton().whileTrue(new CalibrateArmCommand(arm));
         //secondaryController.getDpadUp().onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         secondaryController.getDpadDown().whileTrue(new ArmToPositionCommand(arm, 0.05));
+        secondaryController.getLeftBumper().whileTrue(new ArmTargeting(arm, shooter, drive).alongWith(new ShootCommand(shooter, 6000)));
+        secondaryController.getLeftBumper().onFalse(new StopShootCommand(shooter));
     }
 
     /**

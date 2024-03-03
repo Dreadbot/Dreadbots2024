@@ -29,12 +29,9 @@ public class Shooter extends DreadbotSubsystem {
         }
         this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
-        this.followerMotor.restoreFactoryDefaults();
-        this.leaderMotor.restoreFactoryDefaults();
         this.leaderMotor.setInverted(true);
         this.leaderMotor.setIdleMode(IdleMode.kCoast);
         this.followerMotor.setIdleMode(IdleMode.kCoast);
-        this.followerMotor.follow(leaderMotor, true);
 
         this.angleSolenoid = new Solenoid(21, PneumaticsModuleType.REVPH, 8);
         
@@ -50,12 +47,16 @@ public class Shooter extends DreadbotSubsystem {
         leaderPidController.setP(0.000);
         leaderPidController.setI(0.0);
         leaderPidController.setD(0.00);
-        leaderPidController.setFF(0.00014);
+        leaderPidController.setFF(0.000105);
+        followerPidController.setP(0.000);
+        followerPidController.setI(0.0);
+        followerPidController.setD(0.00);
+        followerPidController.setFF(0.000105);
     }
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Actual Speed", leaderMotor.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("At Speed", isAtSpeed());
+        SmartDashboard.putNumber("Actual Shooter Speed", leaderMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Target Shooter Speed", targetSpeed);
     }
     @Override
     public void close() throws Exception {
@@ -79,14 +80,18 @@ public class Shooter extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
-        SmartDashboard.putNumber("Shooter Desired Speed", speed);
+        // SmartDashboard.putNumber("Shooter Desired Speed", speed);
         this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
+        followerMotor.getPIDController().setReference(speed / 2, ControlType.kVelocity);
     }
 
     public boolean isAtSpeed() {
         return Math.abs(leaderMotor.getEncoder().getVelocity() - targetSpeed) < Constants.ShooterConstants.FLYWHEEL_ERROR_MARGIN;
+    }
+    public double getFlywheelSpeedMPS() {
+        return 0.0508 * leaderMotor.getEncoder().getVelocity() / 60;
     }
     
     public void setSourcePickupPosition() {
