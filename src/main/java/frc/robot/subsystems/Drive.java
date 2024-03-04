@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -70,6 +71,9 @@ public class Drive extends DreadbotSubsystem {
     private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
+    private PIDController turningController = new PIDController(0.017, 0.007, 0.004);
+    private double targetAngle;
+
     private Field2d field2d;
 
     public Drive(NetworkTable table) {
@@ -109,8 +113,7 @@ public class Drive extends DreadbotSubsystem {
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
             );
-            
-
+            turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
                 frontRightLocation,
@@ -135,7 +138,7 @@ public class Drive extends DreadbotSubsystem {
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
                     new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(2.6, 0.1),
+                    new PIDConstants(1.9, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Units.inchesToMeters(30.0),
                     new ReplanningConfig()
@@ -156,6 +159,7 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians());
         if (tagSeen.get()){
             long timestamp = table.getEntry("tagSeen").getLastChange();
             //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get())), timestamp);
@@ -168,16 +172,13 @@ public class Drive extends DreadbotSubsystem {
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
             }
-        );
-
-        SmartDashboard.putNumber("Gyro Angle", gyro.getRotation2d().getDegrees());
-        field2d.setRobotPose(poseEstimator.getEstimatedPosition());
-        
+        );        
     }
 
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+
         if (doLockon) {
             double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = (5.547868) - poseEstimator.getEstimatedPosition().getY();
@@ -185,6 +186,13 @@ public class Drive extends DreadbotSubsystem {
 
             rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
         }
+        // if (DriverStation.isTeleop()) {
+        //     if (DreadbotMath.applyDeadbandToValue(rot, DriveConstants.DEADBAND) != 0) {
+        //         targetAngle = gyro.getRotation2d().getDegrees();
+        //     } else {
+        //         rot = turningController.calculate(gyro.getRotation2d().getDegrees() % 360, targetAngle);
+        //     }
+        // }
         
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;

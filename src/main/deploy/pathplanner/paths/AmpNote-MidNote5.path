@@ -3,37 +3,75 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7338532709852313,
+        "x": 2.4833754585541965,
         "y": 6.728931490649867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.541325049863215,
-        "y": 6.901961157552292
+        "x": 3.0505282556232567,
+        "y": 6.71931873137751
       },
       "isLocked": false,
-      "linkedName": "Amp-Start"
+      "linkedName": "Amp-Note"
     },
     {
       "anchor": {
-        "x": 2.4833754585541965,
-        "y": 6.728931490649867
+        "x": 6.1842877784116235,
+        "y": 7.546016028800207
       },
       "prevControl": {
-        "x": 1.8489333465786375,
-        "y": 6.738544249922224
+        "x": 4.031029701403666,
+        "y": 7.4787267138937095
+      },
+      "nextControl": {
+        "x": 6.635969222276374,
+        "y": 7.560131073920981
+      },
+      "isLocked": false,
+      "linkedName": "MidNote5"
+    },
+    {
+      "anchor": {
+        "x": 7.943422725252945,
+        "y": 7.546016028800207
+      },
+      "prevControl": {
+        "x": 8.866247615399207,
+        "y": 7.517177750983137
+      },
+      "nextControl": {
+        "x": 6.596775506445008,
+        "y": 7.588098754387954
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.415267036623067,
+        "y": 7.41143739898721
+      },
+      "prevControl": {
+        "x": 5.722875333338488,
+        "y": 7.634934052069508
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp-Note"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.5,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.5,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "sequential",
         "data": {
@@ -69,7 +107,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.784146526326488,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,

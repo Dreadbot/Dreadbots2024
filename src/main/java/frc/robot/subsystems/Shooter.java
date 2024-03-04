@@ -47,11 +47,11 @@ public class Shooter extends DreadbotSubsystem {
         leaderPidController.setP(0.000);
         leaderPidController.setI(0.0);
         leaderPidController.setD(0.00);
-        leaderPidController.setFF(0.000105);
+        leaderPidController.setFF(0.00011);
         followerPidController.setP(0.000);
         followerPidController.setI(0.0);
         followerPidController.setD(0.00);
-        followerPidController.setFF(0.000105);
+        followerPidController.setFF(0.00011);
     }
     @Override
     public void periodic() {
@@ -84,7 +84,7 @@ public class Shooter extends DreadbotSubsystem {
         this.targetSpeed = speed;
         // leaderMotor.set(speed);
         leaderMotor.getPIDController().setReference(speed, ControlType.kVelocity);
-        followerMotor.getPIDController().setReference(speed / 2, ControlType.kVelocity);
+        followerMotor.getPIDController().setReference(speed, ControlType.kVelocity);
     }
 
     public boolean isAtSpeed() {
