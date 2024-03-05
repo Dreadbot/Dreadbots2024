@@ -44,6 +44,7 @@ import frc.robot.Constants.SwerveConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
+import util.misc.WaypointHelper;
 
 public class Drive extends DreadbotSubsystem {
     
@@ -192,8 +193,8 @@ public class Drive extends DreadbotSubsystem {
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         if (doLockon) {
-            double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
-            double distToTagY = (5.547868) - poseEstimator.getEstimatedPosition().getY();
+            double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
+            double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
             
             System.out.println(poseEstimator.getEstimatedPosition());
             deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
