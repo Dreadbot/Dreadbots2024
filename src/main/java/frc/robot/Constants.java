@@ -30,14 +30,13 @@ public abstract class Constants {
 
     public static class SwerveConstants {
         public static final double ATTAINABLE_MAX_SPEED = 5;
-        public static final double MODULE_Y_OFFSET = Units.inchesToMeters(24.75) / 2; // Between the left and right
-        public static final double MODULE_X_OFFSET = Units.inchesToMeters(24.75) / 2; //Between the front and back
-
+        public static final double MODULE_Y_OFFSET = Units.inchesToMeters(25) / 2; // Between the left and right
+        public static final double MODULE_X_OFFSET = Units.inchesToMeters(25) / 2; //Between the front and back
         // Encoder offsets are in rotations now???? ok
-        public static final double FRONT_LEFT_ENCODER_OFFSET = 0.131591796875 + 0.5;
-        public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.0234375 + 0.5;
-        public static final double BACK_LEFT_ENCODER_OFFSET = -0.357421875 + 0.5;
-        public static final double BACK_RIGHT_ENCODER_OFFSET = 0.1064453125 + 0.5;
+        public static final double FRONT_LEFT_ENCODER_OFFSET = -0.35913;
+        public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.0266113 + 0.5;
+        public static final double BACK_LEFT_ENCODER_OFFSET = 0.113525;
+        public static final double BACK_RIGHT_ENCODER_OFFSET = -0.3903808;
         public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         public static final double TURN_GEAR_RATIO = 150 / 7;
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);

@@ -29,8 +29,8 @@ public class SwerveModule {
         config.MagnetSensor.MagnetOffset = -canCoderOffset;
         this.turningCanCoder.getConfigurator().apply(config);
         this.turningMotor.setInverted(true);
-        this.driveMotor.setInverted(false);
-        driveMotor.getPIDController().setP(0.0);
+        this.driveMotor.setInverted(true);
+        driveMotor.getPIDController().setP(0.2);
         driveMotor.getPIDController().setFF(0.23);
         this.driveMotor.getEncoder().setPositionConversionFactor(SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO); //convert from revolutions to meters
         this.driveMotor.getEncoder().setVelocityConversionFactor((SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO) / 60);
@@ -70,10 +70,7 @@ public class SwerveModule {
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name +" Velocity", driveMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber(name +" Commanded Velocity", desiredSpeed);
-        SmartDashboard.putNumber(name +" Desired Angle", desiredAngle);
-
+        SmartDashboard.putNumber(name + " CANCoder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
 
     }
 

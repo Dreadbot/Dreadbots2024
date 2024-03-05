@@ -3,55 +3,75 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6924444618120005,
-        "y": 4.361919607030098
+        "x": 2.4833754585541965,
+        "y": 6.728931490649867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2654580294915574,
-        "y": 4.244978062605698
+        "x": 3.0505282556232567,
+        "y": 6.71931873137751
       },
       "isLocked": false,
-      "linkedName": "Source-Shoot"
+      "linkedName": "Amp-Note"
     },
     {
       "anchor": {
-        "x": 2.4231793192931113,
-        "y": 4.128036518181299
+        "x": 6.1842877784116235,
+        "y": 7.546016028800207
       },
       "prevControl": {
-        "x": 1.6981417438618351,
-        "y": 4.174813135951059
+        "x": 4.031029701403666,
+        "y": 7.4787267138937095
+      },
+      "nextControl": {
+        "x": 6.635969222276374,
+        "y": 7.560131073920981
+      },
+      "isLocked": false,
+      "linkedName": "MidNote5"
+    },
+    {
+      "anchor": {
+        "x": 7.943422725252945,
+        "y": 7.546016028800207
+      },
+      "prevControl": {
+        "x": 8.866247615399207,
+        "y": 7.517177750983137
+      },
+      "nextControl": {
+        "x": 6.596775506445008,
+        "y": 7.588098754387954
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.415267036623067,
+        "y": 7.41143739898721
+      },
+      "prevControl": {
+        "x": 5.722875333338488,
+        "y": 7.634934052069508
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Source-Note"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.85,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 1.5,
+      "rotationDegrees": 0.0,
       "rotateFast": false
     }
   ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.6,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.25,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "sequential",
         "data": {
@@ -65,7 +85,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 3.0
+                "waitTime": 1.75
               }
             },
             {
@@ -87,7 +107,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -2.5637702114650582,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,

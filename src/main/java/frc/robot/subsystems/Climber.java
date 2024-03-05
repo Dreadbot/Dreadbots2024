@@ -63,7 +63,6 @@ public class Climber extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
-        System.out.println(gyro.getRoll());
     }
 
     public void climb(double vetricalSpeed, double rotationSpeed) {

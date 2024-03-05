@@ -14,7 +14,7 @@ public class RumbleController extends Command {
     }
 
     @Override
-    public void initialize() {
+    public void execute() {
         this.controller.setRumble(RumbleType.kBothRumble, 1.0);
     }
 
