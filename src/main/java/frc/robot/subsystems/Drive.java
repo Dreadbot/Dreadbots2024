@@ -14,6 +14,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -35,6 +36,7 @@ import frc.robot.Constants.SwerveConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
+import util.misc.WaypointHelper;
 
 public class Drive extends DreadbotSubsystem {
     
@@ -183,8 +185,10 @@ public class Drive extends DreadbotSubsystem {
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
         if (doLockon) {
-            double distToTagX = 16.579342 - poseEstimator.getEstimatedPosition().getX();
-            double distToTagY = (5.547868) - poseEstimator.getEstimatedPosition().getY();
+            double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
+            double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
+            
+            System.out.println(poseEstimator.getEstimatedPosition());
             deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
 
             rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
