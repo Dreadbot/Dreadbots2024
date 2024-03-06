@@ -24,6 +24,7 @@ import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -138,7 +139,7 @@ public class Drive extends DreadbotSubsystem {
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
                     new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(1.9, 0.1),
+                    new PIDConstants(2.1, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Units.inchesToMeters(30.0),
                     new ReplanningConfig()
@@ -159,10 +160,11 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
-        SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians());
+        //double gyroOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+        // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         if (tagSeen.get()){
             long timestamp = table.getEntry("tagSeen").getLastChange();
-            //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), new Rotation2d(rotation.get())), timestamp);
+            //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), getGyroRotation()), timestamp);
         }
         poseEstimator.update(
             getGyroRotation(),
@@ -172,7 +174,8 @@ public class Drive extends DreadbotSubsystem {
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
             }
-        );        
+        );
+        field2d.setRobotPose(poseEstimator.getEstimatedPosition());   
     }
 
     // make sure to input speed, not percentage!!!!!

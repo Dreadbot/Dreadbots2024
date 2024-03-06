@@ -1,15 +1,13 @@
 package frc.robot.commmands.controllerCommands;
 
-import java.sql.PseudoColumnUsage;
-
-import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class RumbleController extends Command {
-    PS4Controller controller;
+    XboxController controller;
 
-    public RumbleController(PS4Controller controller) {
+    public RumbleController(XboxController controller) {
         this.controller = controller;
     }
 

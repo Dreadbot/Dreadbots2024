@@ -92,10 +92,9 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setI(0.0);
         leftPidController.setD(0.0);
         horizontalEvent
-            .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
+            .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0))
             .ifHigh(() -> { 
                 leftMotor.getEncoder().setPosition(0);
-                horizontalSwitchCalibrated = true;
             });
     }
     @Override
@@ -120,12 +119,6 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
 
         limitSwitchEventLoop.poll();
-    }
-
-    public void autonomousInit() {
-        leftMotor.getEncoder().setPosition(ArmConstants.AUTON_START_POSITION);
-        setArmStartState();
-        setReference(new State(ArmConstants.AUTON_START_POSITION, 0));
     }
 
     public void setIdleMode(IdleMode mode) {

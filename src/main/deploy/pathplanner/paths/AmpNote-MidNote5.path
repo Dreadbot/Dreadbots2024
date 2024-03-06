@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4833754585541965,
+        "x": 2.5602775327330525,
         "y": 6.728931490649867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0505282556232567,
+        "x": 3.1274303298021127,
         "y": 6.71931873137751
       },
       "isLocked": false,
@@ -62,7 +62,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.5,
+      "waypointRelativePos": 0.85,
       "rotationDegrees": 0.0,
       "rotateFast": false
     }
@@ -101,7 +101,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

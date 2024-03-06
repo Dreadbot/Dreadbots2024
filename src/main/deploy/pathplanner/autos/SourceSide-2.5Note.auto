@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.359011265031077,
-      "y": 5.578111669043852
+      "x": 0.6924444618120005,
+      "y": 4.361919607030098
     },
-    "rotation": 0
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -26,31 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle-CenterNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot-MiddleNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DropArm"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CenterNote-SourceNote"
+            "pathName": "SourceShoot-SourceNote"
           }
         },
         {
@@ -66,9 +42,28 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SourceNote-MidNote2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DropArm"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "DropArm"
+            "name": "Stop"
           }
         }
       ]

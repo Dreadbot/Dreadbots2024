@@ -23,7 +23,7 @@ public abstract class Constants {
     }
     public static class DriveConstants {
       public static final double SPEED_LIMITER = 4; // !!! DANGEROUS ON 2023 BOT !!! BE CAREFUL!
-      public static final double DEADBAND = 0.08;
+      public static final double DEADBAND = 0.06;
       public static final double ROT_SPEED_LIMITER = 1 * Math.PI;
       public static final double SLEW = 17;
     }
@@ -52,7 +52,7 @@ public abstract class Constants {
         public static final int BEAM_BREAK_SENSOR = 7;
       }
       public static class ShooterConstants {
-        public static final double FLYWHEEL_ERROR_MARGIN = 50;
+        public static final double FLYWHEEL_ERROR_MARGIN = 100;
       }
       public static class ClimberConstants {
         public static final int LEFT_CLIMB_MOTOR = 18;

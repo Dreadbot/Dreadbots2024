@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.4833754585541965,
+        "x": 2.5602775327330525,
         "y": 6.728931490649867
       },
       "prevControl": {
-        "x": 1.8489333465786375,
+        "x": 1.9258354207574935,
         "y": 6.738544249922224
       },
       "nextControl": null,
@@ -28,7 +28,13 @@
       "linkedName": "Amp-Note"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 29.630485996411412,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -47,7 +53,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 1.75
+                "waitTime": 3.0
               }
             },
             {
@@ -62,18 +68,18 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.784146526326488,
+    "rotation": 42.58049078334373,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

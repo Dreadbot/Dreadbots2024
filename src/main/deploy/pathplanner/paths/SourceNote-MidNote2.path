@@ -3,37 +3,71 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.252942271692507,
-        "y": 5.565787618694676
+        "x": 2.4353116621924116,
+        "y": 4.361919607030098
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1853799211111307,
-        "y": 5.921459711771884
+        "x": 0.0030700093897801928,
+        "y": -0.7044993000848603
+      },
+      "isLocked": false,
+      "linkedName": "Source-Note"
+    },
+    {
+      "anchor": {
+        "x": 7.856907891801732,
+        "y": 2.393577058816881
+      },
+      "prevControl": {
+        "x": 7.107112668557887,
+        "y": 2.297449466093312
+      },
+      "nextControl": {
+        "x": 8.611115668862425,
+        "y": 2.4902703635682517
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8967241072655456,
-        "y": 7.007701509548219
+        "x": 5.338364962444211,
+        "y": 1.3169480203129034
       },
       "prevControl": {
-        "x": 1.5028740127745663,
-        "y": 6.296357323394279
+        "x": 6.453445038037618,
+        "y": 1.1823693904999066
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.15,
+      "maxWaypointRelativePos": 0.25,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "sequential",
         "data": {
@@ -47,7 +81,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 1.5
+                "waitTime": 1.75
               }
             },
             {
@@ -69,7 +103,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 26.56505117707799,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
