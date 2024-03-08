@@ -59,12 +59,11 @@ public class Arm extends DreadbotSubsystem {
 
         horizontalSwitch = new DigitalInput(1);
         verticalSwitch = new DigitalInput(2);
-        // TODO: update channel to the correct value
-        absoluteEncoder = new DutyCycleEncoder(new DigitalInput(-1));
+        absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
         absoluteEncoder.setPositionOffset(ArmConstants.ARM_ENCODER_OFFSET);
         absoluteEncoder.setDistancePerRotation(ArmConstants.ARM_ENCODER_SCALE);
         // TODO: tune PID values
-        absolutePID = new PIDController(1.0, 0.0, 0.0);
+        absolutePID = new PIDController(2.0, 0.0, 0.0);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 
         limitSwitchEventLoop = new EventLoop();
@@ -117,8 +116,10 @@ public class Arm extends DreadbotSubsystem {
         this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, 0.264), desiredArmState.velocity);
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
+        SmartDashboard.putNumber("desired position", this.desiredArmState.position);
+
         SmartDashboard.putNumber("Absoulte Encoder position", absoluteEncoder.get());
-        SmartDashboard.putNumber("Absolute Encoder position (w/ offset)", absoluteEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Other Encoder position", absoluteEncoder.getAbsolutePosition());
 
         if (Math.abs(joystickOverride) > 0.08) {
             //we should overrride with manual control
@@ -127,11 +128,17 @@ public class Arm extends DreadbotSubsystem {
             this.desiredArmState = new State(DreadbotMath.clampValue(leftMotor.getEncoder().getPosition(), 0.0, 0.264), 0); //override the desired state with what the user wants
         } else {
             absolutePID.setSetpoint(armState.position);
-            leftMotor.setVoltage(
-                // TODO: check if we need to add a clamp to this; SparkPIDControllers do
-                absolutePID.calculate(absoluteEncoder.getAbsolutePosition()) +
-                Math.cos(Units.rotationsToRadians(absoluteEncoder.getAbsolutePosition())) * ArmConstants.KG
-            );
+            if (absolutePID.atSetpoint()) {
+                leftMotor.setVoltage(
+                    Math.cos(Units.rotationsToRadians(absoluteEncoder.getAbsolutePosition())) * ArmConstants.KG
+                );
+            } else {
+                leftMotor.setVoltage(
+                    // TODO: check if we need to add a clamp to this; SparkPIDControllers do
+                    absolutePID.calculate(absoluteEncoder.getAbsolutePosition()) +
+                    Math.cos(Units.rotationsToRadians(absoluteEncoder.getAbsolutePosition())) * ArmConstants.KG
+                );
+            }
             // leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
         SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
