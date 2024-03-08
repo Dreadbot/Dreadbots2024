@@ -1,11 +1,8 @@
 package frc.robot.commmands.autonomousCommands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.intakeCommands.FeedCommand;
-import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Arm;
