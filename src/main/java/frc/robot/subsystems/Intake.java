@@ -24,6 +24,10 @@ public class Intake extends DreadbotSubsystem {
         intakeMotor.setInverted(true);
         intakeMotor.setIdleMode(IdleMode.kBrake);
     }
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Has Note", !beamBreakSensor.get());
+    }
 
     public void intake(double speed) {
         if(!Constants.SubsystemConstants.INTAKE_ENABLED) {
@@ -33,7 +37,6 @@ public class Intake extends DreadbotSubsystem {
     }
 
     public boolean hasNote() {
-        SmartDashboard.putBoolean("Has Note", !beamBreakSensor.get());
         return !beamBreakSensor.get();
     }
 
