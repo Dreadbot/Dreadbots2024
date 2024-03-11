@@ -18,6 +18,8 @@ public class SwerveModule {
     private CANSparkMax turningMotor;
     private CANcoder turningCanCoder;
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
+    private double desiredSpeed;
+    private double desiredAngle;
     
     public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
@@ -27,8 +29,9 @@ public class SwerveModule {
         config.MagnetSensor.MagnetOffset = -canCoderOffset;
         this.turningCanCoder.getConfigurator().apply(config);
         this.turningMotor.setInverted(true);
-        driveMotor.getPIDController().setP(0.1);
-        driveMotor.getPIDController().setFF(1);
+        this.driveMotor.setInverted(true);
+        driveMotor.getPIDController().setP(0.2);
+        driveMotor.getPIDController().setFF(0.23);
         this.driveMotor.getEncoder().setPositionConversionFactor(SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO); //convert from revolutions to meters
         this.driveMotor.getEncoder().setVelocityConversionFactor((SwerveConstants.WHEEL_DIAMETER * Math.PI * SwerveConstants.DRIVE_GEAR_RATIO) / 60);
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -59,15 +62,16 @@ public class SwerveModule {
 
     public void setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI));
-
+        desiredSpeed = optimizedState.speedMetersPerSecond;
+        desiredAngle = optimizedState.angle.getDegrees();
         double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
         this.driveMotor.getPIDController().setReference(optimizedState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
-        SmartDashboard.putNumber("Desired speed", optimizedState.speedMetersPerSecond);
         turningMotor.setVoltage(turnOutput);
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
+        SmartDashboard.putNumber(name + " CANCoder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
+
     }
 
     public CANSparkMax getDriveMotor() {
@@ -81,5 +85,10 @@ public class SwerveModule {
     public void close() throws Exception{
         driveMotor.close();
         turningMotor.close();
+    }
+
+    public  void stopMotors() {
+        driveMotor.stopMotor();
+        turningMotor.stopMotor();
     }
 }

@@ -3,35 +3,40 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.pathplanner.lib.util.PPLibTelemetry;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
+import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
+import util.misc.WaypointHelper;
 
 public class Drive extends DreadbotSubsystem {
     
@@ -43,21 +48,49 @@ public class Drive extends DreadbotSubsystem {
 
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
-    private SwerveDriveOdometry odometry;
+
+    public boolean doLockon = false;
+    public double deltaTheta = 0.0;
+    public double aprilTagX;
+    public double aprilTagZ;
+    private final NetworkTable table;
+
+    private DoubleSubscriber poseX;
+    private DoubleSubscriber poseY;
+    private DoubleSubscriber rotation;
+    private BooleanSubscriber tagSeen;
+
 
     private AHRS gyro = new AHRS(Port.kMXP);
+
+    public Boolean autoAimArm = false;
+    public double initialDistanceToTag = 0.0;
 
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(3 , -3, 0);
-    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(3, -3, 0);
+    private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
+    private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
 
-    public Drive() {
+    private PIDController turningController = new PIDController(0.017, 0.007, 0.004);
+    private double targetAngle;
+
+    private Field2d field2d;
+
+    public Drive(NetworkTable table) {
+        this.table = table;
+        this.poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
+        this.poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
+        this.rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
+        this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
+        
+        gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
+            field2d = new Field2d();
 
+            SmartDashboard.putData(field2d);
         
             frontLeftModule = new SwerveModule(
                 new CANSparkMax(1, MotorType.kBrushless),
@@ -83,8 +116,7 @@ public class Drive extends DreadbotSubsystem {
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
             );
-            gyro.reset();
-
+            turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
                 frontRightLocation,
@@ -93,24 +125,14 @@ public class Drive extends DreadbotSubsystem {
             );
             //using SwerveDrivePoseEstimator because it allows us to combine vision with odometry measurements down the line
             poseEstimator = new SwerveDrivePoseEstimator(kinematics, 
-                gyro.getRotation2d(),
+                getGyroRotation(),
                 new SwerveModulePosition[] {
                     frontLeftModule.getPosition(),
                     frontRightModule.getPosition(),
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
                 },
-                PathPlannerAuto.getStaringPoseFromAutoFile("New Auto") // CHANGE THIS ON ACTUAL BOT!
-            );
-            odometry = new SwerveDriveOdometry(
-                kinematics, 
-                getGyroRotation(), 
-                new SwerveModulePosition[] {
-                        frontLeftModule.getPosition(),
-                        frontRightModule.getPosition(),
-                        backLeftModule.getPosition(),
-                        backRightModule.getPosition()
-                }
+                new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0)))
             );
             AutoBuilder.configureHolonomic(
                 this::getPosition, 
@@ -119,9 +141,9 @@ public class Drive extends DreadbotSubsystem {
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
                     new PIDConstants(2.6, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(2.6, 0.1),
+                    new PIDConstants(2.1, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
-                    Units.inchesToMeters(30.0),
+                    Math.hypot(SwerveConstants.MODULE_X_OFFSET, SwerveConstants.MODULE_Y_OFFSET),
                     new ReplanningConfig()
                 ),
                 () -> {
@@ -140,6 +162,12 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        //double gyroOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+        // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
+        if (tagSeen.get()){
+            long timestamp = table.getEntry("tagSeen").getLastChange();
+            //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), getGyroRotation()), timestamp);
+        }
         poseEstimator.update(
             getGyroRotation(),
             new SwerveModulePosition[] {
@@ -149,48 +177,45 @@ public class Drive extends DreadbotSubsystem {
                 backRightModule.getPosition()
             }
         );
-        odometry.update(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            }
-        );
-        
-
-        frontLeftModule.putValuesToSmartDashboard("Front Left");
-        frontRightModule.putValuesToSmartDashboard("Front Right");
-        backLeftModule.putValuesToSmartDashboard("Back Left");
-        backRightModule.putValuesToSmartDashboard("Back Right");
-
+        field2d.setRobotPose(poseEstimator.getEstimatedPosition());   
     }
 
     // make sure to input speed, not percentage!!!!!
     //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+
+        if (doLockon) {
+            double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
+            double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
+            
+            System.out.println(poseEstimator.getEstimatedPosition());
+            deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
+
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
+        }
+        // if (DriverStation.isTeleop()) {
+        //     if (DreadbotMath.applyDeadbandToValue(rot, DriveConstants.DEADBAND) != 0) {
+        //         targetAngle = gyro.getRotation2d().getDegrees();
+        //     } else {
+        //         rot = turningController.calculate(gyro.getRotation2d().getDegrees() % 360, targetAngle);
+        //     }
+        // }
+        
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+      
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
-        SmartDashboard.putNumber("ySpeed", ySpeed);
-        SmartDashboard.putNumber("xSpeed", xSpeed);
-
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
-            fieldRelative ? 
-            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) : new ChassisSpeeds(xSpeed, ySpeed, rot)
-        );
-
+        ChassisSpeeds desiredSpeeds = 
+        ChassisSpeeds.discretize(fieldRelative ? 
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getGyroRotation()) : new ChassisSpeeds(xSpeed, ySpeed, rot), 0.02);
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         setDesiredStates(swerveModuleStates);
     }
 
     public void setDesiredStates(SwerveModuleState[] swerveModuleStates) {
-        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
-        }
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
@@ -201,7 +226,7 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
-        poseEstimator.resetPosition(gyro.getRotation2d(),
+        poseEstimator.resetPosition(getGyroRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -212,7 +237,7 @@ public class Drive extends DreadbotSubsystem {
         );
     }
 
-    private Pose2d getPosition() {
+    public Pose2d getPosition() {
         return poseEstimator.getEstimatedPosition();
     }
 
@@ -251,9 +276,21 @@ public class Drive extends DreadbotSubsystem {
         resetOdometry(getPosition());
     }
 
-    private void resetGyro(){
+    public AHRS getGyro() {
+        return gyro;
+    }
+
+    public SwerveDrivePoseEstimator getPoseEstimator() {
+        return poseEstimator;
+    }
+
+    public void resetGyro(){
         gyro.reset();
         resetOdometry(getPosition());
+    }
+    public void resetPose() {
+        gyro.reset();
+        resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(180))));
     }
 
 
@@ -275,9 +312,11 @@ public class Drive extends DreadbotSubsystem {
     @Override
     public void stopMotors() {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
+            return;
         }
-        drive(0, 0, 0, false);
+        frontLeftModule.stopMotors();
+        frontRightModule.stopMotors();
+        backLeftModule.stopMotors();
+        backRightModule.stopMotors();
     }
-    
 }
