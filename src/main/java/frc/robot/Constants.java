@@ -80,6 +80,7 @@ public abstract class Constants {
         public static final double ARM_ENCODER_OFFSET = 0.124;
         public static final double ARM_ENCODER_SCALE = 1.0; // TODO: tune the actual encoder scale
         public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN; // TODO: tune the actual encoder tolerance
+        public static final double ARM_UPPER_LIMIT = .259;
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");

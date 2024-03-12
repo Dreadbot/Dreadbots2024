@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.commmands.armCommands.ArmCommand;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 
@@ -40,12 +41,11 @@ public class Arm extends DreadbotSubsystem {
     private boolean horizontalSwitchCalibrated;
     private boolean isArmInCoastMode = false;
     private boolean isUserButtonPressed = false;
-    private DutyCycleEncoder absoluteEncoder;
 
     private TrapezoidProfile armProfile;
     private State armState;
     private State desiredArmState;
-    private double joystickOverride;
+    public double joystickOverride;
 
     public Arm() {
         if (!Constants.SubsystemConstants.ARM_ENABLED) {
@@ -57,16 +57,14 @@ public class Arm extends DreadbotSubsystem {
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
 
-        this.absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
-        this.absoluteEncoder.setPositionOffset(0.9780);
-
         horizontalSwitch = new DigitalInput(1);
         verticalSwitch = new DigitalInput(2);
         absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
         absoluteEncoder.setPositionOffset(ArmConstants.ARM_ENCODER_OFFSET);
         absoluteEncoder.setDistancePerRotation(ArmConstants.ARM_ENCODER_SCALE);
         // TODO: tune PID values
-        absolutePID = new PIDController(8.0, 0.0, 0.0);
+        absolutePID = new PIDController(48.0, 30.0, 0.0);
+        absolutePID.setIZone(0.02);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 
         limitSwitchEventLoop = new EventLoop();
@@ -91,13 +89,13 @@ public class Arm extends DreadbotSubsystem {
         rightMotor.getEncoder().setVelocityConversionFactor(ArmConstants.ARM_GEAR_RATIO / 60); // rpm -> rps
 
 
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.265f);
-        leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.005f);
+        //leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, 0.265f);
+        //leftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, 0.005f);
 
-        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
-        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
+        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, false);
+        leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, false);
 
-        armProfile = new TrapezoidProfile(new Constraints(1.0 / 4.0, 1.0 / 5.0)); // very slow to start
+        armProfile = new TrapezoidProfile(new Constraints(1.0 / 2.0, 1.0 / 2.0)); // very slow to start
         armState = new State(0, 0); //ARM ASSUMES IT STARTS DOWN!!!!
         desiredArmState = new State(0, 0);
 
@@ -110,6 +108,7 @@ public class Arm extends DreadbotSubsystem {
             horizontalSwitchCalibrated = true;
             leftMotor.getEncoder().setPosition(0.0076);
             });
+        leftMotor.getEncoder().setPosition(absoluteEncoder.get());
         leftMotor.burnFlash();
         rightMotor.burnFlash();
     }
@@ -119,7 +118,7 @@ public class Arm extends DreadbotSubsystem {
         if (!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
-        this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, 0.264), desiredArmState.velocity);
+        this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, ArmConstants.ARM_UPPER_LIMIT), desiredArmState.velocity);
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
         SmartDashboard.putNumber("desired position", this.desiredArmState.position);
@@ -127,34 +126,40 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putNumber("Other Encoder position", absoluteEncoder.getAbsolutePosition());
         SmartDashboard.putBoolean("At Setpoint", absolutePID.atSetpoint());
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
+        SmartDashboard.putNumber("Armstate Position", armState.position);
 
         double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
 
+        SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
+
         if (Math.abs(joystickOverride) > 0.08) {
             // we should overrride with manual control
-            leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08) * 0.2 * -1); // inverted joystick
-            this.armState = new State(DreadbotMath.clampValue(absoluteEncoder.get(), 0.0, 0.264), 0); // override the desired state with what the user wants
-            this.desiredArmState = new State(DreadbotMath.clampValue(absoluteEncoder.get(), 0.0, 0.264), 0); // override the desired state with what the user wants
-        } else {
-            absolutePID.setSetpoint(armState.position);
-            // if (absolutePID.atSetpoint()) {
-            //     leftMotor.setVoltage(
-            //         Math.cos(Units.rotationsToRadians(absoluteEncoder.getAbsolutePosition())) * ArmConstants.KG
-            //     );
-            // } else {
-            leftMotor.setVoltage(
-                // TODO: check if we need to add a clamp to this; SparkPIDControllers do
-                PIDoutput +
-                Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG
+            //leftMotor.set(DreadbotMath.applyDeadbandToValue(joystickOverride, 0.08) * 0.2 * -1); // inverted joystick
+            //this.armState = new State(DreadbotMath.clampValue(absoluteEncoder.get(), 0.0, 0.264), 0); // override the desired state with what the user wants
+            //this.desiredArmState = new State(DreadbotMath.clampValue(absoluteEncoder.get(), 0.0, 0.264), 0); // override the desired state with what the user wants
+            this.desiredArmState = new State(
+                DreadbotMath.clampValue(
+                    this.desiredArmState.position + joystickOverride * -0.00346,
+                    0.000,
+                    ArmConstants.ARM_UPPER_LIMIT
+                ),
+                0
             );
-            // }
-            // leftPidController.setReference(armState.position, ControlType.kPosition, 0, Math.cos(Units.rotationsToRadians(leftMotor.getEncoder().getPosition())) * ArmConstants.KG);
         }
-        //SmartDashboard.putNumber("Encoder position", this.leftMotor.getEncoder().getPosition());
-        //SmartDashboard.putBoolean("Lower limit switch triggered", getHorizontalLimitSwitch());
-        //SmartDashboard.putBoolean("Upper limit switch triggered", getVerticalLimitSwitch());
+        absolutePID.setSetpoint(armState.position);
+        leftMotor.setVoltage(
+            // TODO: check if we need to add a clamp to this; SparkPIDControllers do
+            PIDoutput +
+            Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG
+        );
+
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
         SmartDashboard.putNumber("Absolute Encoder", this.absoluteEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Motor controlled voltage", 
+            PIDoutput +
+            Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG);
+        SmartDashboard.putNumber("PID Output", PIDoutput);
+
 
         limitSwitchEventLoop.poll();
     }
@@ -187,7 +192,7 @@ public class Arm extends DreadbotSubsystem {
          if (!Constants.SubsystemConstants.ARM_ENABLED) {
             return 0.0;
         }
-        return absoluteEncoder.getAbsolutePosition();
+        return absoluteEncoder.get();
     }
 
     public boolean isAtDesiredState() {
