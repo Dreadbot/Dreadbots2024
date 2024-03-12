@@ -35,8 +35,13 @@ public class Climber extends DreadbotSubsystem {
         }
         this.leftClimberMotor = new CANSparkMax(ClimberConstants.LEFT_CLIMB_MOTOR, MotorType.kBrushless);
         this.rightClimberMotor = new CANSparkMax(ClimberConstants.RIGHT_CLIMB_MOTOR, MotorType.kBrushless);
+
         leftClimberMotor.setIdleMode(IdleMode.kBrake);
         rightClimberMotor.setIdleMode(IdleMode.kBrake);
+
+        //leftClimberMotor.setSmartCurrentLimit(40);
+        //rightClimberMotor.setSmartCurrentLimit(40);
+
 
         this.lockPiston = new Solenoid(21, PneumaticsModuleType.REVPH, 9);
 

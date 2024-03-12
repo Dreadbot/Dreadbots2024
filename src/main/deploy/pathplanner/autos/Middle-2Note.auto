@@ -58,6 +58,18 @@
           "data": {
             "name": "DropArm"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MiddleSide-Leave"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
         }
       ]
     }

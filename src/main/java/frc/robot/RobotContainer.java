@@ -30,6 +30,7 @@ import frc.robot.commmands.autonomousCommands.AutoShootCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.climberCommands.UnlockCommand;
+import frc.robot.commmands.controllerCommands.EmergencyRumbleCommand;
 import frc.robot.commmands.controllerCommands.RumbleController;
 import frc.robot.commmands.climberCommands.ClimbCommand;
 import frc.robot.commmands.driveCommands.DriveCommand;
@@ -104,23 +105,22 @@ public class RobotContainer {
         // new Trigger(primaryController::getSquareButton).whileTrue(new ExtendClimbCommand(climber));
         // new Trigger(primaryController::getTriangleButton).whileTrue(new RetractClimbCommand(climber, drive.getGyro()));
         new Trigger(primaryController::getStartButton).onTrue(new ResetGyroCommand(drive));
-        new Trigger(primaryController::getBackButton).onTrue(new ResetPoseCommand(drive, visionTable));
-        new Trigger(primaryController::getXButton).whileTrue(
+        new Trigger(() -> primaryController.getLeftTriggerAxis() > 0.50).whileTrue(
             new UnlockCommand(climber)
-                .andThen(new WaitCommand(0.1))
+                .andThen(new WaitCommand(0.25))
                 .andThen(new ExtendClimbCommand(climber))
         );
-        new Trigger(primaryController::getYButton).whileTrue(
+        new Trigger(() -> primaryController.getRightTriggerAxis() > 0.50).whileTrue(
             new UnlockCommand(climber)
-                .andThen(new WaitCommand(0.1))
+                .andThen(new WaitCommand(0.25))
                 .andThen(new ClimbCommand(climber, drive.getGyro()))
         );
         new Trigger(primaryController::getRightBumper).whileTrue(
             new UnlockCommand(climber)
-                .andThen(new WaitCommand(0.1))
+                .andThen(new WaitCommand(0.25))
                 .andThen(new RetractClimbCommand(climber))
         );
-        new Trigger(primaryController::getBButton).whileTrue(new RumbleController(primaryController));
+        new Trigger(secondaryController::getStartButton).whileTrue(new EmergencyRumbleCommand(secondaryController));
         
         // new Trigger(primaryController::getL1Button).whileTrue(new TurtleCommand(driveCommand));
         new Trigger(secondaryController::getAButton).onTrue(new IntakeCommand(intake, primaryController));
@@ -138,7 +138,7 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        new Trigger(secondaryController::getRightBumper).whileTrue(new ShootCommand(shooter, 6000, secondaryController));
+        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 6000, secondaryController)));
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
@@ -146,12 +146,14 @@ public class RobotContainer {
         new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
         // new Trigger(secondaryController::getTriangleButton).whileTrue(new SourcePickupCommand(shooter));
-        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.08976)); //center note position: 0.11285, 
+        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0845)); //center note position: 0.11285, 
         new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.125000));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.05));
         new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.25));
+
+        new Trigger(shooter::overDrawingAmps).whileTrue(new EmergencyRumbleCommand(secondaryController));
 
         new Trigger(RobotController::getUserButton).whileTrue(new SetArmIdleModeCommand(arm));
     }
@@ -176,7 +178,7 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.09256, 6000));
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0845, 6000));
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 6000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1340, 6000));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 6000));

@@ -1,6 +1,5 @@
 package frc.robot.commmands.autonomousCommands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -16,10 +15,11 @@ public class AutoShootCommand extends SequentialCommandGroup {
 
     public AutoShootCommand(Intake intake, Arm arm, Shooter shooter, double armPosition, double rpm) {
         addCommands(
+            new OuttakeCommand(intake).raceWith(new WaitCommand(0.07)),
             new ShootCommand(shooter, rpm, null)
                 .alongWith(new ArmToPositionCommand(arm, armPosition)),
             new FeedCommand(intake)
-                .until(() -> !intake.hasNote()),
+                .raceWith(new WaitCommand(0.3)),
             new StopShootCommand(shooter)
         );
     }

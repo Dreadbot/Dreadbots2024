@@ -10,7 +10,9 @@ import frc.robot.Constants;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import util.misc.DreadbotSubsystem;
 
@@ -22,11 +24,13 @@ public class Shooter extends DreadbotSubsystem {
     private SparkPIDController followerPidController;
     private Solenoid angleSolenoid;
     private double targetSpeed = 0.0;
+    private PowerDistribution hub;
 
     public Shooter() {
          if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
+        this.hub = new PowerDistribution(1, ModuleType.kRev);
         this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
         this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
         this.leaderMotor.setInverted(true);
@@ -57,6 +61,7 @@ public class Shooter extends DreadbotSubsystem {
     public void periodic() {
         SmartDashboard.putNumber("Actual Shooter Speed", leaderMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Target Shooter Speed", targetSpeed);
+        SmartDashboard.putNumber("Drawn Amps", hub.getCurrent(7));
     }
     @Override
     public void close() throws Exception {
@@ -74,6 +79,9 @@ public class Shooter extends DreadbotSubsystem {
         }
         leaderMotor.stopMotor();
         
+    }
+    public boolean overDrawingAmps() {
+        return hub.getCurrent(7) > 55 || hub.getCurrent(8) > 55;
     }
 
     public void shoot(double speed) {

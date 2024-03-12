@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
@@ -39,6 +40,7 @@ public class Arm extends DreadbotSubsystem {
     private boolean horizontalSwitchCalibrated;
     private boolean isArmInCoastMode = false;
     private boolean isUserButtonPressed = false;
+    private DutyCycleEncoder absoluteEncoder;
 
     private TrapezoidProfile armProfile;
     private State armState;
@@ -54,6 +56,9 @@ public class Arm extends DreadbotSubsystem {
 
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
+
+        this.absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
+        this.absoluteEncoder.setPositionOffset(0.9780);
 
         horizontalSwitch = new DigitalInput(1);
         verticalSwitch = new DigitalInput(2);
@@ -100,10 +105,13 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setI(0.0);
         leftPidController.setD(0.0);
         horizontalEvent
-            .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0))
-            .ifHigh(() -> {
-                leftMotor.getEncoder().setPosition(0);
+            .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
+            .ifHigh(() -> { 
+            horizontalSwitchCalibrated = true;
+            leftMotor.getEncoder().setPosition(0.0076);
             });
+        leftMotor.burnFlash();
+        rightMotor.burnFlash();
     }
 
     @Override
@@ -146,6 +154,7 @@ public class Arm extends DreadbotSubsystem {
         //SmartDashboard.putBoolean("Lower limit switch triggered", getHorizontalLimitSwitch());
         //SmartDashboard.putBoolean("Upper limit switch triggered", getVerticalLimitSwitch());
         SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
+        SmartDashboard.putNumber("Absolute Encoder", this.absoluteEncoder.getAbsolutePosition());
 
         limitSwitchEventLoop.poll();
     }
@@ -207,7 +216,7 @@ public class Arm extends DreadbotSubsystem {
     public boolean getVerticalLimitSwitch() {
         return !this.verticalSwitch.get();
     }
-
+    
     public void disabledPeriodic() {
         if(RobotController.getUserButton() && !isArmInCoastMode && !isUserButtonPressed) {
             isUserButtonPressed = true;

@@ -16,19 +16,25 @@
     },
     {
       "anchor": {
-        "x": 2.4353116621924116,
-        "y": 4.361919607030098
+        "x": 2.4582617826204314,
+        "y": 4.092954054853979
       },
       "prevControl": {
-        "x": 1.7102740867611355,
-        "y": 4.408696224799858
+        "x": 1.7332242071891553,
+        "y": 4.139730672623739
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Source-Note"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
@@ -81,7 +87,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -26.84527945708575,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
