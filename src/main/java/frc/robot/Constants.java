@@ -74,10 +74,10 @@ public abstract class Constants {
       public static class ArmConstants {
         public static final double ARM_POSITION_ERROR_MARGIN = 0.00004;
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
-        public static final double KG = 0.15; //0.27
+        public static final double KG = 0.17; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical
         public static final double ARM_SOURCE_PICKUP_POSITION = 0.2;
-        public static final double ARM_ENCODER_OFFSET = 0.9795; // TODO: tune the actual encoder offset
+        public static final double ARM_ENCODER_OFFSET = 0.124;
         public static final double ARM_ENCODER_SCALE = 1.0; // TODO: tune the actual encoder scale
         public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN; // TODO: tune the actual encoder tolerance
       }
