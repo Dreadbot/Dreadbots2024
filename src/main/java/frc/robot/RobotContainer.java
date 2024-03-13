@@ -170,7 +170,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         arm.setReference(new State(arm.getEncoderPosition(), 0));
-        // arm.setArmStartState();
+        arm.setArmStartState();
     }
     public void autonInit() {
         arm.setReference(new State(arm.getEncoderPosition(), 0));

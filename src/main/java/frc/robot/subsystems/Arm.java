@@ -207,7 +207,7 @@ public class Arm extends DreadbotSubsystem {
         this.joystickOverride = joystickOverride;
     }
     public void setArmStartState() {
-        this.armState = new State(absoluteEncoder.getAbsolutePosition(), 0);
+        this.armState = new State(absoluteEncoder.get(), 0);
     }
     public void overrideArmState(double rotations) {
         this.leftMotor.getEncoder().setPosition(rotations);
