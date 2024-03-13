@@ -95,7 +95,7 @@ public class Arm extends DreadbotSubsystem {
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, false);
         leftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, false);
 
-        armProfile = new TrapezoidProfile(new Constraints(1.0 / 2.0, 1.0 / 2.0)); // very slow to start
+        armProfile = new TrapezoidProfile(new Constraints(1.0 / 2.0, 1.0 / 1.5)); // very slow to start
         armState = new State(0, 0); //ARM ASSUMES IT STARTS DOWN!!!!
         desiredArmState = new State(0, 0);
 
@@ -119,7 +119,6 @@ public class Arm extends DreadbotSubsystem {
             return;
         }
         this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, ArmConstants.ARM_UPPER_LIMIT), desiredArmState.velocity);
-        this.armState = armProfile.calculate(0.02, armState, desiredArmState);
 
         SmartDashboard.putNumber("desired position", this.desiredArmState.position);
         SmartDashboard.putNumber("Absoulte Encoder position", absoluteEncoder.get());
@@ -146,6 +145,7 @@ public class Arm extends DreadbotSubsystem {
                 0
             );
         }
+        this.armState = armProfile.calculate(0.02, armState, desiredArmState);
         absolutePID.setSetpoint(armState.position);
         leftMotor.setVoltage(
             // TODO: check if we need to add a clamp to this; SparkPIDControllers do
