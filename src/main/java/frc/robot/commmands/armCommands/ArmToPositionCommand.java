@@ -1,5 +1,7 @@
 package frc.robot.commmands.armCommands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
@@ -8,10 +10,12 @@ public class ArmToPositionCommand extends Command {
 
     private Arm arm;
     private double position;
+    private DoubleSupplier joystickOverride;
 
-    public ArmToPositionCommand(Arm arm, double position) {
+    public ArmToPositionCommand(Arm arm, double position, DoubleSupplier joystickOverride) {
         this.arm = arm;
         this.position = position;
+        this.joystickOverride = joystickOverride;
         addRequirements(arm);
     }
 
@@ -21,7 +25,13 @@ public class ArmToPositionCommand extends Command {
     } 
 
     @Override
+    public void end(boolean canceled) {
+        System.out.println(canceled);
+        arm.setReference(new State(arm.getEncoderPosition(), 0));
+    }
+
+    @Override
     public boolean isFinished() {
-        return arm.isAtDesiredState();
+        return arm.isAtDesiredState() || Math.abs(joystickOverride.getAsDouble()) > 0.08;
     }
 }

@@ -23,6 +23,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -52,12 +56,16 @@ public class Drive extends DreadbotSubsystem {
     public double aprilTagX;
     public double aprilTagZ;
     private final NetworkTable table;
+    private final NetworkTable smartDashboard;
 
     private DoubleSubscriber poseX;
     private DoubleSubscriber poseY;
     private DoubleSubscriber rotation;
     private BooleanSubscriber tagSeen;
-
+    private StructPublisher<Pose2d> posePub;
+    private StructArrayPublisher<SwerveModuleState> swervePub;
+    private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
+    private StructPublisher<Rotation2d> gyroPub;
 
     private AHRS gyro = new AHRS(Port.kMXP);
 
@@ -78,6 +86,12 @@ public class Drive extends DreadbotSubsystem {
     private Field2d field2d;
 
     public Drive(NetworkTable table) {
+        this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+        this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
+        this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
+        this.swerveOptimPub = this.smartDashboard.getStructArrayTopic("Robot Optimised Swerve", SwerveModuleState.struct).publish();
+        this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
+
         this.table = table;
         this.poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
         this.poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
@@ -172,10 +186,29 @@ public class Drive extends DreadbotSubsystem {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
-                backRightModule.getPosition()
+                backRightModule.getPosition(),
             }
         );
-        field2d.setRobotPose(poseEstimator.getEstimatedPosition());   
+        this.posePub.set(poseEstimator.getEstimatedPosition());
+        this.swervePub.set(new SwerveModuleState[] {
+            frontLeftModule.getState(),
+            frontRightModule.getState(),
+            backLeftModule.getState(),
+            backRightModule.getState(),
+        });
+        this.swerveOptimPub.set(new SwerveModuleState[] {
+            frontLeftModule.getOptimizedState(),
+            frontRightModule.getOptimizedState(),
+            backLeftModule.getOptimizedState(),
+            backRightModule.getOptimizedState(),
+        });
+        this.gyroPub.set(gyro.getRotation2d());
+        field2d.setRobotPose(poseEstimator.getEstimatedPosition());
+        SmartDashboard.putNumber("Front Left Module Speed", Math.abs(frontLeftModule.getState().speedMetersPerSecond));
+        SmartDashboard.putNumber("Front Right Module Speed", Math.abs(frontRightModule.getState().speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Left Module Speed", Math.abs(backLeftModule.getState().speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Right Module Speed", Math.abs(backRightModule.getState().speedMetersPerSecond));
+        SmartDashboard.putNumber("Desired Front Left Module Speed", Math.abs(frontLeftModule.desiredState.speedMetersPerSecond));
     }
 
     // make sure to input speed, not percentage!!!!!
