@@ -18,7 +18,7 @@ public class Intake extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.INTAKE_ENABLED) {
             return;
         }
-        intakeMotor = new CANSparkMax(15, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(IntakeConstants.INTAKE_MOTOR, MotorType.kBrushless);
         beamBreakSensor = new DigitalInput(IntakeConstants.BEAM_BREAK_SENSOR);
         
         intakeMotor.setInverted(true);
