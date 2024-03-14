@@ -147,7 +147,7 @@ public class RobotContainer {
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
         // new Trigger(secondaryController::getTriangleButton).whileTrue(new SourcePickupCommand(shooter));
         new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0845)); //center note position: 0.11285, 
-        new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.125000));
+        new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.09658));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.05));
