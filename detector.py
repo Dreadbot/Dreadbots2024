@@ -8,18 +8,22 @@ import cv2
 import os
 import ntcore
 import time
+from cscore import CameraServer
+
+CameraServer.enableLogging()
+
+output = CameraServer.putVideo("BackfacingCam", 640,480)
 
 def start_network_table():
     inst = ntcore.NetworkTableInstance.getDefault()
-    table = inst.getTable("SmartDashboard")
+    table = inst.getTable("azathoth")
     inst.startClient4("visionclient")
     inst.setServerTeam(3656)
     xPub = table.getDoubleTopic("robotposX").publish()
     zPub = table.getDoubleTopic("robotposZ").publish()
     thetaPub = table.getDoubleTopic("robotposTheta").publish()
-    thetaTagPub = table.getDoubleTopic("thetaTagPub").publish()
-    distancePub = table.getDoubleTopic("distanceToTag").publish()
-    return xPub, zPub, thetaPub, thetaTagPub, distancePub
+    tagSeenPub = table.getBooleanTopic("tagSeen").publish()
+    return xPub, zPub, thetaPub, tagSeenPub
 
 #def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
 #    inst = ntcore.NetworkTableInstance.getDefault()
@@ -27,7 +31,7 @@ def start_network_table():
 #    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
 
 def main():
-    xPub, zPub, thetaPub, thetaTagPub, distancePub = start_network_table()
+    xPub, zPub, thetaPub, tagSeenPub = start_network_table()
     parser = argparse.ArgumentParser(prog='Apriltag Detector')
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
@@ -70,28 +74,33 @@ def main():
                                       estimate_tag_pose=True,
                                       camera_params=camera_params,
                                       tag_size=0.163525)
-
+        tagSeenPub.set(not not all_tags)
         for tag in all_tags:
+            if (tag.tag_id != 4):
+                continue
             tag_info = tag_positions[f"tag{tag.tag_id}"]
             tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
             true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
 
             alpha = math.atan2(-tag.pose_R[2][0], math.sqrt(tag.pose_R[2][1]**2 + tag.pose_R[2][2]**2));
             conv_angle = -(math.pi - alpha - math.radians(tag_info["theta"]))
+            conv_angle_x = 26 * math.pi / 180
 
+            Rx_robot_world = np.linalg.inv(np.array([[1, 0, 0], [0, math.cos(conv_angle_x), -math.sin(conv_angle_x)], [0, math.sin(conv_angle_x), math.cos(conv_angle_x)]]))
             Ry_robot_world = np.linalg.inv(np.array([[math.cos(conv_angle), 0, math.sin(conv_angle)], [0, 1, 0], [-math.sin(conv_angle), 0, math.cos(conv_angle)]]))
+
+            print(np.matmul(Ry_robot_world, np.matmul(Rx_robot_world, tag.pose_t)))
 
             print(math.degrees(alpha))
             print(np.matmul(Ry_robot_world, tag.pose_t))
-            full_t = tag_t - np.matmul(Ry_robot_world, tag.pose_t)
+            full_t = tag_t - np.matmul(Ry_robot_world, np.matmul(Rx_robot_world, tag.pose_t))
             print(full_t)
             print("---")
 
-            xPub.set(full_t[0])
+            xPub.set(1.14935 + full_t[0])
             zPub.set(full_t[2])
             thetaPub.set(conv_angle)
-            thetaTagPub.set(math.atan(tag.pose_t[0]/tag.pose_t[2]))
-            distancePub.set(math.sqrt(math.sqr(tag.pose_t[2])+math.sqr(tag.pose_t[0])))
+	output.putFrame(frame)
 
         #if cv2.waitKey(1) == ord('q') & 0xff:
         #    break
