@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
@@ -50,8 +49,8 @@ public class Arm extends DreadbotSubsystem {
         if (!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
-        leftMotor = new CANSparkMax(13, MotorType.kBrushless);
-        rightMotor = new CANSparkMax(14, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(ArmConstants.ARM_LEFT_MOTOR, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(ArmConstants.ARM_RIGHT_MOTOR, MotorType.kBrushless);
 
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
@@ -59,8 +58,8 @@ public class Arm extends DreadbotSubsystem {
         this.absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
         this.absoluteEncoder.setPositionOffset(0.9780);
 
-        horizontalSwitch = new DigitalInput(1);
-        verticalSwitch = new DigitalInput(2);
+        horizontalSwitch = new DigitalInput(ArmConstants.HORIZONTAL_ARM_SWITCH);
+        verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
 
         limitSwitchEventLoop = new EventLoop();
         horizontalSwitchCalibrated = false;

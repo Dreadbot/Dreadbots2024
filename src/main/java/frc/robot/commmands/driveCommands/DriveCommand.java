@@ -22,7 +22,7 @@ public class DriveCommand extends Command {
         this.joystickX = joystickX;
         this.joystickY = joystickY;
         this.joystickRotatation = joyStickRotation;
-        this.speedModifier = 1;
+        this.speedModifier = DriveConstants.SPEED_MODIFIER;
 
         addRequirements(drive);
     }

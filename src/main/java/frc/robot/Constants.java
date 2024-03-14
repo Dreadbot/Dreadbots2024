@@ -26,6 +26,7 @@ public abstract class Constants {
       public static final double DEADBAND = 0.06;
       public static final double ROT_SPEED_LIMITER = 1 * Math.PI;
       public static final double SLEW = 17;
+      public static final double SPEED_MODIFIER = 1;
     }
 
     public static class SwerveConstants {
@@ -50,9 +51,13 @@ public abstract class Constants {
         public static final double INTAKE_SPEED = 0.7;
         public static final double OUTTAKE_SPEED = 0.3;
         public static final int BEAM_BREAK_SENSOR = 7;
+        public static final int INTAKE_MOTOR = 15;
+
       }
       public static class ShooterConstants {
         public static final double FLYWHEEL_ERROR_MARGIN = 100;
+        public static final int SHOOTER_LEADER_MOTOR = 16;
+        public static final int SHOOTER_FOLLOWER_MOTOR = 17;
       }
       public static class ClimberConstants {
         public static final int LEFT_CLIMB_MOTOR = 18;
@@ -77,6 +82,11 @@ public abstract class Constants {
         public static final double KG = 0.15; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical
         public static final double ARM_SOURCE_PICKUP_POSITION = 0.2;
+        public static final int ARM_LEFT_MOTOR = 13;
+        public static final int ARM_RIGHT_MOTOR = 14;
+        public static final int HORIZONTAL_ARM_SWITCH = 1;
+        public static final int VERTICAL_ARM_SWITCH = 2;
+
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");
