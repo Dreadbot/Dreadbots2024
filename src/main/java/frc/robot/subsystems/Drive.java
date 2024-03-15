@@ -38,6 +38,7 @@ import frc.robot.Constants.SwerveConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.SwerveModule;
+import util.misc.VisionIntegration;
 import util.misc.WaypointHelper;
 
 public class Drive extends DreadbotSubsystem {
@@ -60,7 +61,7 @@ public class Drive extends DreadbotSubsystem {
 
     private DoubleSubscriber poseX;
     private DoubleSubscriber poseY;
-    private DoubleSubscriber rotation;
+    private DoubleSubscriber poseZ;
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
     private StructArrayPublisher<SwerveModuleState> swervePub;
@@ -93,9 +94,9 @@ public class Drive extends DreadbotSubsystem {
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
 
         this.table = table;
-        this.poseX = table.getDoubleTopic("robotposZ").subscribe(0.0);
-        this.poseY = table.getDoubleTopic("robotposX").subscribe(0.0);
-        this.rotation = table.getDoubleTopic("robotposTheta").subscribe(0.0);
+        this.poseX = table.getDoubleTopic("robotX").subscribe(0.0);
+        this.poseY = table.getDoubleTopic("robotY").subscribe(0.0);
+        this.poseZ = table.getDoubleTopic("robotZ").subscribe(0.0);
         this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
         
         gyro.reset();
@@ -178,7 +179,8 @@ public class Drive extends DreadbotSubsystem {
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         if (tagSeen.get()){
             long timestamp = table.getEntry("tagSeen").getLastChange();
-            //poseEstimator.addVisionMeasurement(new Pose2d(poseX.get(), poseY.get(), getGyroRotation()), timestamp);
+            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), gyro.getAngle()), 4);
+            poseEstimator.addVisionMeasurement(worldToRobot, timestamp);
         }
         poseEstimator.update(
             getGyroRotation(),
