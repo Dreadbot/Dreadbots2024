@@ -10,6 +10,10 @@ import ntcore
 import time
 from cscore import CameraServer
 
+INCHES_TO_METERS = 0.0254
+CAMERA_PITCH = math.radians(90 - 26)
+CAMERA_TO_ROBOT_OFFSET = 0.3937
+
 # IF NECESSARY:
 # run this to list camera properties
 # v4l2-ctl -d /dev/video0 -l
@@ -27,17 +31,12 @@ camera = CameraServer.putVideo("backcam", 640//8, 480//8)
 def start_network_table():
     inst = ntcore.NetworkTableInstance.getDefault()
     table = inst.getTable("azathoth")
-    table2 = inst.getTable("FMSInfo")
-    dashboard = inst.getTable("SmartDashboard")
     inst.startClient4("visionclient")
     inst.setServerTeam(3656)
-    xPub = table.getDoubleTopic("robotposX").publish()
-    zPub = table.getDoubleTopic("robotposZ").publish()
-    thetaPub = table.getDoubleTopic("robotposTheta").publish()
-    tagSeenPub = table.getBooleanTopic("tagSeen").publish()
-    allianceSub = table2.getBooleanTopic("IsRedAlliance").subscribe(True)
-    gyroThetaSub = dashboard.getDoubleTopic("gyroAngle").subscribe(0.0)
-    return xPub, zPub, thetaPub, tagSeenPub, allianceSub, gyroThetaSub
+    robotXPub = table.getDoubleTopic("robotX")
+    robotYPub = table.getDoubleTopic("robotY")
+    robotZPub = table.getDoubleTopic("robotZ")
+    return robotXPub, robotYPub, robotZPub
 
 #def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
 #    inst = ntcore.NetworkTableInstance.getDefault()
@@ -45,12 +44,11 @@ def start_network_table():
 #    return (table.getDoubleTopic("robotposX").publish(), table.getDoubleTopic("robotposZ").publish(), table.getDoubleTopic("robotposTheta").publish())
 
 def main():
-    xPub, zPub, thetaPub, tagSeenPub, allianceSub, gyroThetaSub = start_network_table()
     parser = argparse.ArgumentParser(prog='Apriltag Detector')
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
 
-    #xPub, zPub, thetaPub = init_network_tables()
+    robotXPub, robotYPub, robotZPub = init_network_tables()
 
     with open("field.yaml", 'r') as f:
         tag_positions = yaml.safe_load(f)
@@ -100,39 +98,51 @@ def main():
                 continue
 
             # tag.pose_t[2] += 0.4064
-            tag_info = tag_positions[f"tag{tag.tag_id}"]
-            tag_t = 0.0254 * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
-            true_t = np.matmul(np.linalg.inv(tag.pose_R), tag.pose_t)
+            # tag_info = tag_positions[f"tag{tag.tag_id}"]
+            # tag_t = INCHES_TO_METERS * np.array([[tag_info["z"]], [tag_info["y"]], [tag_info["x"]]])
+            # gyro_angle = -gyroThetaSub.get()
 
-            alpha = math.atan2(-tag.pose_R[2][0], math.sqrt(tag.pose_R[2][1]**2 + tag.pose_R[2][2]**2));
-            conv_angle = -(math.pi - alpha - math.radians(tag_info["theta"]))
-            conv_angle_orig = gyroThetaSub.get()
-            conv_angle_x = 26 * math.pi / 180
-
-            # print(conv_angle_orig)
-            # print(conv_angle)
-
-            Rx_robot_world = np.linalg.inv(np.array([[1, 0, 0], [0, math.cos(conv_angle_x), -math.sin(conv_angle_x)], [0, math.sin(conv_angle_x), math.cos(conv_angle_x)]]))
-            Ry_robot_world = np.linalg.inv(np.array([[math.cos(conv_angle), 0, math.sin(conv_angle)], [0, 1, 0], [-math.sin(conv_angle), 0, math.cos(conv_angle)]]))
-
-            flat_t = np.matmul(Rx_robot_world, tag.pose_t)
-            flat_t[2] += 0.4064
-
-            print(np.matmul(Ry_robot_world, np.matmul(Rx_robot_world, tag.pose_t)))
-
-            print(math.degrees(alpha))
-            print(np.matmul(Ry_robot_world, tag.pose_t))
-            world_t = np.matmul(Ry_robot_world, flat_t)
-            full_t = tag_t - world_t
-            print(full_t)
+            tag_in_robot_frame = calculate_tag_in_robot_frame(tag.pose_t)
+            # robot_rotation = np.array([
+            #     [math.cos(gyro_angle), math.sin(gyro_angle), 0, 0],
+            #     [-math.sin(gyro_angle), math.cos(gyro_angle), 0, 0],
+            #     [0, 0, 1, 0],
+            #     [0, 0, 0, 1]
+            # ], dtype="object")
+            # tag_in_world_frame = np.matmul(robot_rotation, tag_in_robot_frame)
+            robotXPub.set(tag_in_robot_frame[0])
+            robotYPub.set(tag_in_robot_frame[1])
+            robotZPub.set(tag_in_robot_frame[2])
+            print(tag.pose_t)
+            print(tag_in_robot_frame)
+            # print(tag_in_world_frame)
             print("---")
-
-            xPub.set(6.74 - full_t[0])
-            zPub.set(full_t[2]) # world_t[2]
-            thetaPub.set(conv_angle - math.pi)
-
         #if cv2.waitKey(1) == ord('q') & 0xff:
         #    break
+
+def calculate_tag_in_robot_frame(tag_in_camera_frame):
+    tag_in_camera_frame = np.array([[tag_in_camera_frame[0]], [tag_in_camera_frame[1]], [tag_in_camera_frame[2]], [1]], dtype="object")
+    pitch_rotation = np.array([
+        [1, 0, 0, 0],
+        [0, math.cos(CAMERA_PITCH), math.sin(CAMERA_PITCH), 0],
+        [0, -math.sin(CAMERA_PITCH), math.cos(CAMERA_PITCH), 0],
+        [0, 0, 0, 1]
+    ], dtype="object")
+    camera_axes_to_robot_axes = np.array([
+        [math.cos(math.pi / 2), math.sin(math.pi / 2), 0, 0],
+        [-math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ], dtype="object")
+    camera_origin_to_robot_origin = np.array([
+        [1, 0, 0, CAMERA_TO_ROBOT_OFFSET],
+        [0, 1, 0, 0], # -1 due to terrible left handedness of coordinate system
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ], dtype="object")
+    overall_transformation = np.matmul(camera_origin_to_robot_origin, np.matmul(camera_axes_to_robot_axes, pitch_rotation))
+    tag_in_robot_frame = np.matmul(overall_transformation, tag_in_camera_frame)
+    return tag_in_robot_frame
 
 if __name__ == "__main__":
     main()
