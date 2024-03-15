@@ -36,7 +36,8 @@ def start_network_table():
     robotXPub = table.getDoubleTopic("robotX")
     robotYPub = table.getDoubleTopic("robotY")
     robotZPub = table.getDoubleTopic("robotZ")
-    return robotXPub, robotYPub, robotZPub
+    tagSeenPub = table.getBooleanTopic("tagSeen")
+    return robotXPub, robotYPub, robotZPub, tagSeenPub
 
 #def init_network_tables() -> tuple[ntcore.DoubleTopic, ntcore.DoubleTopic, ntcore.DoubleTopic]:
 #    inst = ntcore.NetworkTableInstance.getDefault()
@@ -48,7 +49,7 @@ def main():
     parser.add_argument("intrinsics_file", type=pathlib.Path)
     args = parser.parse_args()
 
-    robotXPub, robotYPub, robotZPub = init_network_tables()
+    robotXPub, robotYPub, robotZPub, tagSeenPub = init_network_tables()
 
     with open("field.yaml", 'r') as f:
         tag_positions = yaml.safe_load(f)
@@ -94,8 +95,8 @@ def main():
                                       tag_size=0.163525)
         tagSeenPub.set(not not all_tags)
         for tag in all_tags:
-            if ((tag.tag_id != 4 and allianceSub.get()) or (tag.tag_id != 7 and not allianceSub.get())):
-                continue
+            # if ((tag.tag_id != 4 and allianceSub.get()) or (tag.tag_id != 7 and not allianceSub.get())):
+            #     continue
 
             # tag.pose_t[2] += 0.4064
             # tag_info = tag_positions[f"tag{tag.tag_id}"]
