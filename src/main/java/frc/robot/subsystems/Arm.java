@@ -18,9 +18,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.commmands.armCommands.ArmCommand;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 
@@ -97,7 +95,7 @@ public class Arm extends DreadbotSubsystem {
 
         armProfile = new TrapezoidProfile(new Constraints(1.0 / 2.0, 1.0 / 1.5)); // very slow to start
 
-        // why not get the position from the absolute encoder?
+        // Mr. Reamy - why not get the position from the absolute encoder?
         armState = new State(0, 0); //ARM ASSUMES IT STARTS DOWN!!!!
         desiredArmState = new State(0, 0);
 
@@ -129,7 +127,7 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
         SmartDashboard.putNumber("Armstate Position", armState.position);
 
-        // Seems like getting the PIDoutput should be called AFTER setting the new Setpoint (see line 156)
+        // Mr. Reamy - Seems like getting the PIDoutput should be called AFTER setting the new Setpoint (see line 156)
         double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
 
         SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
@@ -141,7 +139,7 @@ public class Arm extends DreadbotSubsystem {
             //this.desiredArmState = new State(DreadbotMath.clampValue(absoluteEncoder.get(), 0.0, 0.264), 0); // override the desired state with what the user wants
             this.desiredArmState = new State(
                 DreadbotMath.clampValue(
-                    // should this be the current state instead of desired state?
+                    // Mr. Reamy - should this be the current state instead of desired state?
                     // seems like you want to build on the current state not the old desired state
                     // Where did the value -0.00346 come from?
                     this.desiredArmState.position + joystickOverride * -0.00346,
@@ -153,11 +151,11 @@ public class Arm extends DreadbotSubsystem {
         }
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
         absolutePID.setSetpoint(armState.position);
-        // calculate PIDoutput here
+        // Mr. Reamy - calculate PIDoutput here
         leftMotor.setVoltage(
             // TODO: check if we need to add a clamp to this; SparkPIDControllers do
             PIDoutput +
-            // I'd create a method for this - getFeedforward()
+            // Mr. Reamy - I'd create a method for this - getFeedforward()
             Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG
         );
 
