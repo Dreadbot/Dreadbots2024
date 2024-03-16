@@ -14,9 +14,8 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Shooter;
 import util.misc.WaypointHelper;
 
-public class ArmTargeting extends Command {
+public class ArmTargetCommand extends Command {
     private final Arm arm;
-    private final Shooter shooter;
     private final Drive drive;
     private double distanceToSpeakerBase;
     private double originToBase = .2032;
@@ -24,11 +23,13 @@ public class ArmTargeting extends Command {
     private DriverStation.Alliance alliance = WaypointHelper.getAlliance();
     private double speakerHoodOffset = 0.3048;
     private double speakerHeight = 2.1336;
+    private double angleBoxArm = 1.41372;
+    private double armLength = .6096;
+    private double armAngle;
     
     private Translation2d speakerHood;
-    public ArmTargeting(Arm arm, Shooter shooter, Drive drive) {
+    public ArmTargetCommand(Arm arm, Drive drive) {
         this.arm = arm;
-        this.shooter = shooter;
         this.drive = drive;
         addRequirements(arm);
         if (alliance == DriverStation.Alliance.Red) {
@@ -44,7 +45,7 @@ public class ArmTargeting extends Command {
         double pivotToHoodTheta = Math.atan2(speakerHeight, groundDistToSpeaker);
         double distPivotToHood = Math.hypot(groundDistToSpeaker, speakerHeight);
         
-
-        arm.setReference(new State(0, 0));
+        armAngle = Math.asin((armLength * Math.sin(angleBoxArm)) / distPivotToHood) + angleBoxArm - pivotToHoodTheta;
+        arm.setReference(new State(armAngle, 0));
     }
 }
