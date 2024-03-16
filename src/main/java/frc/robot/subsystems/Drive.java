@@ -9,6 +9,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,6 +21,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -64,6 +68,7 @@ public class Drive extends DreadbotSubsystem {
     private DoubleSubscriber poseZ;
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
+    private StructPublisher<Pose2d> visionPosePub;
     private StructArrayPublisher<SwerveModuleState> swervePub;
     private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
     private StructPublisher<Rotation2d> gyroPub;
@@ -89,6 +94,7 @@ public class Drive extends DreadbotSubsystem {
     public Drive(NetworkTable table) {
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
+        this.visionPosePub = this.smartDashboard.getStructTopic("Vision Pose2d", Pose2d.struct).publish();
         this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
         this.swerveOptimPub = this.smartDashboard.getStructArrayTopic("Robot Optimised Swerve", SwerveModuleState.struct).publish();
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
@@ -147,6 +153,7 @@ public class Drive extends DreadbotSubsystem {
                 },
                 new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0)))
             );
+            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.0));
             AutoBuilder.configureHolonomic(
                 this::getPosition, 
                 this::resetOdometry,
@@ -179,18 +186,30 @@ public class Drive extends DreadbotSubsystem {
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         if (tagSeen.get()){
             long timestamp = table.getEntry("tagSeen").getLastChange();
-            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), gyro.getAngle()), 4);
-            poseEstimator.addVisionMeasurement(worldToRobot, timestamp);
+            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), getGyroRotation().getRadians()), 4);
+            worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+            this.visionPosePub.set(worldToRobot);
+            poseEstimator.resetPosition(
+                getGyroRotation(),
+                new SwerveModulePosition[] {
+                    frontLeftModule.getPosition(),
+                    frontRightModule.getPosition(),
+                    backLeftModule.getPosition(),
+                    backRightModule.getPosition(),
+                },
+                worldToRobot
+            );
+        } else {
+            poseEstimator.update(
+                getGyroRotation(),
+                new SwerveModulePosition[] {
+                    frontLeftModule.getPosition(),
+                    frontRightModule.getPosition(),
+                    backLeftModule.getPosition(),
+                    backRightModule.getPosition(),
+                }
+            );
         }
-        poseEstimator.update(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition(),
-            }
-        );
         this.posePub.set(poseEstimator.getEstimatedPosition());
         this.swervePub.set(new SwerveModuleState[] {
             frontLeftModule.getState(),
@@ -214,7 +233,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     // make sure to input speed, not percentage!!!!!
-    //xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
+    // xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 
         if (doLockon) {
