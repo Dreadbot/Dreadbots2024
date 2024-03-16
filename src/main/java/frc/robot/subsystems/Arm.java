@@ -122,7 +122,7 @@ public class Arm extends DreadbotSubsystem {
         this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, ArmConstants.ARM_LOWER_LIMIT, ArmConstants.ARM_UPPER_LIMIT), desiredArmState.velocity);
 
         SmartDashboard.putNumber("desired position", this.desiredArmState.position);
-        SmartDashboard.putNumber("Absoulte Encoder position", absoluteEncoder.get());
+        SmartDashboard.putNumber("Absolute Encoder Rotation", absoluteEncoder.get() * 360);
         SmartDashboard.putNumber("Other Encoder position", absoluteEncoder.getAbsolutePosition());
         SmartDashboard.putBoolean("At Setpoint", absolutePID.atSetpoint());
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());

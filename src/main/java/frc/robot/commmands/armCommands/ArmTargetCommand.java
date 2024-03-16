@@ -17,7 +17,6 @@ import util.misc.WaypointHelper;
 public class ArmTargetCommand extends Command {
     private final Arm arm;
     private final Drive drive;
-    private double distanceToSpeakerBase;
     private double originToBase = .2032;
     private Translation2d speakerPos = WaypointHelper.getSpeakerPos();
     private DriverStation.Alliance alliance = WaypointHelper.getAlliance();
@@ -26,6 +25,7 @@ public class ArmTargetCommand extends Command {
     private double angleBoxArm = 1.41372;
     private double armLength = .6096;
     private double armAngle;
+    private double targetingBias = .042;
     
     private Translation2d speakerHood;
     public ArmTargetCommand(Arm arm, Drive drive) {
@@ -33,7 +33,7 @@ public class ArmTargetCommand extends Command {
         this.drive = drive;
         addRequirements(arm);
         if (alliance == DriverStation.Alliance.Red) {
-            speakerHoodOffset = -0.3048;
+            speakerHoodOffset = -speakerHoodOffset;
         }
         speakerHood = new Translation2d(speakerPos.getX() + speakerHoodOffset, speakerPos.getY());
     }
@@ -41,11 +41,12 @@ public class ArmTargetCommand extends Command {
     @Override
     public void execute() { 
         Pose2d pos = drive.getPoseEstimator().getEstimatedPosition();
-        double groundDistToSpeaker = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - 0.2032);
+        double groundDistToSpeaker = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
         double pivotToHoodTheta = Math.atan2(speakerHeight, groundDistToSpeaker);
         double distPivotToHood = Math.hypot(groundDistToSpeaker, speakerHeight);
         
         armAngle = Math.asin((armLength * Math.sin(angleBoxArm)) / distPivotToHood) + angleBoxArm - pivotToHoodTheta;
-        arm.setReference(new State(armAngle, 0));
+        arm.setReference(new State((armAngle - (targetingBias * groundDistToSpeaker)) / (2 * Math.PI), 0));
+        SmartDashboard.putNumber("Vision Claculated Angle", armAngle);
     }
 }

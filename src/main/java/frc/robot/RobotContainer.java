@@ -144,8 +144,9 @@ public class RobotContainer {
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
-        new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive));
+        //new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
+        //new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
         // new Trigger(secondaryController::getTriangleButton).whileTrue(new SourcePickupCommand(shooter));
         new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0845, secondaryController::getLeftY)); //center note position: 0.11285, 
