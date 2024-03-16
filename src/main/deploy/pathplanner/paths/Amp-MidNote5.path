@@ -3,73 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4582617826204314,
-        "y": 4.092954054853979
+        "x": 0.7825003829739298,
+        "y": 6.812941855050376
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.026020129817799997,
-        "y": -0.973464852260979
+        "x": 1.2163913469774783,
+        "y": 7.73766940542902
       },
       "isLocked": false,
-      "linkedName": "Source-Note"
+      "linkedName": "Amp-Start"
     },
     {
       "anchor": {
-        "x": 7.856907891801732,
-        "y": 2.393577058816881
+        "x": 4.920412053035782,
+        "y": 7.402246913426052
       },
       "prevControl": {
-        "x": 7.107112668557887,
-        "y": 2.297449466093312
+        "x": 3.9800319699366704,
+        "y": 7.953414128806746
       },
       "nextControl": {
-        "x": 8.611115668862425,
-        "y": 2.4902703635682517
+        "x": 5.860792136134894,
+        "y": 6.851079698045358
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.338364962444211,
-        "y": 1.3169480203129034
+        "x": 7.725212102083809,
+        "y": 7.441716435339651
       },
       "prevControl": {
-        "x": 6.453445038037618,
-        "y": 1.1823693904999066
+        "x": 6.713149678947532,
+        "y": 7.467542735232176
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MidNote5"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0.0,
       "rotateFast": false
     }
   ],
-  "constraintZones": [
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.15,
-      "maxWaypointRelativePos": 0.25,
-      "constraints": {
-        "maxVelocity": 1.25,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.8,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -103,11 +91,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source",
+  "folder": "Amp",
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

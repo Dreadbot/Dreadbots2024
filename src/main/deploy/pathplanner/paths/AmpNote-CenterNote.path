@@ -67,7 +67,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SpikeMarks",
   "previewStartingState": null,
   "useDefaultConstraints": true
 }

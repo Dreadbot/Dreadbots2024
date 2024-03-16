@@ -3,47 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.59859163592971,
-        "y": 5.578111669043852
+        "x": 7.6982450645692255,
+        "y": 4.114276034872691
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2009903848867527,
-        "y": 5.589805823486292
+        "x": 6.125532912259327,
+        "y": 4.994423558762372
       },
       "isLocked": false,
-      "linkedName": "Center-Note"
+      "linkedName": "MidNote3"
     },
     {
       "anchor": {
-        "x": 1.359011265031077,
-        "y": 5.578111669043852
+        "x": 5.873612414603292,
+        "y": 7.2397146162606045
       },
       "prevControl": {
-        "x": 1.8735540604984346,
-        "y": 5.566417514601411
+        "x": 6.672849152877536,
+        "y": 6.287221362088996
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Middle-Start"
+      "linkedName": "Throw"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 22.68599377946907,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle",
+  "folder": "Throw",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }
