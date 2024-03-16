@@ -87,10 +87,11 @@ public abstract class Constants {
         public static final int ARM_RIGHT_MOTOR = 14;
         public static final int HORIZONTAL_ARM_SWITCH = 1;
         public static final int VERTICAL_ARM_SWITCH = 2;
-        public static final double ARM_ENCODER_OFFSET = 0.124;
-        public static final double ARM_ENCODER_SCALE = 1.0; // TODO: tune the actual encoder scale
-        public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN; // TODO: tune the actual encoder tolerance
         public static final double ARM_UPPER_LIMIT = .2526;
+        public static final double ARM_LOWER_LIMIT = .0028;
+        public static final double ARM_ENCODER_OFFSET = 0.124 + ARM_LOWER_LIMIT;
+        public static final double ARM_ENCODER_SCALE = 1.10299; // TODO: tune the actual encoder scale
+        public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN; // TODO: tune the actual encoder tolerance
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");

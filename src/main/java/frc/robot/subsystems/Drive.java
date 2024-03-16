@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -32,6 +34,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,6 +44,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
+import util.misc.OnceCell;
 import util.misc.SwerveModule;
 import util.misc.VisionIntegration;
 import util.misc.WaypointHelper;
@@ -85,6 +89,7 @@ public class Drive extends DreadbotSubsystem {
 
     private SlewRateLimiter forwardSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW , -DriveConstants.SLEW, 0);
     private SlewRateLimiter strafeSlewRateLimiter = new SlewRateLimiter(DriveConstants.SLEW, -DriveConstants.SLEW, 0);
+    private OnceCell<Double> networkTablesTimeOffset = new OnceCell<Double>();
 
     private PIDController turningController = new PIDController(0.017, 0.007, 0.004);
     private double targetAngle;
@@ -184,21 +189,27 @@ public class Drive extends DreadbotSubsystem {
         }
         //double gyroOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
+        double timestamp = (double) table.getEntry("robotX").getLastChange() / 1_000_000;
+        double adjustedTimestamp = timestamp + networkTablesTimeOffset.getOrInitialize(() -> {
+            return Timer.getFPGATimestamp() - timestamp;
+        });
+        SmartDashboard.putNumber("Timestamp", timestamp);
+        SmartDashboard.putNumber("Adjusted Timestamp", adjustedTimestamp);
         if (tagSeen.get()){
-            long timestamp = table.getEntry("tagSeen").getLastChange();
             Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), getGyroRotation().getRadians()), 4);
             worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
             this.visionPosePub.set(worldToRobot);
-            poseEstimator.resetPosition(
-                getGyroRotation(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition(),
-                },
-                worldToRobot
-            );
+            poseEstimator.addVisionMeasurement(worldToRobot, adjustedTimestamp);
+            // poseEstimator.resetPosition(
+            //     getGyroRotation(),
+            //     new SwerveModulePosition[] {
+            //         frontLeftModule.getPosition(),
+            //         frontRightModule.getPosition(),
+            //         backLeftModule.getPosition(),
+            //         backRightModule.getPosition(),
+            //     },
+            //     worldToRobot
+            // );
         } else {
             poseEstimator.update(
                 getGyroRotation(),
