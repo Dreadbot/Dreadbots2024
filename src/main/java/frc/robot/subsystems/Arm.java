@@ -128,6 +128,7 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
         SmartDashboard.putNumber("Armstate Position", armState.position);
 
+
         SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
 
         if (Math.abs(joystickOverride) > 0.08) {

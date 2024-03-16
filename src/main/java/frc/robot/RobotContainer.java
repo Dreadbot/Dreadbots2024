@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmTargetCommand;
@@ -30,6 +31,7 @@ import frc.robot.commmands.armCommands.SetArmIdleModeCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
+import frc.robot.commmands.climberCommands.UnbindCommand;
 import frc.robot.commmands.climberCommands.UnlockCommand;
 import frc.robot.commmands.controllerCommands.EmergencyRumbleCommand;
 import frc.robot.commmands.controllerCommands.RumbleController;
@@ -108,16 +110,19 @@ public class RobotContainer {
         new Trigger(primaryController::getStartButton).onTrue(new ResetGyroCommand(drive));
         new Trigger(() -> primaryController.getLeftTriggerAxis() > 0.50).whileTrue(
             new UnlockCommand(climber)
+                .andThen(new UnbindCommand(climber, ClimberConstants.EXTEND_SPEED).withTimeout(0.02))
                 .andThen(new WaitCommand(0.25))
                 .andThen(new ExtendClimbCommand(climber))
         );
         new Trigger(() -> primaryController.getRightTriggerAxis() > 0.50).whileTrue(
             new UnlockCommand(climber)
+                .andThen(new UnbindCommand(climber, ClimberConstants.RETRACT_SPEED).withTimeout(0.02))
                 .andThen(new WaitCommand(0.25))
                 .andThen(new ClimbCommand(climber, drive.getGyro()))
         );
         new Trigger(primaryController::getRightBumper).whileTrue(
             new UnlockCommand(climber)
+                .andThen(new UnbindCommand(climber, ClimberConstants.RETRACT_SPEED).withTimeout(0.02))
                 .andThen(new WaitCommand(0.25))
                 .andThen(new RetractClimbCommand(climber))
         );
