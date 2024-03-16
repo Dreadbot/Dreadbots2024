@@ -128,7 +128,6 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
         SmartDashboard.putNumber("Armstate Position", armState.position);
 
-        double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
 
         SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
 
@@ -148,6 +147,9 @@ public class Arm extends DreadbotSubsystem {
         }
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
         absolutePID.setSetpoint(armState.position);
+
+        double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
+        
         leftMotor.setVoltage(
             // TODO: check if we need to add a clamp to this; SparkPIDControllers do
             PIDoutput +
