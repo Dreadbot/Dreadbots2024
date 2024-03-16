@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
+import frc.robot.commmands.armCommands.ArmTargetCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.armCommands.CalibrateArmCommand;
 import frc.robot.commmands.armCommands.SetArmIdleModeCommand;
@@ -128,7 +129,8 @@ public class RobotContainer {
 
         new Trigger(secondaryController::getBButton).onTrue(new OuttakeCommand(intake));
         new Trigger(secondaryController::getBButton).onFalse(new StopIntakeCommand(intake));
-
+        
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive));
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
