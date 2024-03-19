@@ -77,7 +77,7 @@ public abstract class Constants {
         public static final double MIN_HEIGHT = 10; 
       }
       public static class ArmConstants {
-        public static final double ARM_POSITION_ERROR_MARGIN = 0.0006;
+        public static final double ARM_POSITION_ERROR_MARGIN = 0.0025;
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
         public static final double KG = 0.17; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical

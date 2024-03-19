@@ -64,7 +64,7 @@ public class Arm extends DreadbotSubsystem {
         verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
         
         // TODO: tune PID values
-        absolutePID = new PIDController(48.0, 30.0, 0.0);
+        absolutePID = new PIDController(35.0, 25.0, 2.0);
         absolutePID.setIZone(0.02);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 
@@ -126,7 +126,6 @@ public class Arm extends DreadbotSubsystem {
         SmartDashboard.putBoolean("At Setpoint", absolutePID.atSetpoint());
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
         SmartDashboard.putNumber("Armstate Position", armState.position);
-
 
         SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
 

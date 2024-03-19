@@ -356,7 +356,9 @@ public class Drive extends DreadbotSubsystem {
         resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(180))));
     }
 
-
+    public SwerveDrivePoseEstimator getEstimator() {
+        return this.poseEstimator;
+    }
 
     @Override
     public void close() throws Exception {

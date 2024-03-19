@@ -8,9 +8,13 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -29,6 +33,7 @@ import frc.robot.commmands.armCommands.ArmToPositionCommand;
 import frc.robot.commmands.armCommands.CalibrateArmCommand;
 import frc.robot.commmands.armCommands.SetArmIdleModeCommand;
 import frc.robot.commmands.autonomousCommands.AutoShootCommand;
+import frc.robot.commmands.autonomousCommands.AutoShootVisionCommand;
 import frc.robot.commmands.climberCommands.ExtendClimbCommand;
 import frc.robot.commmands.climberCommands.RetractClimbCommand;
 import frc.robot.commmands.climberCommands.UnbindCommand;
@@ -52,6 +57,7 @@ import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import util.misc.VisionIntegration;
 
 
 
@@ -77,6 +83,8 @@ public class RobotContainer {
 
     private NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
     private NetworkTable visionTable = ntInst.getTable("azathoth");
+    private NetworkTable smartdashboardTable = ntInst.getTable("SmartDashboard");
+    private StructPublisher<Pose2d> autonPosePublisher = smartdashboardTable.getStructTopic("Auton Pose", Pose2d.struct).publish();
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -87,7 +95,12 @@ public class RobotContainer {
         climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
-        arm = new Arm();       
+        arm = new Arm();
+
+        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+            autonPosePublisher.set(pose);
+            VisionIntegration.currentPoseInAuton = pose;
+        });
 
         configureButtonBindings();
         initializeAutonCommands();
@@ -135,7 +148,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBButton).onTrue(new OuttakeCommand(intake));
         new Trigger(secondaryController::getBButton).onFalse(new StopIntakeCommand(intake));
         
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive));
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()));
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
@@ -149,7 +162,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive));
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()));
         //new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
         //new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
@@ -172,7 +185,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        if (!autoChooser.getSelected().getName().equals("1Note-Vision")) {
+            drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        }
         return autoChooser.getSelected();        
     }
 
@@ -190,6 +205,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 6000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1340, 6000));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 6000));
+        NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 6000));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0, () -> 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake, null));

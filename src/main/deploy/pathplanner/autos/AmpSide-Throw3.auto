@@ -32,14 +32,14 @@
                 "data": {
                   "pathName": "Amp-MidNote5"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
           }
         },
         {
