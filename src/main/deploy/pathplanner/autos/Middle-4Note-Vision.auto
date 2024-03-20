@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.73,
-      "y": 6.728931490649867
+      "x": 1.252942271692507,
+      "y": 5.565787618694676
     },
-    "rotation": 61.049004792533225
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -26,19 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpSide-AmpNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpNote-AmpSide"
+            "pathName": "Middle-AmpNote"
           }
         },
         {
@@ -50,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-Subwoofer"
+            "name": "Shoot-Vision"
           }
         },
         {
@@ -62,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpSide-Leave"
+            "pathName": "AmpNote-CenterNote"
           }
         },
         {
@@ -70,10 +58,46 @@
           "data": {
             "name": "Stop"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterNote-SourceNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
         }
       ]
     }
   },
-  "folder": "AmpSide",
+  "folder": "Middle",
   "choreoAuto": false
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.359011265031077,
+        "x": 2.413492723174905,
         "y": 5.578111669043852
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8980851488936976,
-        "y": 5.578111669043852
+        "x": 1.7469364406478207,
+        "y": 5.383557993144931
       },
       "isLocked": false,
-      "linkedName": "Middle-Start"
+      "linkedName": "Center-Note"
     },
     {
       "anchor": {
         "x": 2.413492723174905,
-        "y": 5.578111669043852
+        "y": 6.753300581921677
       },
       "prevControl": {
-        "x": 1.7937025377255882,
-        "y": 5.589805823486292
+        "x": 1.3211278310021006,
+        "y": 6.199870064448106
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center-Note"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,9 +33,9 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.7,
       "command": {
-        "type": "sequential",
+        "type": "deadline",
         "data": {
           "commands": [
             {
@@ -47,13 +47,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 1.75
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "StopIntake"
+                "waitTime": 1.5
               }
             }
           ]
@@ -62,18 +56,18 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 27.763244890348673,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle",
+  "folder": "SpikeMarks",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

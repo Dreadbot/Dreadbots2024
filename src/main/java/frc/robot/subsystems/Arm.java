@@ -63,9 +63,8 @@ public class Arm extends DreadbotSubsystem {
         horizontalSwitch = new DigitalInput(ArmConstants.HORIZONTAL_ARM_SWITCH);
         verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
         
-        // TODO: tune PID values
-        absolutePID = new PIDController(35.0, 25.0, 2.0);
-        absolutePID.setIZone(0.02);
+        absolutePID = new PIDController(40.0, 20.0, 0.0);
+        absolutePID.setIZone(0.01);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 
         limitSwitchEventLoop = new EventLoop();
@@ -105,7 +104,7 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setD(0.0);
         horizontalEvent
             .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
-            .ifHigh(() -> { 
+            .ifHigh(() -> {
             horizontalSwitchCalibrated = true;
             leftMotor.getEncoder().setPosition(0.0076);
             });
@@ -197,8 +196,7 @@ public class Arm extends DreadbotSubsystem {
     }
 
     public boolean isAtDesiredState() {
-        // return Math.abs(this.desiredArmState.position - this.armState.position) < Constants.ArmConstants.ARM_POSITION_ERROR_MARGIN;
-        return this.absolutePID.atSetpoint();
+        return Math.abs(this.desiredArmState.position - this.getEncoderPosition()) < Constants.ArmConstants.ARM_POSITION_ERROR_MARGIN;
     }
 
     public void setReference(State target) {

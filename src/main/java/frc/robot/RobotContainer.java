@@ -23,8 +23,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
@@ -99,7 +102,6 @@ public class RobotContainer {
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
             autonPosePublisher.set(pose);
-            VisionIntegration.currentPoseInAuton = pose;
         });
 
         configureButtonBindings();
@@ -148,7 +150,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBButton).onTrue(new OuttakeCommand(intake));
         new Trigger(secondaryController::getBButton).onFalse(new StopIntakeCommand(intake));
         
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()));
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
@@ -158,7 +160,7 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 6000, secondaryController)));
+        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 6500, secondaryController)));
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
@@ -167,7 +169,7 @@ public class RobotContainer {
         //new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
         // new Trigger(secondaryController::getTriangleButton).whileTrue(new SourcePickupCommand(shooter));
-        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0845, secondaryController::getLeftY)); //center note position: 0.11285, 
+        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0906, secondaryController::getLeftY)); //center note position: 0.11285, 
         new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.09908, secondaryController::getLeftY));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
@@ -201,15 +203,21 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0845, 6000));
-        NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 6000));
-        NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1340, 6000));
-        NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 6000));
-        NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 6000));
-        NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, 0, () -> 0));
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0906, 6000));
+        NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 6500));
+        NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1340, 6500));
+        NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 6500));
+        NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 6500));
+        NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, ArmConstants.ARM_LOWER_LIMIT, () -> 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake, null));
         NamedCommands.registerCommand("StopIntake", new StopIntakeCommand(intake));
+        NamedCommands.registerCommand("Rev-Shooter", new InstantCommand(() -> {
+            shooter.shoot(6500);
+        }));
+        NamedCommands.registerCommand("Stop-Shooter", new InstantCommand(() -> {
+            shooter.shoot(0);
+        }));
     }
 
     public void disabledPeriodic() {

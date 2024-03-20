@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.WheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,10 +26,10 @@ public class ArmTargetCommand extends Command {
     private DriverStation.Alliance alliance = WaypointHelper.getAlliance();
     private double speakerHoodOffset = 0.3048;
     private double speakerHeight = 2.1336;
-    private double angleBoxArm = 1.41372;
+    private final double angleBoxArm = 1.3788 ;// 1.41372
     private double armLength = .6096;
     private double armAngle;
-    private double targetingBias = .042;
+    private double targetingBias = -0.01;
     
     private Translation2d speakerHood;
     public ArmTargetCommand(Arm arm, PoseEstimator poseEstimator) {
@@ -42,7 +43,7 @@ public class ArmTargetCommand extends Command {
     }
 
     @Override
-    public void execute() { 
+    public void execute() {
         Pose2d pos = poseEstimator.getEstimatedPosition();
         double groundDistToSpeaker = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
         double pivotToHoodTheta = Math.atan2(speakerHeight, groundDistToSpeaker);
