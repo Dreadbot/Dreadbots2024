@@ -160,11 +160,7 @@ public class RobotContainer {
                 .andThen(new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.4)))
                 .andThen(new StopShootCommand(shooter))); */
-<<<<<<< Updated upstream
-        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 6500, secondaryController)));
-=======
-        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 5000, secondaryController)));
->>>>>>> Stashed changes
+        new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 4000, secondaryController)));
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
