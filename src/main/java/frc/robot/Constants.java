@@ -78,6 +78,7 @@ public abstract class Constants {
       }
       public static class ArmConstants {
         public static final double ARM_POSITION_ERROR_MARGIN = 0.0030;
+        public static final double ARM_POSITION_ERROR_MARGIN_AUTON = 0.0050;
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
         public static final double KG = 0.17; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical
@@ -91,9 +92,9 @@ public abstract class Constants {
         public static final double ARM_LOWER_LIMIT = .0189;
         // public static final double ARM_ENCODER_OFFSET = 0.124 + ARM_LOWER_LIMIT;
         public static final double ARM_ENCODER_OFFSET = 0.105;//0.1467;
-        // public static final double ARM_ENCODER_SCALE = 1.10299; // TODO: tune the actual encoder scale
+        // public static final double ARM_ENCODER_SCALE = 1.10299;
         public static final double ARM_ENCODER_SCALE = 1.0; //1.14038;
-        public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN; // TODO: tune the actual encoder tolerance
+        public static final double ARM_ENCODER_TOLERANCE = ARM_POSITION_ERROR_MARGIN;
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");

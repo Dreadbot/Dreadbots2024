@@ -197,7 +197,7 @@ public class Drive extends DreadbotSubsystem {
         });
         SmartDashboard.putNumber("Timestamp", timestamp);
         SmartDashboard.putNumber("Adjusted Timestamp", adjustedTimestamp);
-        if (tagSeen.get()){
+        if (tagSeen.get() && !DriverStation.isAutonomous()){
             Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), getGyroRotation().getRadians()), 4);
             worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
             this.visionPosePub.set(worldToRobot);
@@ -248,12 +248,14 @@ public class Drive extends DreadbotSubsystem {
     // make sure to input speed, not percentage!!!!!
     // xSpeed is forward, ySpeed is strafe -- because of ChassisSpeeds
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
+          return;
+        }
 
         if (doLockon) {
             double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
             
-            System.out.println(poseEstimator.getEstimatedPosition());
             deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
 
             rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
@@ -265,10 +267,6 @@ public class Drive extends DreadbotSubsystem {
         //         rot = turningController.calculate(gyro.getRotation2d().getDegrees() % 360, targetAngle);
         //     }
         // }
-        
-        if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
-          return;
-        }
       
         xSpeed = strafeSlewRateLimiter.calculate(xSpeed);
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);

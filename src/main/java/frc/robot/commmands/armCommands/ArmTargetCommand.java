@@ -19,8 +19,6 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Shooter;
 import util.misc.WaypointHelper;
 
-
-
 public class ArmTargetCommand extends Command {
     private final Arm arm;
     private final PoseEstimator poseEstimator;
@@ -28,7 +26,7 @@ public class ArmTargetCommand extends Command {
     private double armToEndOfPizza = .2413; // I don't know about this number you guys probably have to measure
     private double g = -9.8;
     private double deltaX = 0; // delta x and delta h are random values that are close enough to their actual
-    private double hBase = .2; // should be height of arm pivet, I don't know this value
+    private double hBase = .1778; // should be height of arm pivet, I don't know this value
     private double deltaH = .8;
     private double targetH = 2.1336;
     private double armLength = .6096;
@@ -61,7 +59,7 @@ public class ArmTargetCommand extends Command {
     @Override
     public void execute() {
         Pose2d pos = poseEstimator.getEstimatedPosition();
-        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
+        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY()) - originToBase;
 
         for(int i = 0; i < 20; i++) {
             hNought = hBase + deltaH;

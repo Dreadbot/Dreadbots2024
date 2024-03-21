@@ -2,13 +2,7 @@
   "robotWidth": 0.914,
   "robotLength": 0.914,
   "holonomicMode": true,
-  "pathFolders": [
-    "Amp",
-    "Middle",
-    "Throw",
-    "Source",
-    "SpikeMarks"
-  ],
+  "pathFolders": [],
   "autoFolders": [
     "AmpSide",
     "Middle",
