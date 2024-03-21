@@ -36,18 +36,20 @@ public class ArmTargetCommand extends Command {
         this.arm = arm;
         this.poseEstimator = poseEstimator;
         addRequirements(arm);
-        if (alliance == DriverStation.Alliance.Red) {
-            speakerHoodOffset = -speakerHoodOffset;
-        }
         speakerHood = new Translation2d(speakerPos.getX() + speakerHoodOffset, speakerPos.getY());
     }
 
     @Override
     public void execute() {
+        speakerPos = WaypointHelper.getSpeakerPos();
+        if (alliance == DriverStation.Alliance.Red) {
+            speakerHoodOffset = -Math.abs(speakerHoodOffset);
+        }
         Pose2d pos = poseEstimator.getEstimatedPosition();
-        double groundDistToSpeaker = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
+        double groundDistToSpeaker = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY()) - originToBase;
         double pivotToHoodTheta = Math.atan2(speakerHeight, groundDistToSpeaker);
         double distPivotToHood = Math.hypot(groundDistToSpeaker, speakerHeight);
+        SmartDashboard.putNumber("Distance Pivot to Hood", distPivotToHood);
         
         armAngle = Math.asin((armLength * Math.sin(angleBoxArm)) / distPivotToHood) + angleBoxArm - pivotToHoodTheta;
         arm.setReference(new State((armAngle - (targetingBias * groundDistToSpeaker)) / (2 * Math.PI), 0));

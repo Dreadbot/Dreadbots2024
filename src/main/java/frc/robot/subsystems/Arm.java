@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -196,7 +197,8 @@ public class Arm extends DreadbotSubsystem {
     }
 
     public boolean isAtDesiredState() {
-        return Math.abs(this.desiredArmState.position - this.getEncoderPosition()) < Constants.ArmConstants.ARM_POSITION_ERROR_MARGIN;
+        double margin = DriverStation.isAutonomous() ? ArmConstants.ARM_POSITION_ERROR_MARGIN_AUTON : ArmConstants.ARM_POSITION_ERROR_MARGIN;
+        return Math.abs(this.desiredArmState.position - this.getEncoderPosition()) < margin;
     }
 
     public void setReference(State target) {
