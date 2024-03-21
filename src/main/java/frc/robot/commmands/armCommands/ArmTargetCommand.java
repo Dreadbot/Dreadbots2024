@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.WheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +23,7 @@ import util.misc.WaypointHelper;
 
 public class ArmTargetCommand extends Command {
     private final Arm arm;
-    private final Drive drive;
+    private final PoseEstimator poseEstimator;
     private double fixedAngle = 1.41372;
     private double armToEndOfPizza = .2413; // I don't know about this number you guys probably have to measure
     private double g = -9.8;
@@ -47,7 +48,7 @@ public class ArmTargetCommand extends Command {
 
     private double vNought = 16; // I don't know what you guys want this to be
 
-    public ArmTargetCommand(Arm arm, Drive drive) {
+    public ArmTargetCommand(Arm arm, PoseEstimator poseEstimator) {
         this.arm = arm;
         this.poseEstimator = poseEstimator;
         addRequirements(arm);
@@ -59,7 +60,7 @@ public class ArmTargetCommand extends Command {
 
     @Override
     public void execute() {
-        Pose2d pos = drive.getPoseEstimator().getEstimatedPosition();
+        Pose2d pos = poseEstimator.getEstimatedPosition();
         double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
 
         for(int i = 0; i < 20; i++) {
@@ -69,7 +70,7 @@ public class ArmTargetCommand extends Command {
             b = D;
             c = hNought + a - targetH;
 
-            horizontalAngle = Math.atan((-b + Math.sqrt(Math.pow(b, 2) - 4*a*c))/(2 * a));
+            horizontalAngle = Math.atan((-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a));
             armAngle = fixedAngle - horizontalAngle;
             deltaH = armLength * Math.sin(fixedAngle - horizontalAngle) + armToEndOfPizza * Math.sin(horizontalAngle);
             deltaX = armLength * Math.cos(armAngle);
