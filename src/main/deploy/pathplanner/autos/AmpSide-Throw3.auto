@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.359011265031077,
-      "y": 5.578111669043852
+      "x": 0.7825003829739298,
+      "y": 6.812941855050376
     },
-    "rotation": 0
+    "rotation": 58.66704824484896
   },
   "command": {
     "type": "sequential",
@@ -18,15 +18,34 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DropArm"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp-MidNote5"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "DropArm"
+            "name": "Stop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle-CenterNote"
+            "pathName": "MidNote5-Throw"
           }
         },
         {
@@ -38,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CenterNote-Middle"
+            "pathName": "Throw-MidNote4"
           }
         },
         {
@@ -48,21 +67,33 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot-Subwoofer"
+            "pathName": "MidNote4-Throw"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DropArm"
+            "name": "Stop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleSide-Leave"
+            "pathName": "Throw-MidNote3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidNote3-Throw"
           }
         },
         {
@@ -74,6 +105,6 @@
       ]
     }
   },
-  "folder": "Middle",
+  "folder": "AmpSide",
   "choreoAuto": false
 }

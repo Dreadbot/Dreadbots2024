@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.359011265031077,
-        "y": 5.578111669043852
+        "x": 0.7825003829739298,
+        "y": 6.812941855050376
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8980851488936976,
-        "y": 5.578111669043852
+        "x": 1.2163913469774783,
+        "y": 7.73766940542902
       },
       "isLocked": false,
-      "linkedName": "Middle-Start"
+      "linkedName": "Amp-Start"
     },
     {
       "anchor": {
-        "x": 2.413492723174905,
-        "y": 5.578111669043852
+        "x": 4.920412053035782,
+        "y": 7.402246913426052
       },
       "prevControl": {
-        "x": 1.7937025377255882,
-        "y": 5.589805823486292
+        "x": 3.9800319699366704,
+        "y": 7.953414128806746
+      },
+      "nextControl": {
+        "x": 5.860792136134894,
+        "y": 6.851079698045358
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.725212102083809,
+        "y": 7.441716435339651
+      },
+      "prevControl": {
+        "x": 6.713149678947532,
+        "y": 7.467542735232176
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center-Note"
+      "linkedName": "MidNote5"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "sequential",
         "data": {
@@ -62,8 +84,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -73,7 +95,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle",
+  "folder": "Amp",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

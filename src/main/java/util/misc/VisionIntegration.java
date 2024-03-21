@@ -24,6 +24,7 @@ public class VisionIntegration {
         new Pose2d(DreadbotMath.inchesToMeters(182.73), DreadbotMath.inchesToMeters(177.10), Rotation2d.fromDegrees(120)),
         new Pose2d(DreadbotMath.inchesToMeters(182.73), DreadbotMath.inchesToMeters(146.19), Rotation2d.fromDegrees(240)),
     };
+    public static Pose2d currentPoseInAuton = new Pose2d();
 
     public static Pose2d getApriltagPose(int tagId) {
         return tagVectors[tagId - 1];

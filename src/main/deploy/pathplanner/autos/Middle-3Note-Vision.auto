@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.252942271692507,
-      "y": 5.565787618694676
+      "x": 1.359011265031077,
+      "y": 5.578111669043852
     },
     "rotation": 0
   },
@@ -14,13 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle-AmpNote"
+            "pathName": "Middle-CenterNote"
           }
         },
         {
@@ -32,25 +38,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpNote-CenterNote"
+            "name": "Shoot-Vision"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "name": "DropArm"
           }
         },
         {
@@ -68,7 +62,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         }
       ]

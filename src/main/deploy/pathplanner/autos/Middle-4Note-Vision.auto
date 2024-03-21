@@ -14,7 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         },
         {
@@ -32,7 +38,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         },
         {
@@ -50,7 +62,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         },
         {
@@ -68,7 +86,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
           }
         }
       ]
