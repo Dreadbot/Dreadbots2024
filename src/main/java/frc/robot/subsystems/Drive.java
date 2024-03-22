@@ -20,7 +20,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
@@ -59,6 +61,7 @@ public class Drive extends DreadbotSubsystem {
 
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
+    private SwerveDriveOdometry odometry;
 
     public boolean doLockon = false;
     public double deltaTheta = 0.0;
@@ -156,17 +159,26 @@ public class Drive extends DreadbotSubsystem {
                     backLeftModule.getPosition(),
                     backRightModule.getPosition()
                 },
-                new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(0)))
+                new Pose2d()
+            );
+            odometry = new SwerveDriveOdometry(kinematics, 
+                getGyroRotation(),
+                new SwerveModulePosition[] {
+                    frontLeftModule.getPosition(),
+                    frontRightModule.getPosition(),
+                    backLeftModule.getPosition(),
+                    backRightModule.getPosition()
+                }
             );
             poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.0));
             AutoBuilder.configureHolonomic(
-                this::getPosition, 
+                this::getOdometryPosition, 
                 this::resetOdometry,
                 this::getSpeeds,
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
                     new PIDConstants(1.2, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(2.1, 0.1),
+                    new PIDConstants(1.2, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Math.hypot(SwerveConstants.MODULE_X_OFFSET, SwerveConstants.MODULE_Y_OFFSET),
                     new ReplanningConfig()
@@ -187,13 +199,22 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        odometry.update(
+            getGyroRotation(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition(),
+            } 
+        );
         //double gyroOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
         double timestamp = (double) table.getEntry("robotX").getLastChange() / 1_000_000;
         double adjustedTimestamp = timestamp + networkTablesTimeOffset.getOrInitialize(() -> {
-            return Timer.getFPGATimestamp() - timestamp;
+            return Timer.getFPGATimestamp() - timestamp;    
         });
         SmartDashboard.putNumber("Timestamp", timestamp);
         SmartDashboard.putNumber("Adjusted Timestamp", adjustedTimestamp);
@@ -238,11 +259,6 @@ public class Drive extends DreadbotSubsystem {
         });
         this.gyroPub.set(gyro.getRotation2d());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
-        SmartDashboard.putNumber("Front Left Module Speed", Math.abs(frontLeftModule.getState().speedMetersPerSecond));
-        SmartDashboard.putNumber("Front Right Module Speed", Math.abs(frontRightModule.getState().speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Left Module Speed", Math.abs(backLeftModule.getState().speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Right Module Speed", Math.abs(backRightModule.getState().speedMetersPerSecond));
-        SmartDashboard.putNumber("Desired Front Left Module Speed", Math.abs(frontLeftModule.desiredState.speedMetersPerSecond));
     }
 
     // make sure to input speed, not percentage!!!!!
@@ -289,7 +305,18 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
-        poseEstimator.resetPosition(getGyroRotation(),
+        poseEstimator.resetPosition(
+            getGyroRotation(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            },
+            pose
+        );
+        odometry.resetPosition(
+            getGyroRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -303,6 +330,10 @@ public class Drive extends DreadbotSubsystem {
     public Pose2d getPosition() {
         return poseEstimator.getEstimatedPosition();
     }
+     public Pose2d getOdometryPosition() {
+        return odometry.getPoseMeters();
+    }
+    
 
     private Rotation2d getGyroRotation() {
         return gyro.getRotation2d();
@@ -326,7 +357,6 @@ public class Drive extends DreadbotSubsystem {
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(targetSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         setDesiredStates(swerveModuleStates);
-
     }
 
 

@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -71,7 +72,7 @@ import util.misc.VisionIntegration;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-
+    public final DigitalInput toPi = new DigitalInput(9);
     
     private final XboxController primaryController = new XboxController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final XboxController secondaryController = new XboxController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
@@ -205,7 +206,7 @@ public class RobotContainer {
     public void initializeAutonCommands() {
         NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0906, 4000));
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 4000));
-        NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1239, 4000));
+        NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1300, 4500));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 4000));
         NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 4000));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, ArmConstants.ARM_LOWER_LIMIT, () -> 0));

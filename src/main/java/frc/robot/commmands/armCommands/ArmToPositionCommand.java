@@ -26,8 +26,9 @@ public class ArmToPositionCommand extends Command {
 
     @Override
     public void end(boolean canceled) {
-        System.out.println(canceled);
-        arm.setReference(new State(arm.getEncoderPosition(), 0));
+        if(canceled) {
+            arm.setReference(new State(arm.getEncoderPosition(), 0));
+        }
     }
 
     @Override

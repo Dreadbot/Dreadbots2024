@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7825003829739298,
-      "y": 6.812941855050376
+      "x": 0.7392210795817603,
+      "y": 6.700750495518085
     },
     "rotation": 61.049004792533225
   },
@@ -51,6 +51,18 @@
           "type": "path",
           "data": {
             "pathName": "AmpNote2.5-MidNote5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidNote5-PullBack"
           }
         },
         {

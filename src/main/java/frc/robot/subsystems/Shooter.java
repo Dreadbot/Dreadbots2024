@@ -52,11 +52,11 @@ public class Shooter extends DreadbotSubsystem {
         leaderPidController.setP(0.000);
         leaderPidController.setI(0.0);
         leaderPidController.setD(0.00);
-        leaderPidController.setFF(0.000185);
+        leaderPidController.setFF(0.00019);
         followerPidController.setP(0.000);
         followerPidController.setI(0.0);
         followerPidController.setD(0.00);
-        followerPidController.setFF(0.000185);
+        followerPidController.setFF(0.00019);
     }
     @Override
     public void periodic() {
