@@ -208,7 +208,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 4000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1300, 4500));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 4000));
-        NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 4000));
+        NamedCommands.registerCommand("Shoot-Vision", new AutoShootVisionCommand(intake, arm, shooter, drive, 5000));
         NamedCommands.registerCommand("DropArm", new ArmToPositionCommand(arm, ArmConstants.ARM_LOWER_LIMIT, () -> 0));
         NamedCommands.registerCommand("Stop", new StopDriveCommand(drive));
         NamedCommands.registerCommand("Intake", new IntakeCommand(intake, null));

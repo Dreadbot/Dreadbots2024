@@ -64,7 +64,7 @@ public class Arm extends DreadbotSubsystem {
         horizontalSwitch = new DigitalInput(ArmConstants.HORIZONTAL_ARM_SWITCH);
         verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
         
-        absolutePID = new PIDController(40.0, 20.0, 0.0);
+        absolutePID = new PIDController(45.0, 20.0, 0.0);
         absolutePID.setIZone(0.01);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 

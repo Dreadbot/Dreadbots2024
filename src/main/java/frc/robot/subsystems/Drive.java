@@ -55,7 +55,6 @@ public class Drive extends DreadbotSubsystem {
 
     private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
-    private SwerveDriveOdometry odometry;
 
     public boolean doLockon = false;
     public double deltaTheta = 0.0;
@@ -155,18 +154,9 @@ public class Drive extends DreadbotSubsystem {
                 },
                 new Pose2d()
             );
-            odometry = new SwerveDriveOdometry(kinematics, 
-                getGyroRotation(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition()
-                }
-            );
             poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.0));
             AutoBuilder.configureHolonomic(
-                this::getOdometryPosition, 
+                this::getPosition, 
                 this::resetOdometry,
                 this::getSpeeds,
                 this::followSpeeds,
@@ -193,20 +183,11 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
-        odometry.update(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition(),
-            } 
-        );
         //double gyroOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
-        double timestamp = (double) table.getEntry("robotX").getLastChange() / 1_000_000;
+        double timestamp = table.getEntry("robotX").getLastChange() / 1_000_000.0;
         double adjustedTimestamp = timestamp + networkTablesTimeOffset.getOrInitialize(() -> {
             return Timer.getFPGATimestamp() - timestamp;    
         });
@@ -309,25 +290,11 @@ public class Drive extends DreadbotSubsystem {
             },
             pose
         );
-        odometry.resetPosition(
-            getGyroRotation(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            },
-            pose
-        );
     }
 
     public Pose2d getPosition() {
         return poseEstimator.getEstimatedPosition();
     }
-     public Pose2d getOdometryPosition() {
-        return odometry.getPoseMeters();
-    }
-    
 
     private Rotation2d getGyroRotation() {
         return gyro.getRotation2d();

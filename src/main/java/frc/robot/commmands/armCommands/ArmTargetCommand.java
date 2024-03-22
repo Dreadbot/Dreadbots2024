@@ -43,7 +43,7 @@ public class ArmTargetCommand extends Command {
     private double armAngle;
     private double armRot;
     private Translation2d speakerHood;
-    private final double targetBias = -0.005;
+    private final double targetBias = -0.006;
 
     private double vNought = (4 * Math.PI * 0.0254 * 4000)/60; // I don't know what you guys want this to be
 
@@ -80,5 +80,17 @@ public class ArmTargetCommand extends Command {
         SmartDashboard.putNumber("Target Angle", armAngle);
         SmartDashboard.putNumber("Target Box Height", hNought);
         arm.setReference(new State(armRot, 0));
+    }
+
+    @Override
+    public boolean isFinished() {
+        return arm.isAtDesiredState();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            arm.setReference(new State(arm.getEncoderPosition(), 0));
+        }
     }
 }

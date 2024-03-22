@@ -38,37 +38,63 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-AmpSide"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DropArm"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "AmpNote2.5-MidNote5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidNote5-AmpNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "DropArm"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpNote2.5-MidNote5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "MidNote5-PullBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
           }
         }
       ]
