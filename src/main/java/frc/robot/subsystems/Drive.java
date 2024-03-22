@@ -178,7 +178,7 @@ public class Drive extends DreadbotSubsystem {
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
                     new PIDConstants(1.2, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(1.2, 0.1),
+                    new PIDConstants(0.8, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Math.hypot(SwerveConstants.MODULE_X_OFFSET, SwerveConstants.MODULE_Y_OFFSET),
                     new ReplanningConfig()
