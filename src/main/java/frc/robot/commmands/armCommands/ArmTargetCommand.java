@@ -59,13 +59,7 @@ public class ArmTargetCommand extends Command {
     @Override
     public void execute() {
         Pose2d pos = poseEstimator.getEstimatedPosition();
-<<<<<<< HEAD
-        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY()) - originToBase;
-||||||| feb9b2c
-        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY() - originToBase);
-=======
         double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY())- originToBase;
->>>>>>> origin/vision-target-gravity
 
         for(int i = 0; i < 20; i++) {
             hNought = hBase + deltaH;
@@ -74,13 +68,7 @@ public class ArmTargetCommand extends Command {
             b = D;
             c = hNought + a - targetH;
 
-<<<<<<< HEAD
-            horizontalAngle = Math.atan((-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a));
-||||||| feb9b2c
-            horizontalAngle = Math.atan((-b + Math.sqrt(Math.pow(b, 2) - 4*a*c))/(2 * a));
-=======
             horizontalAngle = Math.atan2((-b + Math.sqrt(Math.pow(b, 2) - 4*a*c)),(2 * a));
->>>>>>> origin/vision-target-gravity
             armAngle = fixedAngle - horizontalAngle;
             deltaH = armLength * Math.sin(fixedAngle - horizontalAngle) + armToEndOfPizza * Math.sin(horizontalAngle);
             deltaX = armLength * Math.cos(armAngle);
