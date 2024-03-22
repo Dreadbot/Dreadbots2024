@@ -11,6 +11,7 @@ public class WaypointHelper {
         }
         return new Translation2d(-0.0381, 5.547868);
     }
+    
     public static DriverStation.Alliance getAlliance() {
         if(DriverStation.getAlliance().isPresent()) {
             return DriverStation.getAlliance().get();

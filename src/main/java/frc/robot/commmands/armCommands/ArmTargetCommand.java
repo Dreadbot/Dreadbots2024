@@ -43,23 +43,24 @@ public class ArmTargetCommand extends Command {
     private double armAngle;
     private double armRot;
     private Translation2d speakerHood;
+    private final double targetBias = -0.005;
 
-    private double vNought = 16; // I don't know what you guys want this to be
+    private double vNought = (4 * Math.PI * 0.0254 * 4000)/60; // I don't know what you guys want this to be
 
     public ArmTargetCommand(Arm arm, PoseEstimator poseEstimator) {
         this.arm = arm;
         this.poseEstimator = poseEstimator;
         addRequirements(arm);
-        if(alliance == DriverStation.Alliance.Red) {
-            speakerHoodOffset = -0.3048;
-        }
-        speakerHood = new Translation2d(speakerPos.getX() + speakerHoodOffset, speakerPos.getY());
     }
 
     @Override
     public void execute() {
+        speakerHoodOffset = 0.3048 * (WaypointHelper.getAlliance() == DriverStation.Alliance.Red ? -1 : 1);
+        speakerPos = WaypointHelper.getSpeakerPos();
+        speakerHood = new Translation2d(speakerPos.getX() + speakerHoodOffset, speakerPos.getY());
+
         Pose2d pos = poseEstimator.getEstimatedPosition();
-        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY()) - originToBase;
+        double targetBoxX = Math.hypot(speakerHood.getX() - pos.getX(), speakerHood.getY() - pos.getY())- originToBase;
 
         for(int i = 0; i < 20; i++) {
             hNought = hBase + deltaH;
@@ -68,13 +69,16 @@ public class ArmTargetCommand extends Command {
             b = D;
             c = hNought + a - targetH;
 
-            horizontalAngle = Math.atan((-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a));
+            horizontalAngle = Math.atan2((-b + Math.sqrt(Math.pow(b, 2) - 4*a*c)),(2 * a));
             armAngle = fixedAngle - horizontalAngle;
             deltaH = armLength * Math.sin(fixedAngle - horizontalAngle) + armToEndOfPizza * Math.sin(horizontalAngle);
             deltaX = armLength * Math.cos(armAngle);
         }
-        armRot = armAngle / (2 * Math.PI);
+        armRot = (armAngle / (2 * Math.PI)) + targetBias * targetBoxX;
         SmartDashboard.putNumber("Vision Target Command Angle", armRot);
+        SmartDashboard.putNumber("Distance To Speaker Base", targetBoxX);
+        SmartDashboard.putNumber("Target Angle", armAngle);
+        SmartDashboard.putNumber("Target Box Height", hNought);
         arm.setReference(new State(armRot, 0));
     }
 }

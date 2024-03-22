@@ -40,7 +40,7 @@ public abstract class Constants {
         public static final double BACK_RIGHT_ENCODER_OFFSET = -0.3903808;
         public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
         public static final double TURN_GEAR_RATIO = 150 / 7;
-        public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.75);
       }
 
       public static class AutonomousConstants {
