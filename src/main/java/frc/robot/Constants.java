@@ -27,6 +27,7 @@ public abstract class Constants {
       public static final double ROT_SPEED_LIMITER = 1.5 * Math.PI;
       public static final double SLEW = 17;
       public static final double SPEED_MODIFIER = 1;
+      
     }
 
     public static class SwerveConstants {
@@ -88,6 +89,8 @@ public abstract class Constants {
         public static final int ARM_RIGHT_MOTOR = 14;
         public static final int HORIZONTAL_ARM_SWITCH = 1;
         public static final int VERTICAL_ARM_SWITCH = 2;
+        public static final int ARM_DUTY_CYCLE_ENCODER = 8;
+        public static final double SET_POSITION_OFFSET = 0.9780;
         public static final double ARM_UPPER_LIMIT = .2685;
         public static final double ARM_LOWER_LIMIT = .0189;
         // public static final double ARM_ENCODER_OFFSET = 0.124 + ARM_LOWER_LIMIT;
@@ -98,7 +101,7 @@ public abstract class Constants {
       }
       public static class ColorSensorConstants {
         public static final Color NOTE_COLOR = new Color("#9F3F1F");
-        public static final double CONFIDENCE = 0.80;
+        public static final double CONFIDENCE = 0.8;
       }
     private Constants() throws IllegalStateException {
         throw new IllegalStateException("Constants is a utility class. It should not be instantiated.");

@@ -19,9 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -32,6 +30,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -67,7 +66,7 @@ public class Drive extends DreadbotSubsystem {
 
     private DoubleSubscriber poseX;
     private DoubleSubscriber poseY;
-    private DoubleSubscriber poseZ;
+    private DoubleSubscriber poseLatency;
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
     private StructPublisher<Pose2d> visionPosePub;
@@ -105,7 +104,7 @@ public class Drive extends DreadbotSubsystem {
         this.table = table;
         this.poseX = table.getDoubleTopic("robotX").subscribe(0.0);
         this.poseY = table.getDoubleTopic("robotY").subscribe(0.0);
-        this.poseZ = table.getDoubleTopic("robotZ").subscribe(0.0);
+        this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0);
         this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
         
         gyro.reset();
@@ -189,38 +188,34 @@ public class Drive extends DreadbotSubsystem {
         // SmartDashboard.putNumber("gyroAngle", getGyroRotation().getRadians() - gyroOffset);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
-        double timestamp = table.getEntry("robotX").getLastChange() / 1_000_000.0;
-        double adjustedTimestamp = timestamp + networkTablesTimeOffset.getOrInitialize(() -> {
-            return Timer.getFPGATimestamp() - timestamp;    
-        });
+        double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
-        SmartDashboard.putNumber("Adjusted Timestamp", adjustedTimestamp);
-        if (tagSeen.get() && !DriverStation.isAutonomous()){
+        if (tagSeen.get()) {
             Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), getGyroRotation().getRadians()), 4);
             worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
             this.visionPosePub.set(worldToRobot);
-            // poseEstimator.addVisionMeasurement(worldToRobot, adjustedTimestamp);
-            poseEstimator.resetPosition(
-                getGyroRotation(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition(),
-                },
-                worldToRobot
-            );
-        } else {
-            poseEstimator.update(
-                getGyroRotation(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition(),
-                }
-            );
+            poseEstimator.addVisionMeasurement(worldToRobot, timestamp);
+            // poseEstimator.resetPosition(
+            //     getGyroRotation(),
+            //     new SwerveModulePosition[] {
+            //         frontLeftModule.getPosition(),
+            //         frontRightModule.getPosition(),
+            //         backLeftModule.getPosition(),
+            //         backRightModule.getPosition(),
+            //     },
+            //     worldToRobot
+            // );
         }
+        poseEstimator.updateWithTime(
+            RobotController.getFPGATime() / 1_000_000.0,
+            getGyroRotation(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition(),
+            }
+        );
         this.posePub.set(poseEstimator.getEstimatedPosition());
         this.swervePub.set(new SwerveModuleState[] {
             frontLeftModule.getState(),
