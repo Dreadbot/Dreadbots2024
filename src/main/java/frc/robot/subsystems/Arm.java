@@ -55,14 +55,14 @@ public class Arm extends DreadbotSubsystem {
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
 
-        this.absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
-        this.absoluteEncoder.setPositionOffset(0.9780);
+        this.absoluteEncoder = new DutyCycleEncoder(new DigitalInput(ArmConstants.ARM_DUTY_CYCLE_ENCODER));
+        this.absoluteEncoder.setPositionOffset(ArmConstants.SET_POSITION_OFFSET);
 
         horizontalSwitch = new DigitalInput(ArmConstants.HORIZONTAL_ARM_SWITCH);
         verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
-        horizontalSwitch = new DigitalInput(1);
-        verticalSwitch = new DigitalInput(2);
-        absoluteEncoder = new DutyCycleEncoder(new DigitalInput(8));
+        horizontalSwitch = new DigitalInput(ArmConstants.HORIZONTAL_ARM_SWITCH);
+        verticalSwitch = new DigitalInput(ArmConstants.VERTICAL_ARM_SWITCH);
+        absoluteEncoder = new DutyCycleEncoder(new DigitalInput(ArmConstants.ARM_DUTY_CYCLE_ENCODER));
         absoluteEncoder.setPositionOffset(ArmConstants.ARM_ENCODER_OFFSET);
         absoluteEncoder.setDistancePerRotation(ArmConstants.ARM_ENCODER_SCALE);
         // TODO: tune PID values
