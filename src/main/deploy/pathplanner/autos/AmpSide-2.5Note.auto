@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7338532709852313,
-      "y": 6.728931490649867
+      "x": 0.7392210795817603,
+      "y": 6.700750495518085
     },
     "rotation": 61.049004792533225
   },
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpSide-AmpNote"
+            "pathName": "AmpSide-AmpNote2.5"
           }
         },
         {
@@ -38,7 +38,57 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-AmpSide"
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DropArm"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "AmpNote2.5-MidNote5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidNote5-AmpNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
           }
         },
         {
@@ -46,22 +96,10 @@
           "data": {
             "name": "DropArm"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpNote-MidNote5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "AmpSide",
   "choreoAuto": false
 }

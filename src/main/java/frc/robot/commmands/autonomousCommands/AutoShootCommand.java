@@ -16,8 +16,9 @@ public class AutoShootCommand extends SequentialCommandGroup {
     public AutoShootCommand(Intake intake, Arm arm, Shooter shooter, double armPosition, double rpm) {
         addCommands(
             new OuttakeCommand(intake).raceWith(new WaitCommand(0.07)),
-            new ShootCommand(shooter, rpm, null)
-                .alongWith(new ArmToPositionCommand(arm, armPosition, () -> 0)),
+            (new ShootCommand(shooter, rpm, null)
+                .alongWith(new ArmToPositionCommand(arm, armPosition, () -> 0)))
+                .withTimeout(3),
             new FeedCommand(intake)
                 .raceWith(new WaitCommand(0.3)),
             new StopShootCommand(shooter)

@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -107,7 +108,7 @@ public class Arm extends DreadbotSubsystem {
         leftPidController.setD(0.0);
         horizontalEvent
             .and(() -> (Math.signum(leftMotor.getEncoder().getVelocity()) < 0 && !horizontalSwitchCalibrated))
-            .ifHigh(() -> { 
+            .ifHigh(() -> {
             horizontalSwitchCalibrated = true;
             leftMotor.getEncoder().setPosition(0.0076);
             });
@@ -121,16 +122,13 @@ public class Arm extends DreadbotSubsystem {
         if (!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
-        this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, 0.0, ArmConstants.ARM_UPPER_LIMIT), desiredArmState.velocity);
 
         SmartDashboard.putNumber("desired position", this.desiredArmState.position);
-        SmartDashboard.putNumber("Absoulte Encoder position", absoluteEncoder.get());
-        SmartDashboard.putNumber("Other Encoder position", absoluteEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Absolute Encoder Rotation", absoluteEncoder.get() * 360);
+        SmartDashboard.putNumber("Absolute Encoder position", absoluteEncoder.get());
         SmartDashboard.putBoolean("At Setpoint", absolutePID.atSetpoint());
         SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
         SmartDashboard.putNumber("Armstate Position", armState.position);
-
-        double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
 
         SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
 
@@ -148,8 +146,11 @@ public class Arm extends DreadbotSubsystem {
                 0
             );
         }
+
+        this.desiredArmState = new State(DreadbotMath.clampValue(desiredArmState.position, ArmConstants.ARM_LOWER_LIMIT, ArmConstants.ARM_UPPER_LIMIT), desiredArmState.velocity);
         this.armState = armProfile.calculate(0.02, armState, desiredArmState);
         absolutePID.setSetpoint(armState.position);
+        double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
         leftMotor.setVoltage(
             // TODO: check if we need to add a clamp to this; SparkPIDControllers do
             PIDoutput +
@@ -199,8 +200,8 @@ public class Arm extends DreadbotSubsystem {
     }
 
     public boolean isAtDesiredState() {
-        // return Math.abs(this.desiredArmState.position - this.armState.position) < Constants.ArmConstants.ARM_POSITION_ERROR_MARGIN;
-        return this.absolutePID.atSetpoint();
+        double margin = DriverStation.isAutonomous() ? ArmConstants.ARM_POSITION_ERROR_MARGIN_AUTON : ArmConstants.ARM_POSITION_ERROR_MARGIN;
+        return Math.abs(this.desiredArmState.position - this.getEncoderPosition()) < margin;
     }
 
     public void setReference(State target) {
