@@ -195,6 +195,7 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+        // drive.getGyro().setAngleAdjustment(-drive.getPosition().getRotation().getDegrees());
         arm.setReference(new State(arm.getEncoderPosition(), 0));
         arm.setArmStartState();
     }

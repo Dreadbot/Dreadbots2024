@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -277,6 +279,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetOdometry(Pose2d pose) {
+        gyro.reset();
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
@@ -290,6 +293,7 @@ public class Drive extends DreadbotSubsystem {
             },
             pose
         );
+        
     }
 
     public Pose2d getPosition() {
