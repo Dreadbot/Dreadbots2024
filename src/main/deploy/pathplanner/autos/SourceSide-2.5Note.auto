@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceShoot-SourceNote"
+            "pathName": "SourceShoot-SourceNote2.5"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-SourceSide"
+            "name": "Shoot-Vision"
           }
         },
         {

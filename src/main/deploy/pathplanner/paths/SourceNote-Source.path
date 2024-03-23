@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4582617826204314,
-        "y": 4.092954054853979
+        "x": 2.4833754585541965,
+        "y": 4.25845235765413
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7098358983042754,
-        "y": 3.8356826571203007
+        "x": 1.7349495742380405,
+        "y": 4.001180959920452
       },
       "isLocked": false,
       "linkedName": "Source-Note"
@@ -73,7 +73,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": true
 }

@@ -73,7 +73,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Middle",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": true
 }

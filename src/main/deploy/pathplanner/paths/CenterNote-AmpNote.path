@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.413492723174905,
-        "y": 6.753300581921677
+        "y": 6.815446324101079
       },
       "prevControl": {
         "x": 1.3211278310021006,
-        "y": 6.199870064448106
+        "y": 6.262015806627508
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "deadline",
         "data": {
@@ -47,7 +47,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 1.5
+                "waitTime": 1.75
               }
             }
           ]
@@ -67,7 +67,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "SpikeMarks",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": true
 }

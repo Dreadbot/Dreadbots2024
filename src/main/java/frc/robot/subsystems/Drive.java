@@ -191,8 +191,13 @@ public class Drive extends DreadbotSubsystem {
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
         if (tagSeen.get()) {
-            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get(), poseY.get(), getGyroRotation().getRadians()), 4);
-            worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(
+                VisionIntegration.robotToWorldFrame(
+                    poseX.get(),
+                    poseY.get(),
+                    getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()),
+                4);
+            worldToRobot = new Pose2d(worldToRobot.getTranslation(), getPoseRotation());
             this.visionPosePub.set(worldToRobot);
             poseEstimator.addVisionMeasurement(worldToRobot, timestamp);
             // poseEstimator.resetPosition(
@@ -297,6 +302,10 @@ public class Drive extends DreadbotSubsystem {
 
     private Rotation2d getGyroRotation() {
         return gyro.getRotation2d();
+    }
+
+    private Rotation2d getPoseRotation() {
+        return getPosition().getRotation();
     }
 
     private ChassisSpeeds getSpeeds() {
