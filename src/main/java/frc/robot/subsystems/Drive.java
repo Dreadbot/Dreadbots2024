@@ -190,7 +190,7 @@ public class Drive extends DreadbotSubsystem {
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
-        if (tagSeen.get()) {
+        if (tagSeen.get() && !DriverStation.isAutonomous()) {
             Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(
                 VisionIntegration.robotToWorldFrame(
                     poseX.get(),
