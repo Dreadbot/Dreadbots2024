@@ -199,13 +199,11 @@ public class Drive extends DreadbotSubsystem {
         if (tagSeen.get()) {
             VisionPosition[] positions = visionPositions.get();
             List<Pose2d> worldPositions = new ArrayList<Pose2d>();
-            System.out.println(positions.length);
             for (VisionPosition position : positions) {
                 Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()), position.ID);
                 worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
                 worldPositions.add(worldToRobot);
             }
-            System.out.println("---");
             double sumX = 0;
             double sumY = 0;
             double sumRot = 0;
