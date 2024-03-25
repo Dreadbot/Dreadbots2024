@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opencv.core.Mat;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -24,7 +27,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.IntegerArraySubscriber;
+import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -64,8 +70,9 @@ public class Drive extends DreadbotSubsystem {
     private final NetworkTable table;
     private final NetworkTable smartDashboard;
 
-    private DoubleSubscriber poseX;
-    private DoubleSubscriber poseY;
+    private DoubleArraySubscriber poseX;
+    private DoubleArraySubscriber poseY;
+    private IntegerArraySubscriber tagID;
     private DoubleSubscriber poseLatency;
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
@@ -102,8 +109,9 @@ public class Drive extends DreadbotSubsystem {
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
 
         this.table = table;
-        this.poseX = table.getDoubleTopic("robotX").subscribe(0.0);
-        this.poseY = table.getDoubleTopic("robotY").subscribe(0.0);
+        this.poseX = table.getDoubleArrayTopic("robotX").subscribe(new double[]{});
+        this.poseY = table.getDoubleArrayTopic("robotY").subscribe(new double[]{});
+        this.tagID = table.getIntegerArrayTopic("tagID").subscribe(new long[] {});
         this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0);
         this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
         
@@ -191,15 +199,31 @@ public class Drive extends DreadbotSubsystem {
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
         if (tagSeen.get()) {
-            Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(
-                VisionIntegration.robotToWorldFrame(
-                    poseX.get(),
-                    poseY.get(),
-                    getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()),
-                4);
-            worldToRobot = new Pose2d(worldToRobot.getTranslation(), getPoseRotation());
-            this.visionPosePub.set(worldToRobot);
-            poseEstimator.addVisionMeasurement(worldToRobot, timestamp);
+            try {
+                List<Pose2d> worldPositions = new ArrayList<Pose2d>();
+                for (int i = 0; i < tagID.get().length; i++) {
+                    Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get()[i], poseY.get()[i], getGyroRotation().getRadians()), (int) tagID.get()[i]);
+                    worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+                    worldPositions.add(worldToRobot);
+                }
+                double sumX = 0;
+                double sumY = 0;
+                double sumRot = 0;
+                for (Pose2d pos : worldPositions) {
+                    sumX += pos.getX();
+                    sumY += pos.getY();
+                    sumRot += pos.getRotation().getRadians();
+                }
+                double avgX = sumX / tagID.get().length;
+                double avgY = sumY / tagID.get().length;
+                double avgRot = sumRot / tagID.get().length;
+
+                Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
+                this.visionPosePub.set(averagedPose);
+                poseEstimator.addVisionMeasurement(averagedPose, timestamp);
+            } catch (IndexOutOfBoundsException err) {
+                
+            }
             // poseEstimator.resetPosition(
             //     getGyroRotation(),
             //     new SwerveModulePosition[] {
