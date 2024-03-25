@@ -159,7 +159,9 @@ public class RobotContainer {
                 .andThen(new StopShootCommand(shooter))); */
         new Trigger(secondaryController::getRightBumper).whileTrue(new OuttakeCommand(intake).raceWith(new WaitCommand(0.04)).andThen(new ShootCommand(shooter, 4000, secondaryController)));
         new Trigger(secondaryController::getRightBumper).onFalse(new StopShootCommand(shooter));
-        new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
+        new Trigger(secondaryController::getBackButton).whileTrue(new ShootCommand(shooter, -2000, secondaryController));
+        new Trigger(secondaryController::getBackButton).onFalse(new StopShootCommand(shooter));
+        new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, 2000, secondaryController).alongWith(new FeedCommand(intake)));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
         new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
         //new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
