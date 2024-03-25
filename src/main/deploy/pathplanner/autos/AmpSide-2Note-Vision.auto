@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7530787895299451,
-      "y": 4.4122565060118415
+      "x": 0.73,
+      "y": 6.728931490649867
     },
-    "rotation": -61.78264414527071
+    "rotation": 61.049004792533225
   },
   "command": {
     "type": "sequential",
@@ -26,19 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceShoot-SourceNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceNote-Source"
+            "pathName": "AmpSide-AmpNote2.5"
           }
         },
         {
@@ -50,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-Subwoofer"
+            "name": "Shoot-Vision"
           }
         },
         {
@@ -58,22 +46,10 @@
           "data": {
             "name": "DropArm"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceSide-Leave"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
         }
       ]
     }
   },
-  "folder": "SourceSide",
+  "folder": "AmpSide",
   "choreoAuto": false
 }

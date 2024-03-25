@@ -34,6 +34,7 @@ import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -50,6 +51,7 @@ import util.misc.DreadbotSubsystem;
 import util.misc.OnceCell;
 import util.misc.SwerveModule;
 import util.misc.VisionIntegration;
+import util.misc.VisionPosition;
 import util.misc.WaypointHelper;
 
 public class Drive extends DreadbotSubsystem {
@@ -70,9 +72,7 @@ public class Drive extends DreadbotSubsystem {
     private final NetworkTable table;
     private final NetworkTable smartDashboard;
 
-    private DoubleArraySubscriber poseX;
-    private DoubleArraySubscriber poseY;
-    private IntegerArraySubscriber tagID;
+    private StructArraySubscriber<VisionPosition> visionPositions;
     private DoubleSubscriber poseLatency;
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
@@ -109,9 +109,7 @@ public class Drive extends DreadbotSubsystem {
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
 
         this.table = table;
-        this.poseX = table.getDoubleArrayTopic("robotX").subscribe(new double[]{});
-        this.poseY = table.getDoubleArrayTopic("robotY").subscribe(new double[]{});
-        this.tagID = table.getIntegerArrayTopic("tagID").subscribe(new long[] {});
+        this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{});
         this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0);
         this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
         
@@ -199,31 +197,30 @@ public class Drive extends DreadbotSubsystem {
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
         if (tagSeen.get()) {
-            try {
-                List<Pose2d> worldPositions = new ArrayList<Pose2d>();
-                for (int i = 0; i < tagID.get().length; i++) {
-                    Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(poseX.get()[i], poseY.get()[i], getGyroRotation().getRadians()), (int) tagID.get()[i]);
-                    worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
-                    worldPositions.add(worldToRobot);
-                }
-                double sumX = 0;
-                double sumY = 0;
-                double sumRot = 0;
-                for (Pose2d pos : worldPositions) {
-                    sumX += pos.getX();
-                    sumY += pos.getY();
-                    sumRot += pos.getRotation().getRadians();
-                }
-                double avgX = sumX / tagID.get().length;
-                double avgY = sumY / tagID.get().length;
-                double avgRot = sumRot / tagID.get().length;
-
-                Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
-                this.visionPosePub.set(averagedPose);
-                poseEstimator.addVisionMeasurement(averagedPose, timestamp);
-            } catch (IndexOutOfBoundsException err) {
-                
+            VisionPosition[] positions = visionPositions.get();
+            List<Pose2d> worldPositions = new ArrayList<Pose2d>();
+            System.out.println(positions.length);
+            for (VisionPosition position : positions) {
+                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()), position.ID);
+                worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+                worldPositions.add(worldToRobot);
             }
+            System.out.println("---");
+            double sumX = 0;
+            double sumY = 0;
+            double sumRot = 0;
+            for (Pose2d pos : worldPositions) {
+                sumX += pos.getX();
+                sumY += pos.getY();
+                sumRot += pos.getRotation().getRadians();
+            }
+            double avgX = sumX / positions.length;
+            double avgY = sumY / positions.length;
+            double avgRot = sumRot / positions.length;
+
+            Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
+            this.visionPosePub.set(averagedPose);
+            poseEstimator.addVisionMeasurement(averagedPose, timestamp);
             // poseEstimator.resetPosition(
             //     getGyroRotation(),
             //     new SwerveModulePosition[] {
