@@ -168,8 +168,8 @@ public class Drive extends DreadbotSubsystem {
                 this::getSpeeds,
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
-                    new PIDConstants(1.2, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(0.8, 0.1),
+                    new PIDConstants(1.8, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                    new PIDConstants(1.8, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Math.hypot(SwerveConstants.MODULE_X_OFFSET, SwerveConstants.MODULE_Y_OFFSET),
                     new ReplanningConfig()
@@ -196,8 +196,9 @@ public class Drive extends DreadbotSubsystem {
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
-        if (tagSeen.get()) {
-            VisionPosition[] positions = visionPositions.get();
+        
+        VisionPosition[] positions = visionPositions.get();
+        if (positions.length > 0) {
             List<Pose2d> worldPositions = new ArrayList<Pose2d>();
             for (VisionPosition position : positions) {
                 Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()), position.ID);

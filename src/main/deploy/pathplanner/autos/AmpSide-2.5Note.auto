@@ -74,15 +74,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "MidNote5-AmpNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "MidNote5-AmpNote"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
