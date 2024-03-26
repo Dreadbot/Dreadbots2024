@@ -33,6 +33,7 @@ import edu.wpi.first.networktables.IntegerArraySubscriber;
 import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
@@ -109,9 +110,9 @@ public class Drive extends DreadbotSubsystem {
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
 
         this.table = table;
-        this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{});
-        this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0);
-        this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false);
+        this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{}, PubSubOption.periodic(0.02));
+        this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0, PubSubOption.periodic(0.02));
+        this.tagSeen = table.getBooleanTopic("tagSeen").subscribe(false, PubSubOption.periodic(0.02));
         
         gyro.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
