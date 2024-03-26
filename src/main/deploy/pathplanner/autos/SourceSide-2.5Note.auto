@@ -65,6 +65,31 @@
           "data": {
             "name": "Stop"
           }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidNote2-SourceNote"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
         }
       ]
     }

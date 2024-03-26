@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.42,
-        "y": 4.29
+        "x": 8.14,
+        "y": 2.97
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0838264611423836,
-        "y": 0.41605801324014924
+        "x": 5.97280707441977,
+        "y": 0.5094762414349199
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.14,
-        "y": 2.970342615158299
+        "x": 1.9162226614851365,
+        "y": 4.066197172206992
       },
       "prevControl": {
-        "x": 6.582732997878176,
-        "y": 2.0763560028291024
+        "x": 1.214491234603079,
+        "y": 1.528428724304756
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.75,
-      "rotationDegrees": 0.0,
+      "rotationDegrees": -37.56999999999999,
       "rotateFast": false
     }
   ],
@@ -48,37 +48,7 @@
       }
     }
   ],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.2,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Intake"
-              }
-            },
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 1.75
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "StopIntake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 2.0,
@@ -86,8 +56,8 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0,
+    "velocity": 0.0,
+    "rotation": -37.56999999999999,
     "rotateFast": false
   },
   "reversed": false,
