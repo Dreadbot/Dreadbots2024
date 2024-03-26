@@ -201,7 +201,7 @@ public class Drive extends DreadbotSubsystem {
         if (positions.length > 0) {
             List<Pose2d> worldPositions = new ArrayList<Pose2d>();
             for (VisionPosition position : positions) {
-                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromRadians(Math.PI)).getRadians()), position.ID);
+                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, new Rotation2d(position.rot).rotateBy(VisionIntegration.getApriltagPose(position.ID).getRotation()).getRadians()), position.ID);
                 worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
                 worldPositions.add(worldToRobot);
             }
