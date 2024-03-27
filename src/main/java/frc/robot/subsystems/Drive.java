@@ -279,10 +279,16 @@ public class Drive extends DreadbotSubsystem {
             double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
             
-            deltaTheta = Math.atan2(distToTagY, distToTagX) - getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians(); //get back of robot
+            double inputRotation = getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians();
+            SmartDashboard.putNumber("Input Rotation", Units.radiansToDegrees(inputRotation));
 
+            double inputTarget = Math.atan2(distToTagY, distToTagX);
+            deltaTheta = inputTarget - inputRotation; //get back of robot
+            
+            SmartDashboard.putNumber("Target Rotation", Units.radiansToDegrees(inputTarget));
+            SmartDashboard.putNumber("Rotation Delta", Units.radiansToDegrees(deltaTheta));
             if (deltaTheta > Math.PI) {
-                deltaTheta = Math.PI * 2 - deltaTheta;
+                deltaTheta = deltaTheta - Math.PI * 2;
             } else if (deltaTheta < -Math.PI) {
                 deltaTheta = Math.PI * 2 + deltaTheta;
             }
@@ -290,11 +296,8 @@ public class Drive extends DreadbotSubsystem {
             if(Math.abs(deltaTheta) >= Math.PI) {
                 System.out.println(deltaTheta);
             }
-    
-
 
             rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta, .1))) * DriveConstants.ROT_SPEED_LIMITER;
-            System.out.println(rot);
         }
         // if (DriverStation.isTeleop()) {
         //     if (DreadbotMath.applyDeadbandToValue(rot, DriveConstants.DEADBAND) != 0) {
@@ -395,6 +398,8 @@ public class Drive extends DreadbotSubsystem {
     }
     public void resetPose() {
         gyro.reset();
+        // 1.36
+        // 15.25
         resetOdometry(new Pose2d(new Translation2d(1.36, 5.54), new Rotation2d()));
     }
 
