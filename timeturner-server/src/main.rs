@@ -17,10 +17,10 @@ static LOCK: AtomicBool = AtomicBool::new(true);
 async fn main() -> std::io::Result<()> {
   let listener = initialise_server()?;
   let chip = Chip::new(get_chip_name()).await?;
-  let opts_in = Options::input([17])
+  let opts_in = Options::input([15])
     .consumer(CONSUMER_NAME)
     .edge(EdgeDetect::Both);
-  let opts_out = Options::output([4]).consumer(CONSUMER_NAME);
+  let opts_out = Options::output([14]).consumer(CONSUMER_NAME);
   let input = chip.request_lines(opts_in).await?;
   let output = chip.request_lines(opts_out).await?;
 

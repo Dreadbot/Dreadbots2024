@@ -1,10 +1,14 @@
 #![feature(once_cell_try)]
+use interprocess::os::unix::udsocket::{tokio::UdStreamListener, UdStream};
+#[cfg(feature = "python")]
+use pyo3::{
+  pyfunction, pymodule, types::PyModule, Bound, IntoPy, Py, PyAny, PyObject,
+  PyResult, Python, ToPyObject,
+};
 use std::{
   io::{Read, Write},
   sync::{Mutex, OnceLock},
 };
-
-use interprocess::os::unix::udsocket::{tokio::UdStreamListener, UdStream};
 
 pub const IPC_STREAM_ID: &'static str = "@timeturner";
 
@@ -15,7 +19,18 @@ pub enum Registration {
   NoServer,
 }
 
+#[cfg(feature = "python")]
+impl IntoPy<Py<PyAny>> for Registration {
+  fn into_py(self, py: Python<'_>) -> PyObject {
+    match self {
+      Registration::Success(val) => val.to_object(py),
+      _ => py.None(),
+    }
+  }
+}
+
 #[no_mangle]
+#[cfg_attr(feature = "python", pyfunction)]
 pub extern "C" fn retrieve_next_id() -> Registration {
   static STREAM: OnceLock<Mutex<UdStream>> = OnceLock::new();
 
@@ -54,4 +69,15 @@ pub fn connect_blocking() -> std::io::Result<UdStream> {
 
 pub fn initialise_server() -> std::io::Result<UdStreamListener> {
   UdStreamListener::bind(IPC_STREAM_ID)
+}
+
+#[cfg(feature = "python")]
+#[pymodule]
+#[pyo3(name = "timeturner")]
+pub fn timeturner(m: &Bound<'_, PyModule>) -> PyResult<()> {
+  use pyo3::wrap_pyfunction;
+
+  m.add_function(wrap_pyfunction!(retrieve_next_id, m)?)?;
+
+  Ok(())
 }
