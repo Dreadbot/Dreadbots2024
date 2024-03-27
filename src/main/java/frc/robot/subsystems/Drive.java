@@ -171,8 +171,8 @@ public class Drive extends DreadbotSubsystem {
                 this::getSpeeds,
                 this::followSpeeds,
                 new HolonomicPathFollowerConfig(
-                    new PIDConstants(1.8, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
-                    new PIDConstants(1.8, 0.1),
+                    new PIDConstants(2.2, 0.1), //MAKE SURE TO CHANGE THIS FOR THIS YEAR BOT!!!! (THESE ARE LAST YEARS VALUES)
+                    new PIDConstants(2.2, 0.1),
                     AutonomousConstants.MAX_SPEED_METERS_PER_SECOND, // keep it slow for right now during testing
                     Math.hypot(SwerveConstants.MODULE_X_OFFSET, SwerveConstants.MODULE_Y_OFFSET),
                     new ReplanningConfig()
@@ -221,10 +221,15 @@ public class Drive extends DreadbotSubsystem {
             double avgX = sumX / positions.length;
             double avgY = sumY / positions.length;
             double avgRot = sumRot / positions.length;
-
             Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
+            double error = averagedPose.getTranslation().getDistance(getPoseEstimator().getEstimatedPosition().getTranslation());
+            if(error < 5.0) {
+                poseEstimator.addVisionMeasurement(averagedPose, timestamp);
+            } else {
+                System.out.println("The april tags get a bit quirky ;) error :" + error);
+            }
             this.visionPosePub.set(averagedPose);
-            poseEstimator.addVisionMeasurement(averagedPose, timestamp);
+            
             // poseEstimator.resetPosition(
             //     getGyroRotation(),
             //     new SwerveModulePosition[] {
@@ -275,17 +280,21 @@ public class Drive extends DreadbotSubsystem {
             double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
             
             deltaTheta = Math.atan2(distToTagY, distToTagX) - getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians(); //get back of robot
+
             if (deltaTheta > Math.PI) {
                 deltaTheta = Math.PI * 2 - deltaTheta;
             } else if (deltaTheta < -Math.PI) {
                 deltaTheta = Math.PI * 2 + deltaTheta;
             }
-            System.out.println("X: " + distToTagX);
-            System.out.println("Y: " + distToTagY);
-            System.out.println("DeltaTheta: " + Units.radiansToDegrees(deltaTheta));
+
+            if(Math.abs(deltaTheta) >= Math.PI) {
+                System.out.println(deltaTheta);
+            }
+    
 
 
             rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta, .1))) * DriveConstants.ROT_SPEED_LIMITER;
+            System.out.println(rot);
         }
         // if (DriverStation.isTeleop()) {
         //     if (DreadbotMath.applyDeadbandToValue(rot, DriveConstants.DEADBAND) != 0) {
@@ -386,7 +395,7 @@ public class Drive extends DreadbotSubsystem {
     }
     public void resetPose() {
         gyro.reset();
-        resetOdometry(new Pose2d(new Translation2d(15.25, 5.54), new Rotation2d(Units.degreesToRadians(180))));
+        resetOdometry(new Pose2d(new Translation2d(1.36, 5.54), new Rotation2d()));
     }
 
     public SwerveDrivePoseEstimator getEstimator() {
