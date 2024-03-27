@@ -2,6 +2,7 @@ package util.misc;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import util.math.DreadbotMath;
 import util.math.Vector2D;
 
@@ -37,5 +38,19 @@ public class VisionIntegration {
 
     public static Pose2d worldToRobotFromWorldFrame(Pose2d worldFrame, int tagId) {
         return new Pose2d(getApriltagPose(tagId).getTranslation().minus(worldFrame.getTranslation()), worldFrame.getRotation());
+    }
+
+    public static Rotation2d getAllianceAgnosticRotation(Rotation2d rotation) {
+        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            return rotation.rotateBy(Rotation2d.fromDegrees(180));
+        }
+        return rotation;
+    }
+
+    public static int getAllianceAgnosticInversion() {
+        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            return 1;
+        }
+        return -1;
     }
 }

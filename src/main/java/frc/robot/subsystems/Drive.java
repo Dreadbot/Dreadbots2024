@@ -78,6 +78,7 @@ public class Drive extends DreadbotSubsystem {
     private BooleanSubscriber tagSeen;
     private StructPublisher<Pose2d> posePub;
     private StructPublisher<Pose2d> visionPosePub;
+    private StructPublisher<Pose2d> speakerPosePub;
     private StructArrayPublisher<SwerveModuleState> swervePub;
     private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
     private StructPublisher<Rotation2d> gyroPub;
@@ -107,6 +108,7 @@ public class Drive extends DreadbotSubsystem {
         this.visionPosePub = this.smartDashboard.getStructTopic("Vision Pose2d", Pose2d.struct).publish();
         this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
         this.swerveOptimPub = this.smartDashboard.getStructArrayTopic("Robot Optimised Swerve", SwerveModuleState.struct).publish();
+        this.speakerPosePub = this.smartDashboard.getStructTopic("Speaker Pose2d", Pose2d.struct).publish();
         this.gyroPub = this.smartDashboard.getStructTopic("Robot Gyro", Rotation2d.struct).publish();
 
         this.table = table;
@@ -197,13 +199,15 @@ public class Drive extends DreadbotSubsystem {
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
         SmartDashboard.putNumber("Timestamp", timestamp);
-        
+        this.speakerPosePub.set(new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
+
         VisionPosition[] positions = visionPositions.get();
         if (positions.length > 0) {
+
             List<Pose2d> worldPositions = new ArrayList<Pose2d>();
             for (VisionPosition position : positions) {
-                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, new Rotation2d(position.rot).rotateBy(VisionIntegration.getApriltagPose(position.ID).getRotation()).getRadians()), position.ID);
-                worldToRobot = new Pose2d(worldToRobot.getTranslation(), worldToRobot.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians()), position.ID);
+                worldToRobot = new Pose2d(worldToRobot.getTranslation(), getPoseRotation());
                 worldPositions.add(worldToRobot);
             }
             double sumX = 0;
@@ -270,9 +274,18 @@ public class Drive extends DreadbotSubsystem {
             double distToTagX = WaypointHelper.getSpeakerPos().getX() - poseEstimator.getEstimatedPosition().getX();
             double distToTagY = WaypointHelper.getSpeakerPos().getY() - poseEstimator.getEstimatedPosition().getY();
             
-            deltaTheta = -Math.atan2(distToTagY, distToTagX) - Math.toRadians(gyro.getYaw());
+            deltaTheta = Math.atan2(distToTagY, distToTagX) - getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians(); //get back of robot
+            if (deltaTheta > Math.PI) {
+                deltaTheta = Math.PI * 2 - deltaTheta;
+            } else if (deltaTheta < -Math.PI) {
+                deltaTheta = Math.PI * 2 + deltaTheta;
+            }
+            System.out.println("X: " + distToTagX);
+            System.out.println("Y: " + distToTagY);
+            System.out.println("DeltaTheta: " + Units.radiansToDegrees(deltaTheta));
 
-            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta,.1))) * DriveConstants.ROT_SPEED_LIMITER * -1;
+
+            rot = Math.max(-1, Math.min(1, DreadbotMath.applyDeadbandToValue(deltaTheta, .1))) * DriveConstants.ROT_SPEED_LIMITER;
         }
         // if (DriverStation.isTeleop()) {
         //     if (DreadbotMath.applyDeadbandToValue(rot, DriveConstants.DEADBAND) != 0) {
