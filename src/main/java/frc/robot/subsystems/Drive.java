@@ -73,6 +73,8 @@ public class Drive extends DreadbotSubsystem {
     private final NetworkTable table;
     private final NetworkTable smartDashboard;
 
+    private final VisionSync visionSync;
+
     private StructArraySubscriber<VisionPosition> visionPositions;
     private DoubleSubscriber poseLatency;
     private BooleanSubscriber tagSeen;
@@ -102,7 +104,8 @@ public class Drive extends DreadbotSubsystem {
 
     private Field2d field2d;
 
-    public Drive(NetworkTable table) {
+    public Drive(NetworkTable table, VisionSync visionSync) {
+        this.visionSync = visionSync;
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
         this.visionPosePub = this.smartDashboard.getStructTopic("Vision Pose2d", Pose2d.struct).publish();
@@ -203,6 +206,8 @@ public class Drive extends DreadbotSubsystem {
 
         VisionPosition[] positions = visionPositions.get();
         if (positions.length > 0) {
+            double cachedTimestamp = (visionSync.takeTimestampForFrameIndex(positions[0].frameIdx));
+            SmartDashboard.putNumber("Cached Timestamp", cachedTimestamp / 1_000_000.0);
 
             List<Pose2d> worldPositions = new ArrayList<Pose2d>();
             for (VisionPosition position : positions) {
@@ -224,7 +229,7 @@ public class Drive extends DreadbotSubsystem {
             Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
             double error = averagedPose.getTranslation().getDistance(getPoseEstimator().getEstimatedPosition().getTranslation());
             if(error < 5.0) {
-                poseEstimator.addVisionMeasurement(averagedPose, timestamp);
+                poseEstimator.addVisionMeasurement(averagedPose, cachedTimestamp);
             } else {
                 System.out.println("The april tags get a bit quirky ;) error :" + error);
             }

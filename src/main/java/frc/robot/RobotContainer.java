@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -57,6 +56,7 @@ import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.VisionSync;
 import util.misc.VisionIntegration;
 
 
@@ -68,12 +68,11 @@ import util.misc.VisionIntegration;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    public final DigitalInput toPi = new DigitalInput(9);
-    
     private final XboxController primaryController = new XboxController(OperatorConstants.PRIMARY_JOYSTICK_PORT);
     private final XboxController secondaryController = new XboxController(OperatorConstants.SECONDARY_JOYSTICK_PORT);
     private final Drive drive;
     private final Climber climber;
+    private final VisionSync visionSync;
 
     public final SendableChooser<Command> autoChooser; 
     private final Shooter shooter;
@@ -88,7 +87,8 @@ public class RobotContainer {
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive(visionTable);
+        visionSync = new VisionSync();
+        drive = new Drive(visionTable, visionSync);
         drive.getGyro().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
