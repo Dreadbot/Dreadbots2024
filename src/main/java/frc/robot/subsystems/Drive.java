@@ -398,9 +398,7 @@ public class Drive extends DreadbotSubsystem {
     }
     public void resetPose() {
         gyro.reset();
-        // 1.36
-        // 15.25
-        resetOdometry(new Pose2d(new Translation2d(1.36, 5.54), new Rotation2d()));
+        resetOdometry(WaypointHelper.getResetPose());
     }
 
     public SwerveDrivePoseEstimator getEstimator() {
