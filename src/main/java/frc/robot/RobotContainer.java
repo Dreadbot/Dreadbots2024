@@ -176,7 +176,7 @@ public class RobotContainer {
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
         new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.06500, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
-        new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.25, secondaryController::getLeftY));
+        new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.253, secondaryController::getLeftY));
 
         new Trigger(shooter::overDrawingAmps).whileTrue(new EmergencyRumbleCommand(secondaryController));
 

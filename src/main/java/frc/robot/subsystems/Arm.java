@@ -148,7 +148,6 @@ public class Arm extends DreadbotSubsystem {
         absolutePID.setSetpoint(armState.position);
         double PIDoutput = absolutePID.calculate(absoluteEncoder.get());
         leftMotor.setVoltage(
-            // TODO: check if we need to add a clamp to this; SparkPIDControllers do
             PIDoutput +
             Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG
         );
