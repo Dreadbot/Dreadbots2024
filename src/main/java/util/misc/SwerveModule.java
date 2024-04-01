@@ -20,6 +20,7 @@ public class SwerveModule {
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
     private double desiredSpeed;
     private double desiredAngle;
+    public SwerveModuleState desiredState = new SwerveModuleState();
     
     public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
@@ -60,8 +61,13 @@ public class SwerveModule {
         driveMotor.getEncoder().setPosition(0);
     }
 
+    public SwerveModuleState getOptimizedState() {
+        return SwerveModuleState.optimize(getState(), new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI));
+    }
+
     public void setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI));
+        this.desiredState = desiredState;
         desiredSpeed = optimizedState.speedMetersPerSecond;
         desiredAngle = optimizedState.angle.getDegrees();
         double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
@@ -71,7 +77,6 @@ public class SwerveModule {
 
     public void putValuesToSmartDashboard(String name) {
         SmartDashboard.putNumber(name + " CANCoder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
-
     }
 
     public CANSparkMax getDriveMotor() {

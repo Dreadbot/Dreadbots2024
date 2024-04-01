@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7338532709852313,
+      "x": 0.73,
       "y": 6.728931490649867
     },
     "rotation": 61.049004792533225
@@ -74,6 +74,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "AmpSide",
   "choreoAuto": false
 }

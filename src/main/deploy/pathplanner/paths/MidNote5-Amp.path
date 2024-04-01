@@ -1,0 +1,101 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7392210795817603,
+        "y": 6.700750495518085
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.1731120435853089,
+        "y": 7.625478045896729
+      },
+      "isLocked": false,
+      "linkedName": "Amp-Start"
+    },
+    {
+      "anchor": {
+        "x": 4.920412053035782,
+        "y": 7.402246913426052
+      },
+      "prevControl": {
+        "x": 3.9800319699366704,
+        "y": 7.953414128806746
+      },
+      "nextControl": {
+        "x": 5.860792136134894,
+        "y": 6.851079698045358
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.154903429244799,
+        "y": 7.459501195348996
+      },
+      "prevControl": {
+        "x": 7.1428410061085215,
+        "y": 7.485327495241521
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MidNote5"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.8,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.75
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIntake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

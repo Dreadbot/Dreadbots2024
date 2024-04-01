@@ -99,6 +99,10 @@ public interface DreadbotMath {
         return inputValue;
     }
 
+    static double inchesToMeters(double meters) {
+        return 0.0254 * meters;
+    }
+
     /**
      * Deadband Processing function
      * <p>

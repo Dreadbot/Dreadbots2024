@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7338532709852313,
+      "x": 0.73,
       "y": 6.728931490649867
     },
     "rotation": 61.049004792533225
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpSide-AmpNote"
+            "pathName": "AmpSide-AmpNote2.5"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-AmpSide"
+            "name": "Shoot-Vision"
           }
         },
         {
@@ -46,22 +46,10 @@
           "data": {
             "name": "DropArm"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpNote-MidNote5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "AmpSide",
   "choreoAuto": false
 }

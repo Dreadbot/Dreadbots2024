@@ -15,14 +15,14 @@ public class DriveCommand extends Command {
     private final DoubleSupplier joystickX;
     private final DoubleSupplier joystickY;
     private final DoubleSupplier joystickRotatation;
-    private double speedModifier; 
+    private double speedModifier;
 
     public DriveCommand(Drive drive, DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joyStickRotation) {
         this.drive = drive;
         this.joystickX = joystickX;
         this.joystickY = joystickY;
         this.joystickRotatation = joyStickRotation;
-        this.speedModifier = 1;
+        this.speedModifier = DriveConstants.SPEED_MODIFIER;
 
         addRequirements(drive);
     }

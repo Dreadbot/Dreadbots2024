@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -31,8 +32,8 @@ public class Shooter extends DreadbotSubsystem {
             return;
         }
         this.hub = new PowerDistribution(1, ModuleType.kRev);
-        this.leaderMotor = new CANSparkMax(16, MotorType.kBrushless);
-        this.followerMotor = new CANSparkMax(17, MotorType.kBrushless);
+        this.leaderMotor = new CANSparkMax(ShooterConstants.SHOOTER_LEADER_MOTOR, MotorType.kBrushless);
+        this.followerMotor = new CANSparkMax(ShooterConstants.SHOOTER_FOLLOWER_MOTOR, MotorType.kBrushless);
         this.leaderMotor.setInverted(true);
         this.leaderMotor.setIdleMode(IdleMode.kCoast);
         this.followerMotor.setIdleMode(IdleMode.kCoast);
@@ -51,11 +52,11 @@ public class Shooter extends DreadbotSubsystem {
         leaderPidController.setP(0.000);
         leaderPidController.setI(0.0);
         leaderPidController.setD(0.00);
-        leaderPidController.setFF(0.00012);
+        leaderPidController.setFF(0.00019);
         followerPidController.setP(0.000);
         followerPidController.setI(0.0);
         followerPidController.setD(0.00);
-        followerPidController.setFF(0.00012);
+        followerPidController.setFF(0.00019);
     }
     @Override
     public void periodic() {

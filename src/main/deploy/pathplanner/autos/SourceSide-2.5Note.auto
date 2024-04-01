@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceShoot-SourceNote"
+            "pathName": "SourceShoot-SourceNote2.5"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot-SourceSide"
+            "name": "Shoot-Vision"
           }
         },
         {
@@ -65,10 +65,35 @@
           "data": {
             "name": "Stop"
           }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidNote2-SourceNote"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "SourceSide",
   "choreoAuto": false
 }

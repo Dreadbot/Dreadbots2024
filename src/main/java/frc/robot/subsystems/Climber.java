@@ -4,10 +4,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.SubsystemConstants;
 
@@ -39,8 +37,8 @@ public class Climber extends DreadbotSubsystem {
         leftClimberMotor.setIdleMode(IdleMode.kBrake);
         rightClimberMotor.setIdleMode(IdleMode.kBrake);
 
-        //leftClimberMotor.setSmartCurrentLimit(40);
-        //rightClimberMotor.setSmartCurrentLimit(40);
+        leftClimberMotor.setSmartCurrentLimit(80);
+        rightClimberMotor.setSmartCurrentLimit(80);
 
 
         this.lockPiston = new Solenoid(21, PneumaticsModuleType.REVPH, 9);

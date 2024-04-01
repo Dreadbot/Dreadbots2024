@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.359011265031077,
+      "y": 5.578111669043852
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle-CenterNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterNote-SourceNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Vision"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Middle",
+  "choreoAuto": false
+}
