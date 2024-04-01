@@ -63,7 +63,7 @@ public class Arm extends DreadbotSubsystem {
         absoluteEncoder.setPositionOffset(ArmConstants.ARM_ENCODER_OFFSET);
         absoluteEncoder.setDistancePerRotation(ArmConstants.ARM_ENCODER_SCALE);
         // TODO: tune PID values
-        absolutePID = new PIDController(48.0, 30.0, 0.0);
+        absolutePID = new PIDController(52.0, 30.0, 0.0);
         absolutePID.setIZone(0.02);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 

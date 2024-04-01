@@ -171,11 +171,11 @@ public class RobotContainer {
         new Trigger(secondaryController::getYButton).whileTrue(new ShootCommand(shooter, 1700, secondaryController));
         new Trigger(secondaryController::getYButton).onFalse(new StopShootCommand(shooter));
 
-        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0926, secondaryController::getLeftY)); //center note position: 0.11285, 
+        new Trigger(() -> secondaryController.getPOV() == 270).onTrue(new ArmToPositionCommand(arm, 0.0806, secondaryController::getLeftY)); //center note position: 0.11285, 
         new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.09908, secondaryController::getLeftY));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
-        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.06500, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
+        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.0, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
         new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.253, secondaryController::getLeftY));
 
         new Trigger(shooter::overDrawingAmps).whileTrue(new EmergencyRumbleCommand(secondaryController));
@@ -206,7 +206,7 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0906, 4000));
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0806, 4000)); // .906
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 4000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1300, 4500));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 4000));
