@@ -1,0 +1,15 @@
+[package]
+name = "timeturner-server"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["rpi5"]
+rpi5 = []
+rpi4 = []
+
+[dependencies]
+interprocess = { version = "1.2.1", features = ["tokio_support"] }
+tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros", "time", "sync"] }
+tokio-gpiod = "0.2.3"
+timeturner = { path = "../timeturner", default-features = false }
