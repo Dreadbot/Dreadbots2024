@@ -2,7 +2,7 @@ package frc.robot.commmands.intakeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.intake.Intake;
 
 public class OuttakeCommand extends Command {
     

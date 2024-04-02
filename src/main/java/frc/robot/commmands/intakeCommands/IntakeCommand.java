@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commmands.controllerCommands.RumbleController;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.intake.Intake;
 
 public class IntakeCommand extends Command {
 

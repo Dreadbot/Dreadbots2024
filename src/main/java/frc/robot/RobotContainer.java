@@ -52,10 +52,11 @@ import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOCAN;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOCAN;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOCAN;
 import util.gyro.GyroIONavX;
@@ -91,7 +92,7 @@ public class RobotContainer {
         pneumaticHub.enableCompressorDigital();
         climber = new Climber();
         shooter = new Shooter(new ShooterIOCAN());
-        intake = new Intake();
+        intake = new Intake(new IntakeIOCAN());
         arm = new Arm(new ArmIOCAN());
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
