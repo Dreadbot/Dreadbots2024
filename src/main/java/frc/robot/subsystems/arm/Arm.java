@@ -51,14 +51,14 @@ public class Arm extends DreadbotSubsystem {
 
         io.updateInputs(inputs);
 
-        Logger.recordOutput("desired position", this.desiredArmState.position);
-        Logger.recordOutput("Absolute Encoder Rotation", inputs.absolutePosition * 360);
-        Logger.recordOutput("Absolute Encoder position", inputs.absolutePosition);
-        Logger.recordOutput("At Setpoint", absolutePID.atSetpoint());
-        Logger.recordOutput("Absolute PID Setpoint", absolutePID.getSetpoint());
-        Logger.recordOutput("Armstate Position", armState.position);
+        Logger.recordOutput("Arm/DesiredPosition", this.desiredArmState.position);
+        Logger.recordOutput("Arm/AbsoluteDegrees", inputs.absolutePosition * 360);
+        Logger.recordOutput("Arm/AbsoluteRotations", inputs.absolutePosition);
+        Logger.recordOutput("Arm/AtSetpoint", absolutePID.atSetpoint());
+        Logger.recordOutput("Arm/AbsoluteSetpiont", absolutePID.getSetpoint());
+        Logger.recordOutput("Arm/ArmstatePosition", armState.position);
 
-        Logger.recordOutput("PID Error", absolutePID.getPositionError());
+        Logger.recordOutput("Arm/PIDError", absolutePID.getPositionError());
 
         if (Math.abs(joystickOverride) > 0.08) {
             // we should overrride with manual control
@@ -84,11 +84,11 @@ public class Arm extends DreadbotSubsystem {
             Math.cos(Units.rotationsToRadians(inputs.absolutePosition)) * ArmConstants.KG
         );
 
-        Logger.recordOutput("Is at position", this.isAtDesiredState());
-        Logger.recordOutput("Motor controlled voltage", 
+        Logger.recordOutput("Arm/AtDesired", this.isAtDesiredState());
+        Logger.recordOutput("Arm/ControlledVoltage", 
             PIDoutput +
             Math.cos(Units.rotationsToRadians(inputs.absolutePosition)) * ArmConstants.KG);
-        Logger.recordOutput("PID Output", PIDoutput);
+        Logger.recordOutput("Arm/PIDOutput", PIDoutput);
     }
 
     public void setIdleMode(IdleMode mode) {

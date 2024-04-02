@@ -6,14 +6,12 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -35,13 +33,14 @@ import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
+import util.gyro.GyroIO;
+import util.gyro.GyroIOInputsAutoLogged;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.VisionIntegration;
@@ -73,7 +72,8 @@ public class Drive extends DreadbotSubsystem {
     private StructArrayPublisher<SwerveModuleState> swervePub;
     private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
 
-    private AHRS gyro = new AHRS(Port.kMXP);
+    private GyroIO gyroIO;
+    private GyroIOInputsAutoLogged gyroInputs;
 
     public Boolean autoAimArm = false;
     public double initialDistanceToTag = 0.0;
@@ -90,7 +90,7 @@ public class Drive extends DreadbotSubsystem {
 
     private Field2d field2d;
 
-    public Drive(NetworkTable table) {
+    public Drive(NetworkTable table, GyroIO gyroIO) {
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
         this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
@@ -99,7 +99,9 @@ public class Drive extends DreadbotSubsystem {
         this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{}, PubSubOption.periodic(0.02));
         this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0, PubSubOption.periodic(0.02));
         
-        gyro.reset();
+        this.gyroIO = gyroIO;
+
+        this.gyroIO.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
             field2d = new Field2d();
 
@@ -177,9 +179,7 @@ public class Drive extends DreadbotSubsystem {
           return;
         }
 
-        Logger.recordOutput("Gyro Roll", gyro.getRoll());
-        Logger.recordOutput("Gyro Pitch", gyro.getPitch());
-        Logger.recordOutput("Speaker Pose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
+        Logger.recordOutput("SpeakerPose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
 
         VisionPosition[] positions = visionPositions.get();
@@ -209,7 +209,7 @@ public class Drive extends DreadbotSubsystem {
             } else {
                 System.out.println("The april tags get a bit quirky ;) error :" + error);
             }
-            Logger.recordOutput("Vision Pose", averagedPose);
+            Logger.recordOutput("Drive/Pose/Vision", averagedPose);
             
             // poseEstimator.resetPosition(
             //     getGyroRotation(),
@@ -245,8 +245,7 @@ public class Drive extends DreadbotSubsystem {
             backLeftModule.getOptimizedState(),
             backRightModule.getOptimizedState(),
         });
-        Logger.recordOutput("Gyro Rotation", gyro.getRotation2d());
-        Logger.recordOutput("Pose Estimator", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Drive/Pose/Estimated", poseEstimator.getEstimatedPosition());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
     }
 
@@ -307,7 +306,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetOdometry(Pose2d pose) {
-        gyro.reset();
+        gyroIO.reset();
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
@@ -329,7 +328,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     private Rotation2d getGyroRotation() {
-        return gyro.getRotation2d();
+        return gyroInputs.yaw;
     }
 
     private Rotation2d getPoseRotation() {
@@ -366,21 +365,25 @@ public class Drive extends DreadbotSubsystem {
     //     resetOdometry(getPosition());
     // }
 
-    public AHRS getGyro() {
-        return gyro;
-    }
-
     public SwerveDrivePoseEstimator getPoseEstimator() {
         return poseEstimator;
     }
 
     public void resetGyro(){
-        gyro.reset();
+        gyroIO.reset();
         resetOdometry(getPosition());
     }
     public void resetPose() {
-        gyro.reset();
+        gyroIO.reset();
         resetOdometry(WaypointHelper.getResetPose());
+    }
+
+    public GyroIO getGyroIO() {
+        return this.gyroIO;
+    }
+
+    public GyroIOInputsAutoLogged getGyroInputs() {
+        return this.gyroInputs;
     }
 
     public SwerveDrivePoseEstimator getEstimator() {

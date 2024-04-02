@@ -8,17 +8,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface SwerveModuleIO {
     @AutoLog
     public static class SwerveModuleIOInputs {
-        double velocity;
-        Rotation2d rotation;
+        public double velocity;
+        public Rotation2d rotation;
 
-        double drivePosition;
-        double driveVoltage;
-        double driveCurrent;
-        double driveTemperature;
+        public double drivePosition;
+        public double driveVoltage;
+        public double driveCurrent;
+        public double driveTemperature;
 
-        double turningVoltage;
-        double turningCurrent;
-        double turningTemperature;
+        public double turningVoltage;
+        public double turningCurrent;
+        public double turningTemperature;
     }
 
     public default void updateInputs(SwerveModuleIOInputs inputs) {}

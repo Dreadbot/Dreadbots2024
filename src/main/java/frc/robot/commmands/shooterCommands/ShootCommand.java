@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commmands.controllerCommands.RumbleController;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class ShootCommand extends Command {
 

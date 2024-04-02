@@ -8,9 +8,9 @@ import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class AutoShootVisionCommand extends SequentialCommandGroup {
     public AutoShootVisionCommand(Intake intake, Arm arm, Shooter shooter, Drive drive, double rpm) {

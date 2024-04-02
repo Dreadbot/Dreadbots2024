@@ -53,10 +53,12 @@ import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOCAN;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOCAN;
+import util.gyro.GyroIONavX;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -83,12 +85,12 @@ public class RobotContainer {
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive(visionTable);
-        drive.getGyro().reset();
+        drive = new Drive(visionTable, new GyroIONavX());
+        drive.getGyroIO().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
-        climber = new Climber(drive.getGyro());
-        shooter = new Shooter();
+        climber = new Climber();
+        shooter = new Shooter(new ShooterIOCAN());
         intake = new Intake();
         arm = new Arm(new ArmIOCAN());
 
@@ -124,7 +126,7 @@ public class RobotContainer {
             new UnlockCommand(climber)
                 .andThen(new UnbindCommand(climber, ClimberConstants.RETRACT_SPEED).withTimeout(0.02))
                 .andThen(new WaitCommand(0.25))
-                .andThen(new ClimbCommand(climber, drive.getGyro()))
+                .andThen(new ClimbCommand(climber, drive.getGyroInputs()))
         );
         new Trigger(primaryController::getRightBumper).whileTrue(
             new UnlockCommand(climber)

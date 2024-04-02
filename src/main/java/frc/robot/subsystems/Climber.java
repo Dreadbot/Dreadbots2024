@@ -8,11 +8,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.SubsystemConstants;
-
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import util.misc.DreadbotSubsystem;
 
 public class Climber extends DreadbotSubsystem {
@@ -27,7 +24,7 @@ public class Climber extends DreadbotSubsystem {
     private DigitalInput rightBottomSwitch;
     // private AHRS gyro;
 
-    public Climber(AHRS gyro) { 
+    public Climber() { 
         if(!SubsystemConstants.CLIMBER_ENABLED) {
             return;
         }
