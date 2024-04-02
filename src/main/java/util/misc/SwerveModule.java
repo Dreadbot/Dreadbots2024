@@ -1,5 +1,7 @@
 package util.misc;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase;
@@ -9,7 +11,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule {
@@ -18,8 +19,6 @@ public class SwerveModule {
     private CANSparkMax turningMotor;
     private CANcoder turningCanCoder;
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
-    private double desiredSpeed;
-    private double desiredAngle;
     public SwerveModuleState desiredState = new SwerveModuleState();
     
     public SwerveModule(CANSparkMax driveMotor, CANSparkMax turnMotor, CANcoder turningCanCoder, double canCoderOffset) {
@@ -68,15 +67,13 @@ public class SwerveModule {
     public void setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI));
         this.desiredState = desiredState;
-        desiredSpeed = optimizedState.speedMetersPerSecond;
-        desiredAngle = optimizedState.angle.getDegrees();
         double turnOutput = turningPIDController.calculate(turningCanCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI, optimizedState.angle.getRadians());
         this.driveMotor.getPIDController().setReference(optimizedState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
         turningMotor.setVoltage(turnOutput);
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name + " CANCoder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
+        Logger.recordOutput(name + " CANCoder", turningCanCoder.getAbsolutePosition().getValueAsDouble());
     }
 
     public CANSparkMax getDriveMotor() {

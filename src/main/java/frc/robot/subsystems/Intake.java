@@ -1,12 +1,13 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import util.misc.DreadbotSubsystem;
 
 public class Intake extends DreadbotSubsystem { 
@@ -26,7 +27,7 @@ public class Intake extends DreadbotSubsystem {
     }
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Has Note", !beamBreakSensor.get());
+        Logger.recordOutput("Has Note", !beamBreakSensor.get());
     }
 
     public void intake(double speed) {

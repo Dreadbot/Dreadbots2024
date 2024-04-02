@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
@@ -17,7 +19,6 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import util.math.DreadbotMath;
@@ -28,14 +29,12 @@ public class Arm extends DreadbotSubsystem {
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
     private SparkPIDController leftPidController;
-    private SparkPIDController rightPidController;
 
     private DigitalInput horizontalSwitch;
     private DigitalInput verticalSwitch;
     private DutyCycleEncoder absoluteEncoder;
     private PIDController absolutePID;
     private BooleanEvent horizontalEvent;
-    private BooleanEvent verticalEvent;
     private EventLoop limitSwitchEventLoop;
     private boolean horizontalSwitchCalibrated;
     private boolean isArmInCoastMode = false;
@@ -62,7 +61,6 @@ public class Arm extends DreadbotSubsystem {
         absoluteEncoder = new DutyCycleEncoder(new DigitalInput(ArmConstants.ARM_DUTY_CYCLE_ENCODER));
         absoluteEncoder.setPositionOffset(ArmConstants.ARM_ENCODER_OFFSET);
         absoluteEncoder.setDistancePerRotation(ArmConstants.ARM_ENCODER_SCALE);
-        // TODO: tune PID values
         absolutePID = new PIDController(52.0, 30.0, 0.0);
         absolutePID.setIZone(0.02);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
@@ -71,12 +69,10 @@ public class Arm extends DreadbotSubsystem {
         horizontalSwitchCalibrated = false;
 
         horizontalEvent = new BooleanEvent(limitSwitchEventLoop, this::getHorizontalLimitSwitch);
-        verticalEvent = new BooleanEvent(limitSwitchEventLoop, this::getVerticalLimitSwitch);
         rightMotor.setInverted(true);
         rightMotor.follow(leftMotor, true);
 
         leftPidController = leftMotor.getPIDController();
-        rightPidController = rightMotor.getPIDController();
 
         leftMotor.setIdleMode(IdleMode.kBrake);
         rightMotor.setIdleMode(IdleMode.kBrake);
@@ -119,14 +115,14 @@ public class Arm extends DreadbotSubsystem {
             return;
         }
 
-        SmartDashboard.putNumber("desired position", this.desiredArmState.position);
-        SmartDashboard.putNumber("Absolute Encoder Rotation", absoluteEncoder.get() * 360);
-        SmartDashboard.putNumber("Absolute Encoder position", absoluteEncoder.get());
-        SmartDashboard.putBoolean("At Setpoint", absolutePID.atSetpoint());
-        SmartDashboard.putNumber("Absolute PID Setpoint", absolutePID.getSetpoint());
-        SmartDashboard.putNumber("Armstate Position", armState.position);
+        Logger.recordOutput("desired position", this.desiredArmState.position);
+        Logger.recordOutput("Absolute Encoder Rotation", absoluteEncoder.get() * 360);
+        Logger.recordOutput("Absolute Encoder position", absoluteEncoder.get());
+        Logger.recordOutput("At Setpoint", absolutePID.atSetpoint());
+        Logger.recordOutput("Absolute PID Setpoint", absolutePID.getSetpoint());
+        Logger.recordOutput("Armstate Position", armState.position);
 
-        SmartDashboard.putNumber("PID Error", absolutePID.getPositionError());
+        Logger.recordOutput("PID Error", absolutePID.getPositionError());
 
         if (Math.abs(joystickOverride) > 0.08) {
             // we should overrride with manual control
@@ -152,12 +148,12 @@ public class Arm extends DreadbotSubsystem {
             Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG
         );
 
-        SmartDashboard.putBoolean("Is at position", this.isAtDesiredState());
-        SmartDashboard.putNumber("Absolute Encoder", this.absoluteEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("Motor controlled voltage", 
+        Logger.recordOutput("Is at position", this.isAtDesiredState());
+        Logger.recordOutput("Absolute Encoder", this.absoluteEncoder.getAbsolutePosition());
+        Logger.recordOutput("Motor controlled voltage", 
             PIDoutput +
             Math.cos(Units.rotationsToRadians(absoluteEncoder.get())) * ArmConstants.KG);
-        SmartDashboard.putNumber("PID Output", PIDoutput);
+        Logger.recordOutput("PID Output", PIDoutput);
 
 
         limitSwitchEventLoop.poll();

@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
@@ -14,7 +17,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
@@ -60,9 +62,9 @@ public class Shooter extends DreadbotSubsystem {
     }
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Actual Shooter Speed", leaderMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Target Shooter Speed", targetSpeed);
-        SmartDashboard.putNumber("Drawn Amps", hub.getCurrent(7));
+        Logger.recordOutput("Actual Shooter Speed", leaderMotor.getEncoder().getVelocity());
+        Logger.recordOutput("Target Shooter Speed", targetSpeed);
+        Logger.recordOutput("Drawn Amps", hub.getCurrent(7));
     }
     @Override
     public void close() throws Exception {

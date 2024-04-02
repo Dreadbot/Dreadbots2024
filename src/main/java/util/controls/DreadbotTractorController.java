@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Joystick;
  * A Wrapper Class to make coding with a Logetech Tractor
  * controller easier and simplier
  */
-@SuppressWarnings("unused")
 public class DreadbotTractorController {
     private final Joystick tractorController;
     /**

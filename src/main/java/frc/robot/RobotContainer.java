@@ -11,6 +11,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -57,9 +57,6 @@ import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import util.misc.VisionIntegration;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -147,7 +144,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBButton).onTrue(new OuttakeCommand(intake));
         new Trigger(secondaryController::getBButton).onFalse(new StopIntakeCommand(intake));
         
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()).repeatedly());
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
@@ -163,7 +160,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBackButton).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, 2000, secondaryController).alongWith(new FeedCommand(intake)));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()).repeatedly());
         //new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
         //new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
@@ -175,7 +172,7 @@ public class RobotContainer {
         new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.09908, secondaryController::getLeftY));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
-        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.0, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
+        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.07, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
         new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.253, secondaryController::getLeftY));
 
         new Trigger(shooter::overDrawingAmps).whileTrue(new EmergencyRumbleCommand(secondaryController));
