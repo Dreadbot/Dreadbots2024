@@ -13,6 +13,7 @@ public class Intake extends DreadbotSubsystem {
         }
         this.io = io;
     }
+    
     @Override
     public void periodic() {
         io.updateInputs(inputs);

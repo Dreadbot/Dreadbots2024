@@ -45,7 +45,8 @@ import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOCAN;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
@@ -90,7 +91,7 @@ public class RobotContainer {
         drive.getGyroIO().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
-        climber = new Climber();
+        climber = new Climber(new ClimberIOCAN());
         shooter = new Shooter(new ShooterIOCAN());
         intake = new Intake(new IntakeIOCAN());
         arm = new Arm(new ArmIOCAN());
