@@ -16,7 +16,7 @@ public class Shooter extends DreadbotSubsystem {
     private PowerDistribution hub;
 
     public Shooter(ShooterIO io) {
-         if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
+        if(!Constants.SubsystemConstants.SHOOTER_ENABLED) {
             return;
         }
         this.hub = new PowerDistribution(1, ModuleType.kRev);
