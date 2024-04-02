@@ -5,24 +5,23 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -72,7 +71,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Climber climber;
 
-    public final SendableChooser<Command> autoChooser; 
+    public final LoggedDashboardChooser<Command> autoChooser; 
     private final Shooter shooter;
     private final Intake intake; 
     private final Arm arm;
@@ -80,8 +79,6 @@ public class RobotContainer {
 
     private NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
     private NetworkTable visionTable = ntInst.getTable("azathoth");
-    private NetworkTable smartdashboardTable = ntInst.getTable("SmartDashboard");
-    private StructPublisher<Pose2d> autonPosePublisher = smartdashboardTable.getStructTopic("Auton Pose", Pose2d.struct).publish();
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -95,13 +92,12 @@ public class RobotContainer {
         arm = new Arm();
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            autonPosePublisher.set(pose);
+            Logger.recordOutput("Auton Pose", pose);
         });
 
         configureButtonBindings();
         initializeAutonCommands();
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auton", autoChooser);
+        autoChooser = new LoggedDashboardChooser<>("Auton", AutoBuilder.buildAutoChooser());
     }
     
     
@@ -186,10 +182,11 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        if (!autoChooser.getSelected().getName().equals("1Note-Vision")) {
-            drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        Command command = autoChooser.get();
+        if (!command.getName().equals("1Note-Vision")) {
+            drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(command.getName()));
         }
-        return autoChooser.getSelected();        
+        return command;
     }
 
     public void teleopInit() {
