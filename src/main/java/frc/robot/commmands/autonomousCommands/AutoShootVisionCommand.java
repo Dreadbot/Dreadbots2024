@@ -1,11 +1,7 @@
 package frc.robot.commmands.autonomousCommands;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commmands.armCommands.ArmTargetCommand;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
@@ -22,8 +18,8 @@ public class AutoShootVisionCommand extends SequentialCommandGroup {
             (new OuttakeCommand(intake)
                 .withTimeout(0.07)
                 .andThen(new ShootCommand(shooter, rpm, null).withTimeout(3))
-                .deadlineWith(new ArmTargetCommand(arm, drive.getPoseEstimator()))),
-            new ArmTargetCommand(arm, drive.getPoseEstimator()),
+                .deadlineWith(new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()))),
+            new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()),
             new FeedCommand(intake).withTimeout(.3),
             new StopShootCommand(shooter)
         );

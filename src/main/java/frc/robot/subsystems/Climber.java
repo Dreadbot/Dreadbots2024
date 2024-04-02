@@ -25,7 +25,7 @@ public class Climber extends DreadbotSubsystem {
     private DigitalInput rightTopSwitch;
     private DigitalInput leftBottomSwitch;
     private DigitalInput rightBottomSwitch;
-    private AHRS gyro;
+    // private AHRS gyro;
 
     public Climber(AHRS gyro) { 
         if(!SubsystemConstants.CLIMBER_ENABLED) {
@@ -43,7 +43,7 @@ public class Climber extends DreadbotSubsystem {
 
         this.lockPiston = new Solenoid(21, PneumaticsModuleType.REVPH, 9);
 
-        this.gyro = gyro;
+        // this.gyro = gyro;
 
         rightClimberMotor.setInverted(true);
         this.climberDrive = new DifferentialDrive(leftClimberMotor, rightClimberMotor);
