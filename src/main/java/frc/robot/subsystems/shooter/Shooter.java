@@ -10,7 +10,7 @@ import util.misc.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
     private ShooterIO io;
-    private ShooterIOInputsAutoLogged inputs;
+    private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     private double targetSpeed = 0.0;
     private PowerDistribution hub;

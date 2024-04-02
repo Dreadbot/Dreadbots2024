@@ -73,7 +73,7 @@ public class Drive extends DreadbotSubsystem {
     private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
 
     private GyroIO gyroIO;
-    private GyroIOInputsAutoLogged gyroInputs;
+    private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
     public Boolean autoAimArm = false;
     public double initialDistanceToTag = 0.0;

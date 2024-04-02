@@ -17,7 +17,7 @@ import util.misc.DreadbotSubsystem;
 
 public class Arm extends DreadbotSubsystem {
     private ArmIO io;
-    private ArmIOInputsAutoLogged inputs;
+    private ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
     private PIDController absolutePID;
     private boolean isArmInCoastMode = false;

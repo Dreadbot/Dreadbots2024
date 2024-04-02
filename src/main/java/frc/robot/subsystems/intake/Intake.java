@@ -5,7 +5,7 @@ import util.misc.DreadbotSubsystem;
 
 public class Intake extends DreadbotSubsystem { 
     private IntakeIO io;
-    private IntakeIOInputsAutoLogged inputs;
+    private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public Intake(IntakeIO io) { 
         if(!Constants.SubsystemConstants.INTAKE_ENABLED) {

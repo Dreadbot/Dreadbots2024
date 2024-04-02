@@ -5,7 +5,7 @@ import util.misc.DreadbotSubsystem;
 
 public class Climber extends DreadbotSubsystem {
     private ClimberIO io;
-    private ClimberIOInputAutoLogged inputs;
+    private ClimberIOInputAutoLogged inputs = new ClimberIOInputAutoLogged();
 
     public Climber(ClimberIO io) { 
         if(!SubsystemConstants.CLIMBER_ENABLED) {
