@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +44,11 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
-import util.misc.SwerveModule;
 import util.misc.VisionIntegration;
 import util.misc.VisionPosition;
 import util.misc.WaypointHelper;
+import util.swerve.SwerveModule;
+import util.swerve.SwerveModuleIOCAN;
 
 public class Drive extends DreadbotSubsystem {
     
@@ -104,30 +105,30 @@ public class Drive extends DreadbotSubsystem {
 
             SmartDashboard.putData(field2d);
         
-            frontLeftModule = new SwerveModule(
+            frontLeftModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(1, MotorType.kBrushless),
-                new CANSparkMax(2, MotorType.kBrushless), 
+                new CANSparkMax(2, MotorType.kBrushless),
                 new CANcoder(9), 
                 SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
-            );
-            frontRightModule = new SwerveModule(
+            ));
+            frontRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(3, MotorType.kBrushless),
                 new CANSparkMax(4, MotorType.kBrushless), 
                 new CANcoder(10), 
                 SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
-            );
-            backRightModule = new SwerveModule(
+            ));
+            backRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(5, MotorType.kBrushless),
                 new CANSparkMax(6, MotorType.kBrushless), 
                 new CANcoder(11), 
                 SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
-            );
-            backLeftModule = new SwerveModule(
+            ));
+            backLeftModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(7, MotorType.kBrushless),
                 new CANSparkMax(8, MotorType.kBrushless), 
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
-            );
+            ));
             turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,

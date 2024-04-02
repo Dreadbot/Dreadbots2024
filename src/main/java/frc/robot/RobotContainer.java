@@ -45,7 +45,6 @@ import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
@@ -53,9 +52,11 @@ import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
-import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOCAN;
+import frc.robot.subsystems.drive.Drive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -89,7 +90,7 @@ public class RobotContainer {
         climber = new Climber(drive.getGyro());
         shooter = new Shooter();
         intake = new Intake();
-        arm = new Arm();
+        arm = new Arm(new ArmIOCAN());
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
             Logger.recordOutput("Auton Pose", pose);

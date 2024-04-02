@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.WheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 import util.misc.WaypointHelper;
 
 public class ArmTargetCommand<T extends WheelPositions<T>> extends Command {

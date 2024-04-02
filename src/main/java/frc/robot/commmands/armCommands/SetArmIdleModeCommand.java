@@ -3,7 +3,7 @@ package frc.robot.commmands.armCommands;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 
 public class SetArmIdleModeCommand extends Command {
 
