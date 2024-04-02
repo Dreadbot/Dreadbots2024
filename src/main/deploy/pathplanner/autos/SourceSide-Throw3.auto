@@ -1,0 +1,156 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7530787895299451,
+      "y": 4.4122565060118415
+    },
+    "rotation": -60.21283611847626
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of SourceShoot-MidNote1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidNote1-SourceSideAmpThrow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SourceSideAmpThrow-MidNote2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LowerArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidNote2-SourceSideAmpThrow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SourceSideAmpThrow-MidNote3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LowerArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidNote3-SourceSideAmpThrow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseArm"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

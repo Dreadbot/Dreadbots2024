@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3298443458713622,
-        "y": 5.5273365816052475
+        "x": 5.619397289720505,
+        "y": 0.7905842246869678
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0411885320257763,
-        "y": 6.036812823040165
+        "x": 6.394719729254273,
+        "y": 1.635861461537739
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SourceSideAmpThrow"
     },
     {
       "anchor": {
-        "x": 2.49,
-        "y": 6.81
+        "x": 7.687517638924167,
+        "y": 2.443251465206634
       },
       "prevControl": {
-        "x": 1.6921409803943734,
-        "y": 6.415876869833364
+        "x": 6.074281625415103,
+        "y": 2.3781068025099024
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MidNote2"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.55,
-      "rotationDegrees": 26.57,
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -39,9 +39,9 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.85,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -53,7 +53,7 @@
             {
               "type": "wait",
               "data": {
-                "waitTime": 1.5
+                "waitTime": 1.75
               }
             },
             {
@@ -75,11 +75,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 26.57,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp",
+  "folder": null,
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

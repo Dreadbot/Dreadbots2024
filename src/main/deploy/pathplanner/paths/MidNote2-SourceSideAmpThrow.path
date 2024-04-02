@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7392210795817603,
-        "y": 6.700750495518085
+        "x": 7.687517638924167,
+        "y": 2.443251465206634
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5748738535872988,
-        "y": 7.175418141404908
+        "x": 6.968016514736734,
+        "y": 2.234990451462385
       },
       "isLocked": false,
-      "linkedName": "Amp-Start"
+      "linkedName": "MidNote2"
     },
     {
       "anchor": {
-        "x": 2.926027960313802,
-        "y": 6.98141020213033
+        "x": 5.619397289720505,
+        "y": 0.7905842246869678
       },
       "prevControl": {
-        "x": 2.224378693767406,
-        "y": 6.98141020213033
+        "x": 6.946163063622423,
+        "y": 1.0561511632282525
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SourceSideAmpThrow"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -65.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,11 +45,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -61.76828960285159,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }
