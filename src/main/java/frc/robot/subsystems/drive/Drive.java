@@ -28,7 +28,6 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -69,8 +68,6 @@ public class Drive extends DreadbotSubsystem {
     private StructArraySubscriber<VisionPosition> visionPositions;
     private DoubleSubscriber poseLatency;
     private StructPublisher<Pose2d> posePub;
-    private StructArrayPublisher<SwerveModuleState> swervePub;
-    private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
 
     private GyroIO gyroIO;
     private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -93,13 +90,12 @@ public class Drive extends DreadbotSubsystem {
     public Drive(NetworkTable table, GyroIO gyroIO) {
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
-        this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
-        this.swerveOptimPub = this.smartDashboard.getStructArrayTopic("Robot Optimised Swerve", SwerveModuleState.struct).publish();
 
         this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{}, PubSubOption.periodic(0.02));
         this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0, PubSubOption.periodic(0.02));
         
         this.gyroIO = gyroIO;
+        this.gyroIO.updateInputs(gyroInputs);
 
         this.gyroIO.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
@@ -112,25 +108,25 @@ public class Drive extends DreadbotSubsystem {
                 new CANSparkMax(2, MotorType.kBrushless),
                 new CANcoder(9), 
                 SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
-            ));
+            ), "FL");
             frontRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(3, MotorType.kBrushless),
                 new CANSparkMax(4, MotorType.kBrushless), 
                 new CANcoder(10), 
                 SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
-            ));
+            ), "FR");
             backRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(5, MotorType.kBrushless),
                 new CANSparkMax(6, MotorType.kBrushless), 
                 new CANcoder(11), 
                 SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
-            ));
+            ), "BR");
             backLeftModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(7, MotorType.kBrushless),
                 new CANSparkMax(8, MotorType.kBrushless), 
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
-            ));
+            ), "BL");
             turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
@@ -178,6 +174,12 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        gyroIO.updateInputs(gyroInputs);
+        Logger.processInputs("Gyro", gyroInputs);
+        frontLeftModule.periodic();
+        frontRightModule.periodic();
+        backLeftModule.periodic();
+        backRightModule.periodic();
 
         Logger.recordOutput("SpeakerPose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
         double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
@@ -233,13 +235,13 @@ public class Drive extends DreadbotSubsystem {
             }
         );
         this.posePub.set(poseEstimator.getEstimatedPosition());
-        this.swervePub.set(new SwerveModuleState[] {
+        Logger.recordOutput("Drive/Swerve/States", new SwerveModuleState[] {
             frontLeftModule.getState(),
             frontRightModule.getState(),
             backLeftModule.getState(),
             backRightModule.getState(),
         });
-        this.swerveOptimPub.set(new SwerveModuleState[] {
+        Logger.recordOutput("Drive/Swerve/Optimized", new SwerveModuleState[] {
             frontLeftModule.getOptimizedState(),
             frontRightModule.getOptimizedState(),
             backLeftModule.getOptimizedState(),

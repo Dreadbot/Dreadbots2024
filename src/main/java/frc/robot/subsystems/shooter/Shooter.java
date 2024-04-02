@@ -22,11 +22,13 @@ public class Shooter extends DreadbotSubsystem {
         this.hub = new PowerDistribution(1, ModuleType.kRev);
         
         this.io = io;
+        io.updateInputs(inputs);
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        Logger.processInputs("Shooter", inputs);
 
         Logger.recordOutput("Shooter/ActualSpeed", (inputs.leaderVelocity + inputs.followerVelocity) / 2);
         Logger.recordOutput("Shooter/TargetSpeed", targetSpeed);

@@ -76,7 +76,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Climber climber;
 
-    public final LoggedDashboardChooser<Command> autoChooser; 
+    public final LoggedDashboardChooser<Command> autoChooser;
     private final Shooter shooter;
     private final Intake intake; 
     private final Arm arm;
@@ -97,7 +97,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOCAN());
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            Logger.recordOutput("Auton Pose", pose);
+            Logger.recordOutput("Drive/Pose/Auton", pose);
         });
 
         configureButtonBindings();

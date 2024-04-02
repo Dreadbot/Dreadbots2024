@@ -19,6 +19,7 @@ public class IntakeIOCAN implements IntakeIO {
         this.intakeMotor.setIdleMode(IdleMode.kBrake);
     }
 
+    @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.hasNote = !beamBreakSensor.get();
         
@@ -26,5 +27,20 @@ public class IntakeIOCAN implements IntakeIO {
         inputs.voltage = intakeMotor.getAppliedOutput() * intakeMotor.getBusVoltage();
         inputs.current = intakeMotor.getOutputCurrent();
         inputs.temperature = intakeMotor.getMotorTemperature();
+    }
+
+    @Override
+    public void set(double speed) {
+        intakeMotor.set(speed);
+    }
+
+    @Override
+    public void close() throws Exception {
+        intakeMotor.close();
+    }
+
+    @Override
+    public void stopMotors() {
+        intakeMotor.stopMotor();
     }
 }

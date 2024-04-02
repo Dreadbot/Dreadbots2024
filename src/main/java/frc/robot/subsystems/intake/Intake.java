@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.Constants;
 import util.misc.DreadbotSubsystem;
 
@@ -12,11 +14,13 @@ public class Intake extends DreadbotSubsystem {
             return;
         }
         this.io = io;
+        io.updateInputs(inputs);
     }
     
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        Logger.processInputs("Intake", inputs);
     }
 
     public void intake(double speed) {

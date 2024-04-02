@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climber;
 
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.Constants.SubsystemConstants;
 import util.misc.DreadbotSubsystem;
 
@@ -17,6 +19,7 @@ public class Climber extends DreadbotSubsystem {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        Logger.processInputs("Climber", inputs);
     }
 
     public void climb(double verticalSpeed, double rotationSpeed) {
@@ -24,7 +27,7 @@ public class Climber extends DreadbotSubsystem {
             verticalSpeed = 0;
         }
 
-        if((inputs.leftTopSwitch || inputs.rightBottomSwitch) && verticalSpeed > 0) {
+        if((inputs.leftTopSwitch || inputs.rightTopSwitch) && verticalSpeed > 0) {
             verticalSpeed = 0;
         }
         io.arcade(verticalSpeed, rotationSpeed);
@@ -34,10 +37,10 @@ public class Climber extends DreadbotSubsystem {
         double leftSpeed = speed;
         double rightSpeed = speed;
 
-        if(inputs.leftTopSwitch && speed < 0) {
+        if(inputs.leftBottomSwitch && speed < 0) {
             leftSpeed = 0;
         }
-        if(inputs.rightTopSwitch && speed < 0) {
+        if(inputs.rightBottomSwitch && speed < 0) {
             rightSpeed = 0;
         }   
 

@@ -10,17 +10,23 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class SwerveModule {
 
     private SwerveModuleIO io;
-    private SwerveModuleIOInputsAutoLogged inputs;
+    private SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
 
     private PIDController turningPIDController = new PIDController(6.5, 0, 0);
     public SwerveModuleState desiredState = new SwerveModuleState();
+
+    public String name;
     
-    public SwerveModule(SwerveModuleIO io) {
+    public SwerveModule(SwerveModuleIO io, String name) {
+        this.name = name;
+        turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
         this.io = io;
+        io.updateInputs(inputs);
     }
 
     public void periodic() {
         io.updateInputs(inputs);
+        Logger.processInputs("SwerveModule" + name, inputs);
     }
 
     public SwerveModuleState getState() {
@@ -61,7 +67,7 @@ public class SwerveModule {
         io.close();
     }
 
-    public  void stopMotors() {
+    public void stopMotors() {
         io.stopMotors();
     }
 }

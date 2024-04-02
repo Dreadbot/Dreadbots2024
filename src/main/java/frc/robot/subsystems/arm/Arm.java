@@ -29,10 +29,11 @@ public class Arm extends DreadbotSubsystem {
     public double joystickOverride;
 
     public Arm(ArmIO io) {
-        this.io = io;
         if (!Constants.SubsystemConstants.ARM_ENABLED) {
             return;
         }
+        this.io = io;
+        this.io.updateInputs(inputs);
 
         absolutePID = new PIDController(52.0, 30.0, 0.0);
         absolutePID.setIZone(0.02);
@@ -50,6 +51,7 @@ public class Arm extends DreadbotSubsystem {
         }
 
         io.updateInputs(inputs);
+        Logger.processInputs("Arm", inputs);
 
         Logger.recordOutput("Arm/DesiredPosition", this.desiredArmState.position);
         Logger.recordOutput("Arm/AbsoluteDegrees", inputs.absolutePosition * 360);
