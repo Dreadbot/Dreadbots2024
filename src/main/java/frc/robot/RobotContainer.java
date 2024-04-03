@@ -56,6 +56,7 @@ import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOCAN;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.VisionIOSmartDashboard;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOCAN;
 import frc.robot.subsystems.shooter.Shooter;
@@ -87,7 +88,7 @@ public class RobotContainer {
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive(visionTable, new GyroIONavX());
+        drive = new Drive(visionTable, new GyroIONavX(), new VisionIOSmartDashboard());
         drive.getGyroIO().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();

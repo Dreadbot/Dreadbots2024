@@ -67,6 +67,7 @@ public class ArmIOCAN implements ArmIO {
     @Override
     public void setIdleMode(IdleMode idleMode) {
         leftMotor.setIdleMode(idleMode);
+        rightMotor.setIdleMode(idleMode);
     }
 
     @Override

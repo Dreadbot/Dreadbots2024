@@ -1,8 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -24,11 +21,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -43,7 +37,6 @@ import util.gyro.GyroIOInputsAutoLogged;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
 import util.misc.VisionIntegration;
-import util.misc.VisionPosition;
 import util.misc.WaypointHelper;
 import util.swerve.SwerveModule;
 import util.swerve.SwerveModuleIOCAN;
@@ -65,12 +58,13 @@ public class Drive extends DreadbotSubsystem {
     public double aprilTagZ;
     private final NetworkTable smartDashboard;
 
-    private StructArraySubscriber<VisionPosition> visionPositions;
-    private DoubleSubscriber poseLatency;
     private StructPublisher<Pose2d> posePub;
 
     private GyroIO gyroIO;
     private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+
+    private VisionIO visionIO;
+    private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     public Boolean autoAimArm = false;
     public double initialDistanceToTag = 0.0;
@@ -87,15 +81,15 @@ public class Drive extends DreadbotSubsystem {
 
     private Field2d field2d;
 
-    public Drive(NetworkTable table, GyroIO gyroIO) {
+    public Drive(NetworkTable table, GyroIO gyroIO, VisionIO visionIO) {
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
-
-        this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{}, PubSubOption.periodic(0.02));
-        this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0, PubSubOption.periodic(0.02));
         
         this.gyroIO = gyroIO;
         this.gyroIO.updateInputs(gyroInputs);
+
+        this.visionIO = visionIO;
+        this.visionIO.updateInputs(visionInputs);
 
         this.gyroIO.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
@@ -182,16 +176,24 @@ public class Drive extends DreadbotSubsystem {
         backRightModule.periodic();
 
         Logger.recordOutput("SpeakerPose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
-        double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
+        double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - visionInputs.poseLatency;
 
-        VisionPosition[] positions = visionPositions.get();
-        if (positions.length > 0) {
-
-            List<Pose2d> worldPositions = new ArrayList<Pose2d>();
-            for (VisionPosition position : positions) {
-                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians()), position.ID);
+        visionIO.updateInputs(visionInputs);
+        Logger.processInputs("Vision", visionInputs);
+        if (visionInputs.poses.length > 0) {
+            Pose2d[] worldPositions = new Pose2d[visionInputs.poses.length];
+            for (int i = 0; i < visionInputs.poses.length; i++) {
+                Translation2d visionPose = visionInputs.poses[i];
+                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(
+                    VisionIntegration.robotToWorldFrame(
+                        visionPose.getX(),
+                        visionPose.getY(),
+                        getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians()
+                    ),
+                    visionInputs.tagIds[i]
+                );
                 worldToRobot = new Pose2d(worldToRobot.getTranslation(), getPoseRotation());
-                worldPositions.add(worldToRobot);
+                worldPositions[i] = worldToRobot;
             }
             double sumX = 0;
             double sumY = 0;
@@ -201,9 +203,9 @@ public class Drive extends DreadbotSubsystem {
                 sumY += pos.getY();
                 sumRot += pos.getRotation().getRadians();
             }
-            double avgX = sumX / positions.length;
-            double avgY = sumY / positions.length;
-            double avgRot = sumRot / positions.length;
+            double avgX = sumX / visionInputs.poses.length;
+            double avgY = sumY / visionInputs.poses.length;
+            double avgRot = sumRot / visionInputs.poses.length;
             Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
             double error = averagedPose.getTranslation().getDistance(getPoseEstimator().getEstimatedPosition().getTranslation());
             if(error < 5.0) {

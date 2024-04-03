@@ -26,7 +26,7 @@ public class SwerveModule {
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("SwerveModule" + name, inputs);
+        Logger.processInputs("SwerveModules/" + name, inputs);
     }
 
     public SwerveModuleState getState() {
@@ -60,7 +60,7 @@ public class SwerveModule {
     }
 
     public void putValuesToSmartDashboard(String name) {
-        Logger.recordOutput(name + " CANCoder", inputs.rotation.getDegrees() / 360);
+        Logger.recordOutput("Drive/SwerveModules/" + name + "/CANCoder", inputs.rotation.getDegrees() / 360);
     }
 
     public void close() throws Exception{
