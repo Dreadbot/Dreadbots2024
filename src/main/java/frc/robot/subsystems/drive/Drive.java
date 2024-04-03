@@ -1,19 +1,14 @@
-package frc.robot.subsystems;
-
-import java.util.ArrayList;
-import java.util.List;
+package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -26,28 +21,25 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructArraySubscriber;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveConstants;
+import util.gyro.GyroIO;
+import util.gyro.GyroIOInputsAutoLogged;
 import util.math.DreadbotMath;
 import util.misc.DreadbotSubsystem;
-import util.misc.SwerveModule;
 import util.misc.VisionIntegration;
-import util.misc.VisionPosition;
 import util.misc.WaypointHelper;
+import util.swerve.SwerveModule;
+import util.swerve.SwerveModuleIOCAN;
 
 public class Drive extends DreadbotSubsystem {
     
@@ -66,13 +58,13 @@ public class Drive extends DreadbotSubsystem {
     public double aprilTagZ;
     private final NetworkTable smartDashboard;
 
-    private StructArraySubscriber<VisionPosition> visionPositions;
-    private DoubleSubscriber poseLatency;
     private StructPublisher<Pose2d> posePub;
-    private StructArrayPublisher<SwerveModuleState> swervePub;
-    private StructArrayPublisher<SwerveModuleState> swerveOptimPub;
 
-    private AHRS gyro = new AHRS(Port.kMXP);
+    private GyroIO gyroIO;
+    private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+
+    private VisionIO visionIO;
+    private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     public Boolean autoAimArm = false;
     public double initialDistanceToTag = 0.0;
@@ -89,45 +81,46 @@ public class Drive extends DreadbotSubsystem {
 
     private Field2d field2d;
 
-    public Drive(NetworkTable table) {
+    public Drive(NetworkTable table, GyroIO gyroIO, VisionIO visionIO) {
         this.smartDashboard = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         this.posePub = this.smartDashboard.getStructTopic("Robot Pose2d", Pose2d.struct).publish();
-        this.swervePub = this.smartDashboard.getStructArrayTopic("Robot Swerve", SwerveModuleState.struct).publish();
-        this.swerveOptimPub = this.smartDashboard.getStructArrayTopic("Robot Optimised Swerve", SwerveModuleState.struct).publish();
-
-        this.visionPositions = table.getStructArrayTopic("visionPos", VisionPosition.struct).subscribe(new VisionPosition[]{}, PubSubOption.periodic(0.02));
-        this.poseLatency = table.getDoubleTopic("visionLatency").subscribe(0.0, PubSubOption.periodic(0.02));
         
-        gyro.reset();
+        this.gyroIO = gyroIO;
+        this.gyroIO.updateInputs(gyroInputs);
+
+        this.visionIO = visionIO;
+        this.visionIO.updateInputs(visionInputs);
+
+        this.gyroIO.reset();
         if(Constants.SubsystemConstants.DRIVE_ENABLED) {
             field2d = new Field2d();
 
             SmartDashboard.putData(field2d);
         
-            frontLeftModule = new SwerveModule(
+            frontLeftModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(1, MotorType.kBrushless),
-                new CANSparkMax(2, MotorType.kBrushless), 
+                new CANSparkMax(2, MotorType.kBrushless),
                 new CANcoder(9), 
                 SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
-            );
-            frontRightModule = new SwerveModule(
+            ), "FL");
+            frontRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(3, MotorType.kBrushless),
                 new CANSparkMax(4, MotorType.kBrushless), 
                 new CANcoder(10), 
                 SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
-            );
-            backRightModule = new SwerveModule(
+            ), "FR");
+            backRightModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(5, MotorType.kBrushless),
                 new CANSparkMax(6, MotorType.kBrushless), 
                 new CANcoder(11), 
                 SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
-            );
-            backLeftModule = new SwerveModule(
+            ), "BR");
+            backLeftModule = new SwerveModule(new SwerveModuleIOCAN(
                 new CANSparkMax(7, MotorType.kBrushless),
                 new CANSparkMax(8, MotorType.kBrushless), 
                 new CANcoder(12), 
                 SwerveConstants.BACK_LEFT_ENCODER_OFFSET
-            );
+            ), "BL");
             turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
@@ -175,20 +168,32 @@ public class Drive extends DreadbotSubsystem {
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
+        gyroIO.updateInputs(gyroInputs);
+        Logger.processInputs("Gyro", gyroInputs);
+        frontLeftModule.periodic();
+        frontRightModule.periodic();
+        backLeftModule.periodic();
+        backRightModule.periodic();
 
-        Logger.recordOutput("Gyro Roll", gyro.getRoll());
-        Logger.recordOutput("Gyro Pitch", gyro.getPitch());
-        Logger.recordOutput("Speaker Pose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
-        double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - poseLatency.get();
+        Logger.recordOutput("SpeakerPose", new Pose2d(WaypointHelper.getSpeakerPos(), new Rotation2d()));
+        double timestamp = (RobotController.getFPGATime() / 1_000_000.0) - visionInputs.poseLatency;
 
-        VisionPosition[] positions = visionPositions.get();
-        if (positions.length > 0) {
-
-            List<Pose2d> worldPositions = new ArrayList<Pose2d>();
-            for (VisionPosition position : positions) {
-                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(VisionIntegration.robotToWorldFrame(position.x, position.y, getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians()), position.ID);
+        visionIO.updateInputs(visionInputs);
+        Logger.processInputs("Vision", visionInputs);
+        if (visionInputs.poses.length > 0) {
+            Pose2d[] worldPositions = new Pose2d[visionInputs.poses.length];
+            for (int i = 0; i < visionInputs.poses.length; i++) {
+                Translation2d visionPose = visionInputs.poses[i];
+                Pose2d worldToRobot = VisionIntegration.worldToRobotFromWorldFrame(
+                    VisionIntegration.robotToWorldFrame(
+                        visionPose.getX(),
+                        visionPose.getY(),
+                        getPoseRotation().rotateBy(Rotation2d.fromDegrees(180)).getRadians()
+                    ),
+                    visionInputs.tagIds[i]
+                );
                 worldToRobot = new Pose2d(worldToRobot.getTranslation(), getPoseRotation());
-                worldPositions.add(worldToRobot);
+                worldPositions[i] = worldToRobot;
             }
             double sumX = 0;
             double sumY = 0;
@@ -198,9 +203,9 @@ public class Drive extends DreadbotSubsystem {
                 sumY += pos.getY();
                 sumRot += pos.getRotation().getRadians();
             }
-            double avgX = sumX / positions.length;
-            double avgY = sumY / positions.length;
-            double avgRot = sumRot / positions.length;
+            double avgX = sumX / visionInputs.poses.length;
+            double avgY = sumY / visionInputs.poses.length;
+            double avgRot = sumRot / visionInputs.poses.length;
             Pose2d averagedPose = new Pose2d(avgX, avgY, new Rotation2d(avgRot));
             double error = averagedPose.getTranslation().getDistance(getPoseEstimator().getEstimatedPosition().getTranslation());
             if(error < 5.0) {
@@ -208,7 +213,7 @@ public class Drive extends DreadbotSubsystem {
             } else {
                 System.out.println("The april tags get a bit quirky ;) error :" + error);
             }
-            Logger.recordOutput("Vision Pose", averagedPose);
+            Logger.recordOutput("Drive/Pose/Vision", averagedPose);
             
             // poseEstimator.resetPosition(
             //     getGyroRotation(),
@@ -232,20 +237,19 @@ public class Drive extends DreadbotSubsystem {
             }
         );
         this.posePub.set(poseEstimator.getEstimatedPosition());
-        this.swervePub.set(new SwerveModuleState[] {
+        Logger.recordOutput("Drive/Swerve/States", new SwerveModuleState[] {
             frontLeftModule.getState(),
             frontRightModule.getState(),
             backLeftModule.getState(),
             backRightModule.getState(),
         });
-        this.swerveOptimPub.set(new SwerveModuleState[] {
+        Logger.recordOutput("Drive/Swerve/Optimized", new SwerveModuleState[] {
             frontLeftModule.getOptimizedState(),
             frontRightModule.getOptimizedState(),
             backLeftModule.getOptimizedState(),
             backRightModule.getOptimizedState(),
         });
-        Logger.recordOutput("Gyro Rotation", gyro.getRotation2d());
-        Logger.recordOutput("Pose Estimator", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Drive/Pose/Estimated", poseEstimator.getEstimatedPosition());
         field2d.setRobotPose(poseEstimator.getEstimatedPosition());
     }
 
@@ -306,7 +310,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetOdometry(Pose2d pose) {
-        gyro.reset();
+        gyroIO.reset();
         if(!Constants.SubsystemConstants.DRIVE_ENABLED) {
           return;
         }
@@ -328,7 +332,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     private Rotation2d getGyroRotation() {
-        return gyro.getRotation2d();
+        return gyroInputs.yaw;
     }
 
     private Rotation2d getPoseRotation() {
@@ -365,21 +369,25 @@ public class Drive extends DreadbotSubsystem {
     //     resetOdometry(getPosition());
     // }
 
-    public AHRS getGyro() {
-        return gyro;
-    }
-
     public SwerveDrivePoseEstimator getPoseEstimator() {
         return poseEstimator;
     }
 
     public void resetGyro(){
-        gyro.reset();
+        gyroIO.reset();
         resetOdometry(getPosition());
     }
     public void resetPose() {
-        gyro.reset();
+        gyroIO.reset();
         resetOdometry(WaypointHelper.getResetPose());
+    }
+
+    public GyroIO getGyroIO() {
+        return this.gyroIO;
+    }
+
+    public GyroIOInputsAutoLogged getGyroInputs() {
+        return this.gyroInputs;
     }
 
     public SwerveDrivePoseEstimator getEstimator() {

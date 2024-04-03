@@ -1,7 +1,7 @@
 package frc.robot.commmands.shooterCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class SourceIntakeCommand extends Command {
 

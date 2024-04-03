@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.WheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.arm.Arm;
 import util.misc.WaypointHelper;
 
 public class ArmTargetCommand<T extends WheelPositions<T>> extends Command {
@@ -36,7 +36,7 @@ public class ArmTargetCommand<T extends WheelPositions<T>> extends Command {
     private double armAngle;
     private double armRot;
     private Translation2d speakerHood;
-    private final double targetBias = -0.011;
+    private final double targetBias = -0.008;
 
     private double vNought = (4 * Math.PI * 0.0254 * 4000) / 60; // I don't know what you guys want this to be
 

@@ -2,7 +2,7 @@ package frc.robot.commmands.climberCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
 
 public class RetractClimbCommand extends Command {
 
