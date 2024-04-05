@@ -206,7 +206,7 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0806, 4000)); // .906
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0806, 5000)); // .906
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 4000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1300, 4500));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 4000));

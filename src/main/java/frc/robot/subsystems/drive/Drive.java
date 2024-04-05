@@ -139,9 +139,9 @@ public class Drive extends DreadbotSubsystem {
                 },
                 new Pose2d()
             );
-            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.0));
+            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, 0.0));
             AutoBuilder.configureHolonomic(
-                this::getPosition, 
+                this::getPosition,
                 this::resetOdometry,
                 this::getSpeeds,
                 this::followSpeeds,

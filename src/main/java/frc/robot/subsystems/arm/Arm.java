@@ -35,7 +35,7 @@ public class Arm extends DreadbotSubsystem {
         this.io = io;
         this.io.updateInputs(inputs);
 
-        absolutePID = new PIDController(80.0, 30.0, 0.0);
+        absolutePID = new PIDController(70.0, 30.0, 0.0);
         absolutePID.setIZone(0.02);
         absolutePID.setTolerance(ArmConstants.ARM_ENCODER_TOLERANCE);
 
