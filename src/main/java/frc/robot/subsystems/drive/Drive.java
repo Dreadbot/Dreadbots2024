@@ -139,7 +139,7 @@ public class Drive extends DreadbotSubsystem {
                 },
                 new Pose2d()
             );
-            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, 0.0));
+            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.01, 0.0));
             AutoBuilder.configureHolonomic(
                 this::getPosition,
                 this::resetOdometry,
@@ -296,7 +296,7 @@ public class Drive extends DreadbotSubsystem {
         ySpeed = forwardSlewRateLimiter.calculate(ySpeed);
         ChassisSpeeds desiredSpeeds = 
         ChassisSpeeds.discretize(fieldRelative ? 
-            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getGyroRotation()) : new ChassisSpeeds(xSpeed, ySpeed, rot), 0.02);
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, VisionIntegration.getAllianceAgnosticRotation(getPoseRotation())) : new ChassisSpeeds(xSpeed, ySpeed, rot), 0.02);
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(desiredSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         setDesiredStates(swerveModuleStates);
@@ -378,8 +378,16 @@ public class Drive extends DreadbotSubsystem {
         resetOdometry(getPosition());
     }
     public void resetPose() {
-        gyroIO.reset();
-        resetOdometry(WaypointHelper.getResetPose());
+        poseEstimator.resetPosition(
+            getGyroRotation(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            },
+            WaypointHelper.getResetPose()
+        );
     }
 
     public GyroIO getGyroIO() {
