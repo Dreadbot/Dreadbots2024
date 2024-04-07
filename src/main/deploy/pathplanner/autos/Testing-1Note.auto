@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.1493830537518626,
+      "y": 3.844868126880128
+    },
+    "rotation": -92.26561156794902
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot-Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropArm"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

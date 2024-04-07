@@ -1,0 +1,85 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.619397289720505,
+        "y": 0.7905842246869678
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.394719729254273,
+        "y": 1.635861461537739
+      },
+      "isLocked": false,
+      "linkedName": "SourceSideAmpThrow"
+    },
+    {
+      "anchor": {
+        "x": 7.687517638924167,
+        "y": 2.443251465206634
+      },
+      "prevControl": {
+        "x": 6.074281625415103,
+        "y": 2.3781068025099024
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MidNote2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.75
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIntake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

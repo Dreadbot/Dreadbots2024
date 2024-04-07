@@ -1,28 +1,21 @@
 package frc.robot.commmands.armCommands;
 
-import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.WheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.arm.Arm;
 import util.misc.WaypointHelper;
 
-public class ArmTargetCommand extends Command {
+public class ArmTargetCommand<T extends WheelPositions<T>> extends Command {
     private final Arm arm;
-    private final PoseEstimator poseEstimator;
-    private double fixedAngle = 1.41372;
+    private final PoseEstimator<T> poseEstimator;
+    private final double fixedAngle = 1.34390; // 1.41372
     private double armToEndOfPizza = .2413; // I don't know about this number you guys probably have to measure
     private double g = -9.8;
     private double deltaX = 0; // delta x and delta h are random values that are close enough to their actual
@@ -33,7 +26,7 @@ public class ArmTargetCommand extends Command {
     private double speakerHoodOffset = 0.3048;
     private double originToBase = .2032;
     private Translation2d speakerPos = WaypointHelper.getSpeakerPos();
-    private DriverStation.Alliance alliance = WaypointHelper.getAlliance();
+    // private DriverStation.Alliance alliance = WaypointHelper.getAlliance();
     private double hNought;
     private double D;
     private double a;
@@ -43,11 +36,14 @@ public class ArmTargetCommand extends Command {
     private double armAngle;
     private double armRot;
     private Translation2d speakerHood;
-    private final double targetBias = -0.010;
+    // -.007 - pre comp
+    // -.0040 - MSC3-e7-blue
+    private final double targetBias = -0.0050; // bigger number (less negative) is higher arm, lower note
+
 
     private double vNought = (4 * Math.PI * 0.0254 * 4000) / 60; // I don't know what you guys want this to be
 
-    public ArmTargetCommand(Arm arm, PoseEstimator poseEstimator) {
+    public ArmTargetCommand(Arm arm, PoseEstimator<T> poseEstimator) {
         this.arm = arm;
         this.poseEstimator = poseEstimator;
         addRequirements(arm);
@@ -75,10 +71,10 @@ public class ArmTargetCommand extends Command {
             deltaX = armLength * Math.cos(armAngle);
         }
         armRot = (armAngle / (2 * Math.PI)) + targetBias * targetBoxX;
-        SmartDashboard.putNumber("Vision Target Command Angle", armRot);
-        SmartDashboard.putNumber("Distance To Speaker Base", targetBoxX);
-        SmartDashboard.putNumber("Target Angle", armAngle);
-        SmartDashboard.putNumber("Target Box Height", hNought);
+        Logger.recordOutput("Vision Target Command Angle", armRot);
+        Logger.recordOutput("Distance To Speaker Base", targetBoxX);
+        Logger.recordOutput("Target Angle", armAngle);
+        Logger.recordOutput("Target Box Height", hNought);
         arm.setReference(new State(armRot, 0));
     }
 

@@ -79,7 +79,7 @@ public abstract class Constants {
       }
       public static class ArmConstants {
         public static final double ARM_POSITION_ERROR_MARGIN = 0.0030;
-        public static final double ARM_POSITION_ERROR_MARGIN_AUTON = 0.0050;
+        public static final double ARM_POSITION_ERROR_MARGIN_AUTON = 0.0040;
         public static final double ARM_GEAR_RATIO = 1.0 / 100.0;
         public static final double KG = 0.10; //0.27
         public static final double AUTON_START_POSITION = (90 - 15) / 360.0; //Arm starts 4 degress from vertical
@@ -92,7 +92,7 @@ public abstract class Constants {
         public static final int ARM_DUTY_CYCLE_ENCODER = 8;
         public static final double SET_POSITION_OFFSET = 0.9780;
         public static final double ARM_UPPER_LIMIT = .2685;
-        public static final double ARM_LOWER_LIMIT = .0140; // .0189
+        public static final double ARM_LOWER_LIMIT = .0149; // .0189
         // public static final double ARM_ENCODER_OFFSET = 0.124 + ARM_LOWER_LIMIT;
         public static final double ARM_ENCODER_OFFSET = 0.105;//0.1467;
         // public static final double ARM_ENCODER_SCALE = 1.10299;

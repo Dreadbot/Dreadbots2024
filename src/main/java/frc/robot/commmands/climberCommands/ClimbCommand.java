@@ -1,27 +1,28 @@
 package frc.robot.commmands.climberCommands;
 
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
+import util.gyro.GyroIOInputsAutoLogged;
 
 public class ClimbCommand extends Command {
 
     private final Climber climber;
-    private final AHRS gyro;
+    private final GyroIOInputsAutoLogged gyroInputs;
     
-    public ClimbCommand(Climber climber, AHRS gyro) {
+    public ClimbCommand(Climber climber, GyroIOInputsAutoLogged gyroInputs) {
         this.climber = climber;
-        this.gyro = gyro;
+        this.gyroInputs = gyroInputs;
         addRequirements(climber);
     }
 
     @Override
     public void execute() {
-        climber.climb(ClimberConstants.RETRACT_SPEED, (-gyro.getRoll()) / ClimberConstants.GYRO_ANGLE_CONVERSION_FACTOR);
-        SmartDashboard.putNumber("leftClimberPosition", climber.getLeftClimberPosition());
-        SmartDashboard.putNumber("rightClimberPosition", climber.getRightClimberPosition());
+        climber.climb(ClimberConstants.RETRACT_SPEED, (-gyroInputs.roll) / ClimberConstants.GYRO_ANGLE_CONVERSION_FACTOR);
+        Logger.recordOutput("leftClimberPosition", climber.getLeftClimberPosition());
+        Logger.recordOutput("rightClimberPosition", climber.getRightClimberPosition());
     } 
 
     @Override
@@ -33,7 +34,5 @@ public class ClimbCommand extends Command {
     @Override
     public boolean isFinished() {
         return false;
-        //return climberPositions[0] <= ClimberConstants.MIN_HEIGHT || climberPositions[1] <= ClimberConstants.MIN_HEIGHT;
     }
-    
 }

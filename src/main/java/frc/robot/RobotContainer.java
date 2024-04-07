@@ -5,26 +5,25 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -46,20 +45,23 @@ import frc.robot.commmands.driveCommands.DriveCommand;
 import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOCAN;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
 import frc.robot.commmands.intakeCommands.OuttakeCommand;
 import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import util.misc.VisionIntegration;
-
-
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOCAN;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.VisionIOSmartDashboard;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOCAN;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOCAN;
+import util.gyro.GyroIONavX;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -75,7 +77,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Climber climber;
 
-    public final SendableChooser<Command> autoChooser; 
+    public final LoggedDashboardChooser<Command> autoChooser;
     private final Shooter shooter;
     private final Intake intake; 
     private final Arm arm;
@@ -83,28 +85,25 @@ public class RobotContainer {
 
     private NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
     private NetworkTable visionTable = ntInst.getTable("azathoth");
-    private NetworkTable smartdashboardTable = ntInst.getTable("SmartDashboard");
-    private StructPublisher<Pose2d> autonPosePublisher = smartdashboardTable.getStructTopic("Auton Pose", Pose2d.struct).publish();
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive(visionTable);
-        drive.getGyro().reset();
+        drive = new Drive(visionTable, new GyroIONavX(), new VisionIOSmartDashboard());
+        drive.getGyroIO().reset();
         pneumaticHub = new PneumaticHub(21);
         pneumaticHub.enableCompressorDigital();
-        climber = new Climber(drive.getGyro());
-        shooter = new Shooter();
-        intake = new Intake();
-        arm = new Arm();
+        climber = new Climber(new ClimberIOCAN());
+        shooter = new Shooter(new ShooterIOCAN());
+        intake = new Intake(new IntakeIOCAN());
+        arm = new Arm(new ArmIOCAN());
 
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            autonPosePublisher.set(pose);
+            Logger.recordOutput("Drive/Pose/Auton", pose);
         });
 
         configureButtonBindings();
         initializeAutonCommands();
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auton", autoChooser);
+        autoChooser = new LoggedDashboardChooser<>("Auton", AutoBuilder.buildAutoChooser());
     }
     
     
@@ -130,7 +129,7 @@ public class RobotContainer {
             new UnlockCommand(climber)
                 .andThen(new UnbindCommand(climber, ClimberConstants.RETRACT_SPEED).withTimeout(0.02))
                 .andThen(new WaitCommand(0.25))
-                .andThen(new ClimbCommand(climber, drive.getGyro()))
+                .andThen(new ClimbCommand(climber, drive.getGyroInputs()))
         );
         new Trigger(primaryController::getRightBumper).whileTrue(
             new UnlockCommand(climber)
@@ -147,7 +146,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBButton).onTrue(new OuttakeCommand(intake));
         new Trigger(secondaryController::getBButton).onFalse(new StopIntakeCommand(intake));
         
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()).repeatedly());
         ArmCommand armCommand = new ArmCommand(arm, secondaryController::getLeftY);
         arm.setDefaultCommand(armCommand);
         /* secondaryController.getRightBumper().onTrue(
@@ -163,7 +162,7 @@ public class RobotContainer {
         new Trigger(secondaryController::getBackButton).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).whileTrue(new ShootCommand(shooter, 2000, secondaryController).alongWith(new FeedCommand(intake)));
         new Trigger(() -> secondaryController.getLeftTriggerAxis() > 0.50).onFalse(new StopShootCommand(shooter));
-        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand(arm, drive.getPoseEstimator()).repeatedly());
+        new Trigger(secondaryController::getLeftBumper).whileTrue(new ArmTargetCommand<SwerveDriveWheelPositions>(arm, drive.getPoseEstimator()).repeatedly());
         //new Trigger(secondaryController::getLeftBumper).whileTrue(new ShootCommand(shooter, 4000, secondaryController));
         //new Trigger(secondaryController::getLeftBumper).onFalse(new StopShootCommand(shooter));
         new Trigger(() -> secondaryController.getRightTriggerAxis() > 0.50).whileTrue(new FeedCommand(intake));
@@ -175,7 +174,7 @@ public class RobotContainer {
         new Trigger(() -> secondaryController.getPOV() == 90).onTrue(new ArmToPositionCommand(arm, 0.09908, secondaryController::getLeftY));
         new Trigger(primaryController::getAButton).whileTrue(new LockonCommand(drive));
         // new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, ArmConstants.ARM_SOURCE_PICKUP_POSITION));
-        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.0, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
+        new Trigger(() -> secondaryController.getPOV() == 180).onTrue(new ArmToPositionCommand(arm, 0.07, secondaryController::getLeftY)); //Trap Shot 6in chain from shooter, 0.06773 from climber lined up with chain, 0.06500 with 1700 rpm
         new Trigger(() -> secondaryController.getPOV() == 0).onTrue(new ArmToPositionCommand(arm, 0.253, secondaryController::getLeftY));
 
         new Trigger(shooter::overDrawingAmps).whileTrue(new EmergencyRumbleCommand(secondaryController));
@@ -189,10 +188,11 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        if (!autoChooser.getSelected().getName().equals("1Note-Vision")) {
-            drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
+        Command command = autoChooser.get();
+        if (!command.getName().equals("1Note-Vision")) {
+            drive.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(command.getName()));
         }
-        return autoChooser.getSelected();        
+        return command;
     }
 
     public void teleopInit() {
@@ -206,7 +206,7 @@ public class RobotContainer {
     }
 
     public void initializeAutonCommands() {
-        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0806, 4000)); // .906
+        NamedCommands.registerCommand("Shoot-Subwoofer", new AutoShootCommand(intake, arm, shooter, 0.0806, 5000)); // .906
         NamedCommands.registerCommand("Shoot-MiddleNote", new AutoShootCommand(intake, arm, shooter, 0.12900, 4000));
         NamedCommands.registerCommand("Shoot-AmpSide", new AutoShootCommand(intake, arm, shooter, 0.1300, 4500));
         NamedCommands.registerCommand("Shoot-SourceSide", new AutoShootCommand(intake, arm, shooter, 0.132000, 4000));
