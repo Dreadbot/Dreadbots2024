@@ -38,7 +38,7 @@ public class ArmTargetCommand<T extends WheelPositions<T>> extends Command {
     private Translation2d speakerHood;
     // -.007 - pre comp
     // -.0040 - MSC3-e7-blue
-    private final double targetBias = -0.0050; // bigger number (less negative) is higher arm, lower note
+    private final double targetBias = -0.007; // bigger number (less negative) is higher arm, lower note
 
 
     private double vNought = (4 * Math.PI * 0.0254 * 4000) / 60; // I don't know what you guys want this to be
