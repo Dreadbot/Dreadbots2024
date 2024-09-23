@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.commmands.armCommands.ArmCommand;
 import frc.robot.commmands.armCommands.ArmTargetCommand;
 import frc.robot.commmands.armCommands.ArmToPositionCommand;
@@ -46,6 +47,7 @@ import frc.robot.commmands.driveCommands.LockonCommand;
 import frc.robot.commmands.driveCommands.ResetGyroCommand;
 import frc.robot.commmands.driveCommands.StopDriveCommand;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOCAN;
 import frc.robot.commmands.intakeCommands.FeedCommand;
 import frc.robot.commmands.intakeCommands.IntakeCommand;
@@ -54,13 +56,18 @@ import frc.robot.commmands.intakeCommands.StopIntakeCommand;
 import frc.robot.commmands.shooterCommands.ShootCommand;
 import frc.robot.commmands.shooterCommands.StopShootCommand;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOCAN;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.VisionIO;
 import frc.robot.subsystems.drive.VisionIOSmartDashboard;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCAN;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOCAN;
+import util.gyro.GyroIO;
 import util.gyro.GyroIONavX;
 
 /**
@@ -88,15 +95,38 @@ public class RobotContainer {
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        drive = new Drive(visionTable, new GyroIONavX(), new VisionIOSmartDashboard());
-        drive.getGyroIO().reset();
-        pneumaticHub = new PneumaticHub(21);
-        pneumaticHub.enableCompressorDigital();
-        climber = new Climber(new ClimberIOCAN());
-        shooter = new Shooter(new ShooterIOCAN());
-        intake = new Intake(new IntakeIOCAN());
-        arm = new Arm(new ArmIOCAN());
-
+        switch (RobotConstants.ROBOT_MODE) {
+            case REAL:
+                drive = new Drive(visionTable, new GyroIONavX(), new VisionIOSmartDashboard());
+                drive.getGyroIO().reset();
+                pneumaticHub = new PneumaticHub(21);
+                pneumaticHub.enableCompressorDigital();
+                climber = new Climber(new ClimberIOCAN());
+                shooter = new Shooter(new ShooterIOCAN());
+                intake = new Intake(new IntakeIOCAN());
+                arm = new Arm(new ArmIOCAN());
+                break;
+            case REPLAY:
+                drive = new Drive(visionTable, new GyroIO(){}, new VisionIO(){});
+                drive.getGyroIO().reset();
+                pneumaticHub = new PneumaticHub(21);
+                pneumaticHub.enableCompressorDigital();
+                climber = new Climber(new ClimberIO(){});
+                shooter = new Shooter(new ShooterIO(){});
+                intake = new Intake(new IntakeIO(){});
+                arm = new Arm(new ArmIO(){});
+                break;
+            default:
+                drive = new Drive(visionTable, new GyroIO(){}, new VisionIO(){});
+                drive.getGyroIO().reset();
+                pneumaticHub = new PneumaticHub(21);
+                pneumaticHub.enableCompressorDigital();
+                climber = new Climber(new ClimberIO(){});
+                shooter = new Shooter(new ShooterIO(){});
+                intake = new Intake(new IntakeIO(){});
+                arm = new Arm(new ArmIO(){});
+                break;
+        }
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
             Logger.recordOutput("Drive/Pose/Auton", pose);
         });

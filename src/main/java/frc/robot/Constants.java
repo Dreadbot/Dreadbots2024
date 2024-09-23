@@ -9,6 +9,15 @@ import edu.wpi.first.wpilibj.util.Color;
 
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class Constants {
+
+    public static class RobotConstants {
+      public static enum Mode {
+        REAL,
+        SIM, //not implemented
+        REPLAY
+      };
+      public static final Mode ROBOT_MODE = Mode.REPLAY;
+    }
     public static class OperatorConstants {
       public static final int PRIMARY_JOYSTICK_PORT   = 0;
       public static final int SECONDARY_JOYSTICK_PORT = 1;
