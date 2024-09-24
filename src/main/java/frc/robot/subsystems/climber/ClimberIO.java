@@ -5,20 +5,20 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimberIO {
     @AutoLog
     public static class ClimberIOInput {
-        public boolean leftTopSwitch;
-        public boolean leftBottomSwitch;
-        public boolean rightTopSwitch;
-        public boolean rightBottomSwitch;
+        public boolean leftTopSwitch = false;
+        public boolean leftBottomSwitch = false;
+        public boolean rightTopSwitch = false;
+        public boolean rightBottomSwitch = false;
         
-        public double leftPosition;
-        public double leftVoltage;
-        public double leftCurrent;
-        public double leftTemperature;
+        public double leftPosition = 0.0;
+        public double leftVoltage = 0.0;
+        public double leftCurrent = 0.0;
+        public double leftTemperature = 0.0;
         
-        public double rightPosition;
-        public double rightVoltage;
-        public double rightCurrent;
-        public double rightTemperature;
+        public double rightPosition = 0.0;
+        public double rightVoltage = 0.0;
+        public double rightCurrent = 0.0;
+        public double rightTemperature = 0.0;
     }
 
     public default void updateInputs(ClimberIOInput inputs) {}

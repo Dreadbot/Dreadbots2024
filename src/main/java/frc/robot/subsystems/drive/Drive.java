@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.SwerveConstants;
 import util.gyro.GyroIO;
 import util.gyro.GyroIOInputsAutoLogged;
@@ -39,6 +40,7 @@ import util.misc.DreadbotSubsystem;
 import util.misc.VisionIntegration;
 import util.misc.WaypointHelper;
 import util.swerve.SwerveModule;
+import util.swerve.SwerveModuleIO;
 import util.swerve.SwerveModuleIOCAN;
 
 public class Drive extends DreadbotSubsystem {
@@ -96,31 +98,39 @@ public class Drive extends DreadbotSubsystem {
             field2d = new Field2d();
 
             SmartDashboard.putData(field2d);
-        
-            frontLeftModule = new SwerveModule(new SwerveModuleIOCAN(
-                new CANSparkMax(1, MotorType.kBrushless),
-                new CANSparkMax(2, MotorType.kBrushless),
-                new CANcoder(9), 
-                SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
-            ), "FL");
-            frontRightModule = new SwerveModule(new SwerveModuleIOCAN(
-                new CANSparkMax(3, MotorType.kBrushless),
-                new CANSparkMax(4, MotorType.kBrushless), 
-                new CANcoder(10), 
-                SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
-            ), "FR");
-            backRightModule = new SwerveModule(new SwerveModuleIOCAN(
-                new CANSparkMax(5, MotorType.kBrushless),
-                new CANSparkMax(6, MotorType.kBrushless), 
-                new CANcoder(11), 
-                SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
-            ), "BR");
-            backLeftModule = new SwerveModule(new SwerveModuleIOCAN(
-                new CANSparkMax(7, MotorType.kBrushless),
-                new CANSparkMax(8, MotorType.kBrushless), 
-                new CANcoder(12), 
-                SwerveConstants.BACK_LEFT_ENCODER_OFFSET
-            ), "BL");
+            switch(RobotConstants.ROBOT_MODE) {
+                case REAL:
+                    frontLeftModule = new SwerveModule(new SwerveModuleIOCAN(
+                        new CANSparkMax(1, MotorType.kBrushless),
+                        new CANSparkMax(2, MotorType.kBrushless),
+                        new CANcoder(9), 
+                        SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+                    ), "FL");
+                    frontRightModule = new SwerveModule(new SwerveModuleIOCAN(
+                        new CANSparkMax(3, MotorType.kBrushless),
+                        new CANSparkMax(4, MotorType.kBrushless), 
+                        new CANcoder(10), 
+                        SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
+                    ), "FR");
+                    backRightModule = new SwerveModule(new SwerveModuleIOCAN(
+                        new CANSparkMax(5, MotorType.kBrushless),
+                        new CANSparkMax(6, MotorType.kBrushless), 
+                        new CANcoder(11), 
+                        SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
+                    ), "BR");
+                    backLeftModule = new SwerveModule(new SwerveModuleIOCAN(
+                        new CANSparkMax(7, MotorType.kBrushless),
+                        new CANSparkMax(8, MotorType.kBrushless), 
+                        new CANcoder(12), 
+                        SwerveConstants.BACK_LEFT_ENCODER_OFFSET
+                    ), "BL");
+                break;
+                default:
+                    frontLeftModule = new SwerveModule(new SwerveModuleIO() {}, "FL");
+                    frontRightModule = new SwerveModule(new SwerveModuleIO() {}, "FR");
+                    backRightModule = new SwerveModule(new SwerveModuleIO() {}, "BR");
+                    backLeftModule = new SwerveModule(new SwerveModuleIO() {}, "BL");
+            }
             turningController.enableContinuousInput(-180, 180);
             kinematics = new SwerveDriveKinematics(
                 frontLeftLocation,
@@ -180,6 +190,13 @@ public class Drive extends DreadbotSubsystem {
 
         visionIO.updateInputs(visionInputs);
         Logger.processInputs("Vision", visionInputs);
+        if(visionInputs.tagIds.length > 0) {
+             Pose2d[] tagPoses = new Pose2d[visionInputs.tagIds.length];
+            for(int i = 0; i < visionInputs.tagIds.length; i++) {
+                tagPoses[i] = VisionIntegration.getApriltagPose(visionInputs.tagIds[i]);
+            }
+            Logger.recordOutput("/Vision/TagPoses", tagPoses);
+        }
         if (visionInputs.poses.length > 0) {
             Pose2d[] worldPositions = new Pose2d[visionInputs.poses.length];
             for (int i = 0; i < visionInputs.poses.length; i++) {

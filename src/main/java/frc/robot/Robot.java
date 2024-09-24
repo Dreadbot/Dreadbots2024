@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -51,7 +53,9 @@ public class Robot extends LoggedRobot {
             setUseTiming(false);
             String logPath = LogFileUtil.findReplayLog();
             Logger.setReplaySource(new WPILOGReader(logPath));
-            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+            String[] tokens = logPath.split("\\.");
+            String replayPath = String.join(".", Arrays.copyOfRange(tokens, 0, tokens.length - 1)) + "_sim" + "." + tokens[tokens.length - 1]; //weird workaround bc pathing
+            Logger.addDataReceiver(new WPILOGWriter(replayPath));
         }
 
         Logger.start();

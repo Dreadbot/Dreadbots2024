@@ -5,12 +5,12 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs {
-        boolean hasNote;
+        boolean hasNote = false;
 
-        double velocity;
-        double voltage;
-        double current;
-        double temperature;
+        double velocity = 0.0;
+        double voltage = 0.0;
+        double current = 0.0;
+        double temperature = 0.0;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
